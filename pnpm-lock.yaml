@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@ai-sdk/provider':
+        specifier: '>=2.0.0'
+        version: 2.0.0
       '@ai-sdk/provider-utils':
         specifier: '>=3.0.0'
         version: 3.0.16(zod@4.1.12)
@@ -81,6 +84,9 @@ importers:
 
   packages/ai-cli:
     dependencies:
+      '@ai-sdk/provider':
+        specifier: '>=2.0.0'
+        version: 2.0.0
       '@commander-js/extra-typings':
         specifier: ^13.0.0
         version: 13.1.0(commander@13.1.0)

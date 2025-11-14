@@ -62,11 +62,15 @@ export const promptMissingOption = async (
 export const promptMissingOptions = async (
   options: Option[],
   optionsInput: OptionsInput,
+  inquireBooleanFlags?: boolean,
 ): Promise<OptionsInput> => {
   const completeOptionsInput: OptionsInput = { ...optionsInput };
 
   for (const option of options) {
     if (option.positional) {
+      continue;
+    }
+    if (!inquireBooleanFlags && isBooleanFlag(option.argname)) {
       continue;
     }
     const argname = parseFlagName(option.argname);
@@ -79,8 +83,14 @@ export const promptMissingOptions = async (
   return completeOptionsInput;
 };
 
-export const stripOptionFieldsForCommander = (option: Option): Option => {
+export const stripOptionFieldsForCommander = (
+  option: Option,
+  inquireBooleanFlags?: boolean,
+): Option => {
   if (option.positional) {
+    return option;
+  }
+  if (!inquireBooleanFlags && isBooleanFlag(option.argname)) {
     return option;
   }
   const { required: _, defaults: __, ...rest } = option;

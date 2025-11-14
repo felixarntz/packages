@@ -18,6 +18,7 @@
     "url": "https://github.com/felixarntz/packages/issues"
   },
   "dependencies": {
+    "@ai-sdk/provider": ">=2.0.0",
     "@ai-sdk/provider-utils": ">=3.0.0",
     "@commander-js/extra-typings": "^13.1.0",
     "@inquirer/prompts": "^7.10.0",

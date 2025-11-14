@@ -1,4 +1,5 @@
 import { streamText } from 'ai';
+import type { SharedV2ProviderOptions } from '@ai-sdk/provider';
 import {
   getOpt,
   type HandlerArgs,
@@ -38,18 +39,29 @@ const actualOptions: Option[] = [
     argname: '-s, --system <system>',
     description: 'System instruction to guide the model',
   },
+  {
+    argname: '--thinking',
+    description:
+      'Whether to explicitly opt in to model thinking / reasoning capabilities',
+  },
+  {
+    argname: '--no-thinking',
+    description:
+      'Whether to explicitly opt out of model thinking / reasoning capabilities',
+  },
 ];
 
 export const options = injectFileOptionsForCommander(actualOptions, [
   'prompt',
   'system',
-]).map(stripOptionFieldsForCommander);
+]).map((option) => stripOptionFieldsForCommander(option));
 
 type CommandConfig = {
   prompt: string;
   model: string;
   temperature?: number;
   system?: string;
+  thinking?: boolean;
 };
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
@@ -63,21 +75,78 @@ const parseOptions = (opt: OptionsInput): CommandConfig => {
   if (opt['system']) {
     config.system = String(opt['system']);
   }
+  if (opt['thinking'] !== undefined) {
+    config.thinking = Boolean(opt['thinking']);
+  }
+  if (opt['noThinking'] !== undefined) {
+    config.thinking = !opt['noThinking'];
+  }
   return config;
 };
 
 export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
-  const { prompt, model, temperature, system } = parseOptions(
+  const { prompt, model, temperature, system, thinking } = parseOptions(
     await promptMissingOptions(
       actualOptions,
       await parseFileOptions(getOpt(handlerArgs), ['system']),
     ),
   );
 
+  const thinkingSuffix =
+    thinking === true
+      ? ' with thinking enabled'
+      : thinking === false
+        ? ' with thinking disabled'
+        : '';
   const temperatureSuffix = temperature
     ? ` (using temperature ${temperature})`
     : '';
-  logger.debug(`Prompting model ${model}${temperatureSuffix}...`);
+  logger.debug(
+    `Prompting model ${model}${thinkingSuffix}${temperatureSuffix}...`,
+  );
+
+  let providerOptions: SharedV2ProviderOptions | undefined;
+  if (thinking === true) {
+    providerOptions = {
+      anthropic: {
+        thinking: {
+          type: 'enabled',
+        },
+      },
+      google: {
+        thinkingConfig: {
+          thinkingBudget: 512,
+        },
+      },
+      openai: {
+        reasoningEffort: 'high',
+      },
+      xai: {
+        reasoningEffort: 'high',
+      },
+    };
+  } else if (thinking === false) {
+    providerOptions = {
+      anthropic: {
+        thinking: {
+          type: 'disabled',
+          budgetTokens: 0,
+        },
+      },
+      google: {
+        thinkingConfig: {
+          // Can't disable thinking for Gemini 2.5 Pro.
+          thinkingBudget: model === 'google/gemini-2.5-pro' ? 128 : 0,
+        },
+      },
+      openai: {
+        reasoningEffort: 'minimal',
+      },
+      xai: {
+        reasoningEffort: 'low',
+      },
+    };
+  }
 
   // Stream text result.
   const streamResult = streamText({
@@ -85,6 +154,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     prompt,
     temperature,
     system,
+    providerOptions,
   });
   const { textStream } = streamResult;
   await outputStream(textStream);
