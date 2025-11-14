@@ -88,7 +88,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   const { prompt, model, temperature, system, thinking } = parseOptions(
     await promptMissingOptions(
       actualOptions,
-      await parseFileOptions(getOpt(handlerArgs), ['system']),
+      await parseFileOptions(getOpt(handlerArgs), ['prompt', 'system']),
     ),
   );
 
@@ -102,7 +102,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     ? ` (using temperature ${temperature})`
     : '';
   logger.debug(
-    `Prompting model ${model}${thinkingSuffix}${temperatureSuffix}...`,
+    `Prompting model ${model} to generate text${thinkingSuffix}${temperatureSuffix}...`,
   );
 
   let providerOptions: SharedV2ProviderOptions | undefined;

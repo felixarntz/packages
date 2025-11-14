@@ -93,6 +93,61 @@ export async function writeTextFile(
 }
 
 /**
+ * Reads a file as binary data.
+ *
+ * @param filePath - The path to the file.
+ * @returns A promise that resolves to the file content as a Buffer.
+ */
+export async function readBinaryFile(filePath: string): Promise<Buffer> {
+  try {
+    return await fs.readFile(filePath);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      throw new Error(`File not found: ${filePath}`);
+    }
+
+    throw new Error(`Failed to read file: ${filePath}`);
+  }
+}
+
+/**
+ * Writes binary data to a file.
+ *
+ * @param filePath - The path to the file.
+ * @param content - The content to write to the file as a Buffer.
+ * @param createDir - Optional. Whether to create the directory if it doesn't exist. Default true.
+ * @param overwrite - Optional. Whether to overwrite the file if it already exists. Default true.
+ * @returns A promise that resolves when the file is written.
+ */
+export async function writeBinaryFile(
+  filePath: string,
+  content: Buffer,
+  createDir: boolean = true,
+  overwrite: boolean = true,
+): Promise<void> {
+  // Ensure directory exists if createDir is true.
+  if (createDir) {
+    const dirPath = path.dirname(filePath);
+    await ensureDirectory(dirPath);
+  }
+
+  // If overwrite is false, check if file exists.
+  if (!overwrite) {
+    const exists = await fileExists(filePath);
+    if (exists) {
+      throw new Error(`File already exists: ${filePath}`);
+    }
+  }
+
+  try {
+    // Write the file.
+    await fs.writeFile(filePath, content);
+  } catch (_) {
+    throw new Error(`Failed to write file: ${filePath}`);
+  }
+}
+
+/**
  * Creates a directory if it doesn't exist.
  *
  * @param dirPath - The path to the directory.
