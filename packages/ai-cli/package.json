@@ -1,0 +1,50 @@
+{
+  "name": "@felixarntz/ai-cli",
+  "version": "0.1.0",
+  "description": "CLI with various AI-driven personal tools",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "ai": "dist/ai-cli.js"
+  },
+  "main": "dist/ai-cli.cjs",
+  "module": "dist/ai-cli.js",
+  "types": "dist/ai-cli.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "homepage": "https://github.com/felixarntz/packages#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/felixarntz/packages.git"
+  },
+  "bugs": {
+    "url": "https://github.com/felixarntz/packages/issues"
+  },
+  "dependencies": {
+    "@commander-js/extra-typings": "^13.0.0",
+    "@inquirer/prompts": "^7.10.0",
+    "ai": "^5.0.0",
+    "commander": "^13.0.0",
+    "dotenv": "^16.6.1"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "typescript": "^5.3.3",
+    "vitest": "^3.1.1"
+  },
+  "scripts": {
+    "build": "tsup",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:ci": "eslint . --max-warnings 0",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "test": "vitest run",
+    "test:ci": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
+  }
+}
