@@ -101,7 +101,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   const temperatureSuffix = temperature
     ? ` (using temperature ${temperature})`
     : '';
-  logger.debug(
+  logger.info(
     `Prompting model ${model} to generate text${thinkingSuffix}${temperatureSuffix}...`,
   );
 

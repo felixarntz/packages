@@ -79,7 +79,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
 
   const suffix =
     number > 1 ? ` to generate ${number} images` : ' to generate an image';
-  logger.debug(`Prompting model ${model}${suffix}...`);
+  logger.info(`Prompting model ${model}${suffix}...`);
 
   const providerMap = {
     openai,
@@ -98,12 +98,17 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   const imageModel =
     providerMap[providerName as keyof typeof providerMap].image(modelName);
 
-  // Stream text result.
+  // Stream text result, and log "heartbeat" messages every 5 seconds.
+  const intervalId = setInterval(() => {
+    logger.info('Still generating...');
+  }, 5000);
   const imageResult = await generateImage({
     model: imageModel,
     prompt,
     n: number,
   });
+  clearInterval(intervalId);
+
   const { images } = imageResult;
 
   if (images.length === 0) {
@@ -116,12 +121,12 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
 
   let outputFileBase = output;
   if (images.length > 1) {
-    logger.debug(`Saving ${images.length} generated images...`);
+    logger.info(`Saving ${images.length} generated images...`);
     if (!outputFileBase.includes('%%number%%')) {
       outputFileBase += '-%%number%%';
     }
   } else {
-    logger.debug('Saving generated image...');
+    logger.info('Saving generated image...');
     if (outputFileBase.includes('-%%number%%')) {
       outputFileBase = outputFileBase.replace('-%%number%%', '');
     }
