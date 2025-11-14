@@ -1,5 +1,11 @@
 import { input, select, confirm } from '@inquirer/prompts';
-import { type Option, type OptionsInput, parseFlagName, isBooleanFlag, camelCaseFlagName } from './commander';
+import {
+  type Option,
+  type OptionsInput,
+  parseFlagName,
+  isBooleanFlag,
+  camelCaseFlagName,
+} from './commander';
 
 export const promptMissingOption = async (
   option: Option,
@@ -20,7 +26,9 @@ export const promptMissingOption = async (
     }
   } else {
     // Not-so-great fallback. Always provide descriptions!
-    const argname = option.positional ? option.argname : parseFlagName(option.argname);
+    const argname = option.positional
+      ? option.argname
+      : parseFlagName(option.argname);
     if (isBooleanFlag(option.argname)) {
       message = `Set whether to enable '${argname}'`;
     } else if (option.choices) {
@@ -62,8 +70,10 @@ export const promptMissingOptions = async (
       continue;
     }
     const argname = parseFlagName(option.argname);
-    completeOptionsInput[argname] =
-      await promptMissingOption(option, optionsInput[camelCaseFlagName(argname)]);
+    completeOptionsInput[argname] = await promptMissingOption(
+      option,
+      optionsInput[camelCaseFlagName(argname)],
+    );
   }
 
   return completeOptionsInput;

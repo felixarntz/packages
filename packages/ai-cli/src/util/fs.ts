@@ -40,12 +40,12 @@ export async function directoryExists(dirPath: string): Promise<boolean> {
  */
 export async function readTextFile(
   filePath: string,
-  encoding: BufferEncoding = "utf-8",
+  encoding: BufferEncoding = 'utf-8',
 ): Promise<string> {
   try {
     return await fs.readFile(filePath, { encoding });
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
       throw new Error(`File not found: ${filePath}`);
     }
 
@@ -66,7 +66,7 @@ export async function readTextFile(
 export async function writeTextFile(
   filePath: string,
   content: string,
-  encoding: BufferEncoding = "utf-8",
+  encoding: BufferEncoding = 'utf-8',
   createDir: boolean = true,
   overwrite: boolean = true,
 ): Promise<void> {

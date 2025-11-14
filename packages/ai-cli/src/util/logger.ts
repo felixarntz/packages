@@ -9,7 +9,13 @@ export enum LogLevel {
   SILENT = 5,
 }
 
-type TextStyles = 'bold' | 'cyan' | 'magenta' | 'green' | 'red' | 'yellowBright';
+type TextStyles =
+  | 'bold'
+  | 'cyan'
+  | 'magenta'
+  | 'green'
+  | 'red'
+  | 'yellowBright';
 
 const createStyledText =
   (style: TextStyles) =>

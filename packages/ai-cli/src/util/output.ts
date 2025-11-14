@@ -28,10 +28,10 @@ export async function outputStream(
 ): Promise<void> {
   let lastIsNewline = false;
   for await (const chunk of textStream) {
-    lastIsNewline = chunk.endsWith("\n");
+    lastIsNewline = chunk.endsWith('\n');
     outputPartial(chunk);
   }
   if (!lastIsNewline) {
-    output("");
+    output('');
   }
 }

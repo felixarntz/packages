@@ -124,6 +124,8 @@ export const parseFlagName = (argname: string): string => {
   throw new Error(`Could not parse argument name from "${argname}"`);
 };
 
-export const isBooleanFlag = (argname: string): boolean => argname.includes('--') && !argname.includes('<') && !argname.includes('[');
+export const isBooleanFlag = (argname: string): boolean =>
+  argname.includes('--') && !argname.includes('<') && !argname.includes('[');
 
-export const camelCaseFlagName = (flagName: string): string => flagName.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+export const camelCaseFlagName = (flagName: string): string =>
+  flagName.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());

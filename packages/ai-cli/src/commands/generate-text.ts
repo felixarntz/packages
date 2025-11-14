@@ -5,8 +5,14 @@ import {
   type OptionsInput,
   type Option,
 } from '../util/commander';
-import { parseFileOptions, injectFileOptionsForCommander } from '../util/file-options';
-import { promptMissingOptions, stripOptionFieldsForCommander } from '../util/inquirer';
+import {
+  parseFileOptions,
+  injectFileOptionsForCommander,
+} from '../util/file-options';
+import {
+  promptMissingOptions,
+  stripOptionFieldsForCommander,
+} from '../util/inquirer';
 import { logger } from '../util/logger';
 import { outputStream } from '../util/output';
 
@@ -26,8 +32,7 @@ const actualOptions: Option[] = [
   },
   {
     argname: '-t, --temperature <temperature>',
-    description:
-      'Optional temperature to use for the model (between 0 and 1)',
+    description: 'Optional temperature to use for the model (between 0 and 1)',
   },
   {
     argname: '-s, --system <system>',
@@ -35,7 +40,10 @@ const actualOptions: Option[] = [
   },
 ];
 
-export const options = injectFileOptionsForCommander(actualOptions, ['prompt', 'system']).map(stripOptionFieldsForCommander);
+export const options = injectFileOptionsForCommander(actualOptions, [
+  'prompt',
+  'system',
+]).map(stripOptionFieldsForCommander);
 
 type CommandConfig = {
   prompt: string;
@@ -59,21 +67,17 @@ const parseOptions = (opt: OptionsInput): CommandConfig => {
 };
 
 export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
-  const { prompt, model, temperature, system } =
-    parseOptions(
-      await promptMissingOptions(
-        actualOptions,
-        await parseFileOptions(
-          getOpt(handlerArgs),
-          ['system'],
-        ),
-      ),
-    );
-
-  const temperatureSuffix = temperature ? ` (using temperature ${temperature})` : '';
-  logger.debug(
-    `Prompting model ${model}${temperatureSuffix}...`,
+  const { prompt, model, temperature, system } = parseOptions(
+    await promptMissingOptions(
+      actualOptions,
+      await parseFileOptions(getOpt(handlerArgs), ['system']),
+    ),
   );
+
+  const temperatureSuffix = temperature
+    ? ` (using temperature ${temperature})`
+    : '';
+  logger.debug(`Prompting model ${model}${temperatureSuffix}...`);
 
   // Stream text result.
   const streamResult = streamText({
@@ -93,7 +97,9 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     `  Output tokens: ${tokenUsage.outputTokens}`,
   ];
   if (tokenUsage.reasoningTokens !== undefined) {
-    tokenUsageLogLines.push(`  Reasoning tokens: ${tokenUsage.reasoningTokens}`);
+    tokenUsageLogLines.push(
+      `  Reasoning tokens: ${tokenUsage.reasoningTokens}`,
+    );
   }
   tokenUsageLogLines.push(`  Total tokens: ${tokenUsage.totalTokens}`);
   logger.info(tokenUsageLogLines.join('\n'));
