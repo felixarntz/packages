@@ -15,6 +15,12 @@ import {
   handler as generateImageHandler,
   options as generateImageOptions,
 } from './commands/generate-image';
+import {
+  name as editImageName,
+  description as editImageDescription,
+  handler as editImageHandler,
+  options as editImageOptions,
+} from './commands/edit-image';
 
 /**
  * Initializes the application.
@@ -31,6 +37,11 @@ function initialize() {
     .alias('imagegen')
     .description(generateImageDescription)
     .action(withErrorHandling(generateImageHandler));
+
+  withOptions(program.command(editImageName), editImageOptions)
+    .alias('imageedit')
+    .description(editImageDescription)
+    .action(withErrorHandling(editImageHandler));
 }
 
 /**
