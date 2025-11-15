@@ -38,6 +38,15 @@ const actualOptions: Option[] = [
   {
     argname: '-m, --model <model>',
     description: 'Model to use',
+    choices: [
+      'google/gemini-2.5-flash-image',
+      'google/imagen-4.0-generate-001',
+      'google/imagen-4.0-ultra-generate-001',
+      'google/imagen-4.0-fast-generate-001',
+      'openai/dall-e-3',
+      'openai/dall-e-2',
+      'xai/grok-2-image-1212',
+    ],
     required: true,
   },
   {
