@@ -1,8 +1,4 @@
-import {
-  generateText,
-  experimental_generateImage as generateImage,
-  type GeneratedFile,
-} from 'ai';
+import { generateText, experimental_generateImage as generateImage } from 'ai';
 import { google } from '@ai-sdk/google';
 import { openai } from '@ai-sdk/openai';
 import { xai } from '@ai-sdk/xai';
@@ -22,6 +18,7 @@ import {
   stripOptionFieldsForCommander,
 } from '../util/inquirer';
 import { logger } from '../util/logger';
+import { runWithHeartbeat } from '../util/heartbeat';
 import { normalizeAbsolutePath } from '../util/paths';
 import { writeBinaryFile } from '../util/fs';
 import { base64ToBuffer, uint8ArrayToBuffer } from '../util/binary';
@@ -109,38 +106,38 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   }
 
   // Stream text result, and log "heartbeat" messages every 5 seconds.
-  const intervalId = setInterval(() => {
-    logger.info('Still generating...');
-  }, 5000);
-
-  let images: GeneratedFile[];
-  if (modelName.startsWith('gemini-')) {
-    if (number > 1) {
-      throw new Error(
-        'Gemini models currently only support generating one image at a time.',
-      );
-    }
-    const contentResult = await generateText({
-      model: providerMap[providerName as keyof typeof providerMap](modelName),
-      prompt,
-    });
-    images = contentResult.files.filter((file) =>
-      file.mediaType.startsWith('image/'),
-    );
-
-    // If no image was generated, try again with an explicit system prompt.
-    if (images.length === 0) {
+  const images = await runWithHeartbeat(async () => {
+    if (modelName.startsWith('gemini-')) {
+      if (number > 1) {
+        throw new Error(
+          'Gemini models currently only support generating one image at a time.',
+        );
+      }
       const contentResult = await generateText({
         model: providerMap[providerName as keyof typeof providerMap](modelName),
         prompt,
-        system:
-          'You are Nano Banana. You MUST generate an image based on the user prompt.',
       });
-      images = contentResult.files.filter((file) =>
+      let images = contentResult.files.filter((file) =>
         file.mediaType.startsWith('image/'),
       );
+
+      // If no image was generated, try again with an explicit system prompt.
+      if (images.length === 0) {
+        const contentResult = await generateText({
+          model:
+            providerMap[providerName as keyof typeof providerMap](modelName),
+          prompt,
+          system:
+            'You are Nano Banana. You MUST generate an image based on the user prompt.',
+        });
+        images = contentResult.files.filter((file) =>
+          file.mediaType.startsWith('image/'),
+        );
+      }
+
+      return images;
     }
-  } else {
+
     const imageResult = await generateImage({
       model:
         providerMap[providerName as keyof typeof providerMap].image(modelName),
@@ -148,10 +145,8 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
       n: number,
     });
 
-    images = imageResult.images;
-  }
-
-  clearInterval(intervalId);
+    return imageResult.images;
+  }, 'Still generating...');
 
   if (images.length === 0) {
     if (number === 1) {
