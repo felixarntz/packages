@@ -118,6 +118,19 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     images = contentResult.files.filter((file) =>
       file.mediaType.startsWith('image/'),
     );
+
+    // If no image was generated, try again with an explicit system prompt.
+    if (images.length === 0) {
+      const contentResult = await generateText({
+        model: providerMap[providerName as keyof typeof providerMap](modelName),
+        prompt,
+        system:
+          'You are Nano Banana. You MUST generate an image based on the user prompt.',
+      });
+      images = contentResult.files.filter((file) =>
+        file.mediaType.startsWith('image/'),
+      );
+    }
   } else {
     const imageResult = await generateImage({
       model:
