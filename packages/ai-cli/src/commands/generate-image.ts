@@ -1,4 +1,8 @@
-import { experimental_generateImage as generateImage } from 'ai';
+import {
+  generateText,
+  experimental_generateImage as generateImage,
+  type GeneratedFile,
+} from 'ai';
 import { google } from '@ai-sdk/google';
 import { openai } from '@ai-sdk/openai';
 import { xai } from '@ai-sdk/xai';
@@ -95,21 +99,37 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     );
   }
 
-  const imageModel =
-    providerMap[providerName as keyof typeof providerMap].image(modelName);
-
   // Stream text result, and log "heartbeat" messages every 5 seconds.
   const intervalId = setInterval(() => {
     logger.info('Still generating...');
   }, 5000);
-  const imageResult = await generateImage({
-    model: imageModel,
-    prompt,
-    n: number,
-  });
-  clearInterval(intervalId);
 
-  const { images } = imageResult;
+  let images: GeneratedFile[];
+  if (modelName.startsWith('gemini-')) {
+    if (number > 1) {
+      throw new Error(
+        'Gemini models currently only support generating one image at a time.',
+      );
+    }
+    const contentResult = await generateText({
+      model: providerMap[providerName as keyof typeof providerMap](modelName),
+      prompt,
+    });
+    images = contentResult.files.filter((file) =>
+      file.mediaType.startsWith('image/'),
+    );
+  } else {
+    const imageResult = await generateImage({
+      model:
+        providerMap[providerName as keyof typeof providerMap].image(modelName),
+      prompt,
+      n: number,
+    });
+
+    images = imageResult.images;
+  }
+
+  clearInterval(intervalId);
 
   if (images.length === 0) {
     if (number === 1) {
