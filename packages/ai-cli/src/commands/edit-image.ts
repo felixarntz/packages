@@ -1,6 +1,5 @@
 import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
-import { fileTypeFromBuffer } from 'file-type';
 import {
   getVariadicArgs,
   getOpt,
@@ -19,8 +18,7 @@ import {
 import { logger } from '../util/logger';
 import { runWithHeartbeat } from '../util/heartbeat';
 import { normalizeAbsolutePath } from '../util/paths';
-import { writeBinaryFile } from '../util/fs';
-import { readImageFile } from '../util/images';
+import { readImageFile, writeImageFile } from '../util/images';
 import { base64ToBuffer, uint8ArrayToBuffer } from '../util/binary';
 import { logTokenUsage, logCost } from '../util/ai-usage';
 
@@ -171,7 +169,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     }
   }
   for (const [index, image] of images.entries()) {
-    let buffer: Buffer;
+    let buffer: Buffer<ArrayBufferLike>;
     if (image.base64) {
       buffer = base64ToBuffer(image.base64);
     } else if (image.uint8Array) {
@@ -180,30 +178,13 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
       throw new Error('No image data provided');
     }
 
-    let extension = 'png';
-    if (image.mediaType) {
-      extension =
-        image.mediaType === 'image/jpeg'
-          ? 'jpg'
-          : image.mediaType.split('/')[1];
-    } else {
-      logger.debug(
-        'No media type provided for image; trying to detect from buffer',
-      );
-      const fileType = await fileTypeFromBuffer(buffer);
-      if (fileType) {
-        extension = fileType.ext;
-      } else {
-        logger.debug(
-          'Unable to detect file type from buffer; defaulting to png extension',
-        );
-      }
-    }
+    const filePath = await writeImageFile({
+      fileBase: outputFileBase,
+      buffer,
+      mime: image.mediaType,
+      index: images.length > 1 ? index : undefined,
+    });
 
-    const filename = `${outputFileBase.replace('%%number%%', String(index + 1))}.${extension}`;
-    const filePath = normalizeAbsolutePath(filename);
-
-    await writeBinaryFile(filePath, buffer);
     logger.info(`Saved image to ${filePath}`);
   }
 

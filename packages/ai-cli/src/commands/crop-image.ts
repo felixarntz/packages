@@ -14,8 +14,7 @@ import {
 } from '../util/inquirer';
 import { logger } from '../util/logger';
 import { normalizeAbsolutePath } from '../util/paths';
-import { writeBinaryFile } from '../util/fs';
-import { readImageFile } from '../util/images';
+import { readImageFile, writeImageFile } from '../util/images';
 import { getReasoningProviderOptions } from '../util/reasoning';
 import { logTokenUsage, logCost } from '../util/ai-usage';
 
@@ -44,6 +43,10 @@ const actualOptions: Option[] = [
   {
     argname: '-o, --output <output>',
     description: 'Output filename (optional)',
+  },
+  {
+    argname: '-o, --output <output>',
+    description: 'Output filename prefix, to place the output file elsewhere',
   },
 ];
 
@@ -170,24 +173,25 @@ Return only the pixel offset value.`;
     `Cropping image from ${originalWidth}x${originalHeight} to ${cropWidth}x${cropHeight} with ${cropDirection === 'horizontal' ? 'left' : 'top'} offset ${cropDirection === 'horizontal' ? left : top}...`,
   );
 
-  // Crop the image
+  // Crop the image.
   const croppedBuffer = await sharp(inputImage.buffer)
     .extract({ left, top, width: cropWidth, height: cropHeight })
     .toBuffer();
 
-  // Determine output path
-  let outputPath: string;
-  if (output) {
-    outputPath = normalizeAbsolutePath(output);
-  } else {
+  let fileBase = output;
+  if (!fileBase) {
     const inputPathParts = inputImagePath.split('.');
-    const extension = inputPathParts.pop();
-    const baseName = inputPathParts.join('.');
-    outputPath = `${baseName}-cropped.${extension}`;
+    inputPathParts.pop();
+    fileBase = `${inputPathParts.join('.')}-cropped`;
   }
+  const filePath = await writeImageFile({
+    fileBase,
+    buffer: croppedBuffer,
+    ext: inputImage.ext,
+    mime: inputImage.mime,
+  });
 
-  await writeBinaryFile(outputPath, croppedBuffer);
-  logger.info(`Cropped image saved to ${outputPath}`);
+  logger.info(`Cropped image saved to ${filePath}`);
 
   logTokenUsage(result.usage);
   logCost(result.providerMetadata);

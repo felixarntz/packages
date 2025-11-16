@@ -12,8 +12,7 @@ import {
 } from '../util/inquirer';
 import { logger } from '../util/logger';
 import { normalizeAbsolutePath } from '../util/paths';
-import { writeBinaryFile } from '../util/fs';
-import { readImageFile } from '../util/images';
+import { readImageFile, writeImageFile } from '../util/images';
 import { bufferToBase64, base64ToBuffer } from '../util/binary';
 
 export const name = 'upscale-image';
@@ -41,7 +40,7 @@ const actualOptions: Option[] = [
   },
   {
     argname: '-o, --output <output>',
-    description: 'Output filename (optional)',
+    description: 'Output filename prefix, to place the output file elsewhere',
   },
 ];
 
@@ -105,17 +104,18 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     throw new Error('Upscaled image data is missing.');
   }
 
-  // Determine output path
-  let outputPath: string;
-  if (output) {
-    outputPath = normalizeAbsolutePath(output);
-  } else {
+  let fileBase = output;
+  if (!fileBase) {
     const inputPathParts = inputImagePath.split('.');
-    const extension = inputPathParts.pop();
-    const baseName = inputPathParts.join('.');
-    outputPath = `${baseName}-upscaled.${extension}`;
+    inputPathParts.pop();
+    fileBase = `${inputPathParts.join('.')}-upscaled`;
   }
+  const filePath = await writeImageFile({
+    fileBase,
+    buffer: base64ToBuffer(upscaledImageBase64),
+    ext: inputImage.ext,
+    mime: inputImage.mime,
+  });
 
-  await writeBinaryFile(outputPath, base64ToBuffer(upscaledImageBase64));
-  logger.info(`Upscaled image saved to ${outputPath}`);
+  logger.info(`Upscaled image saved to ${filePath}`);
 };
