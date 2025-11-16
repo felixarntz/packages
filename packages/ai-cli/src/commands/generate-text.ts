@@ -16,6 +16,7 @@ import {
 import { logger } from '../util/logger';
 import { outputStream } from '../util/output';
 import { getReasoningProviderOptions } from '../util/reasoning';
+import { logTokenUsage, logCost } from '../util/ai-usage';
 
 export const name = 'generate-text';
 export const description = 'Sends a prompt to generate text.';
@@ -119,24 +120,6 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   const { textStream } = streamResult;
   await outputStream(textStream);
 
-  // Log token usage.
-  const tokenUsage = await streamResult.totalUsage;
-  const tokenUsageLogLines = [
-    `Token usage:`,
-    `  Input tokens: ${tokenUsage.inputTokens}`,
-    `  Output tokens: ${tokenUsage.outputTokens}`,
-  ];
-  if (tokenUsage.reasoningTokens !== undefined) {
-    tokenUsageLogLines.push(
-      `  Reasoning tokens: ${tokenUsage.reasoningTokens}`,
-    );
-  }
-  tokenUsageLogLines.push(`  Total tokens: ${tokenUsage.totalTokens}`);
-  logger.info(tokenUsageLogLines.join('\n'));
-
-  // Log cost.
-  const providerMetadata = await streamResult.providerMetadata;
-  if (providerMetadata?.['gateway']?.['cost'] !== undefined) {
-    logger.info(`Cost: $${providerMetadata['gateway']['cost']}`);
-  }
+  logTokenUsage(await streamResult.totalUsage);
+  logCost(await streamResult.providerMetadata);
 };

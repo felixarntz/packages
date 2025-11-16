@@ -22,6 +22,7 @@ import { runWithHeartbeat } from '../util/heartbeat';
 import { normalizeAbsolutePath } from '../util/paths';
 import { writeBinaryFile } from '../util/fs';
 import { base64ToBuffer, uint8ArrayToBuffer } from '../util/binary';
+import { logTokenUsage, logCost } from '../util/ai-usage';
 
 export const name = 'generate-image';
 export const description = 'Sends a prompt to generate an image.';
@@ -106,7 +107,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   }
 
   // Stream text result, and log "heartbeat" messages every 5 seconds.
-  const images = await runWithHeartbeat(async () => {
+  const [result, images] = await runWithHeartbeat(async () => {
     if (modelName.startsWith('gemini-')) {
       if (number > 1) {
         throw new Error(
@@ -133,9 +134,10 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
         images = contentResult.files.filter((file) =>
           file.mediaType.startsWith('image/'),
         );
+        return [contentResult, images];
       }
 
-      return images;
+      return [contentResult, images];
     }
 
     const imageResult = await generateImage({
@@ -145,7 +147,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
       n: number,
     });
 
-    return imageResult.images;
+    return [imageResult, imageResult.images];
   }, 'Still generating...');
 
   if (images.length === 0) {
@@ -204,4 +206,9 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     await writeBinaryFile(filePath, buffer);
     logger.info(`Saved image to ${filePath}`);
   }
+
+  if ('totalUsage' in result) {
+    logTokenUsage(result.totalUsage);
+  }
+  logCost(result.providerMetadata);
 };

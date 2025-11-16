@@ -20,6 +20,7 @@ import { runWithHeartbeat } from '../util/heartbeat';
 import { normalizeAbsolutePath } from '../util/paths';
 import { readBinaryFile, writeBinaryFile } from '../util/fs';
 import { base64ToBuffer, uint8ArrayToBuffer } from '../util/binary';
+import { logTokenUsage, logCost } from '../util/ai-usage';
 
 export const name = 'edit-image';
 export const description =
@@ -127,7 +128,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   ];
 
   // Stream text result, and log "heartbeat" messages every 5 seconds.
-  const images = await runWithHeartbeat(async () => {
+  const [result, images] = await runWithHeartbeat(async () => {
     const contentResult = await generateText({
       model: providerMap[providerName as keyof typeof providerMap](modelName),
       prompt,
@@ -149,7 +150,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
       );
     }
 
-    return images;
+    return [contentResult, images];
   }, 'Still editing...');
 
   if (images.length === 0) {
@@ -204,4 +205,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     await writeBinaryFile(filePath, buffer);
     logger.info(`Saved image to ${filePath}`);
   }
+
+  logTokenUsage(result.totalUsage);
+  logCost(result.providerMetadata);
 };

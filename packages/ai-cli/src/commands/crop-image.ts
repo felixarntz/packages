@@ -16,6 +16,7 @@ import { logger } from '../util/logger';
 import { normalizeAbsolutePath } from '../util/paths';
 import { readBinaryFile, writeBinaryFile } from '../util/fs';
 import { getReasoningProviderOptions } from '../util/reasoning';
+import { logTokenUsage, logCost } from '../util/ai-usage';
 
 export const name = 'crop-image';
 export const description = 'Crops an image to a given aspect ratio.';
@@ -190,4 +191,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
 
   await writeBinaryFile(outputPath, croppedBuffer);
   logger.info(`Cropped image saved to ${outputPath}`);
+
+  logTokenUsage(result.usage);
+  logCost(result.providerMetadata);
 };
