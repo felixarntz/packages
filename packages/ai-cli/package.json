@@ -30,6 +30,7 @@
     "@ai-sdk/provider": ">=2.0.0",
     "@ai-sdk/xai": ">=2.0.0",
     "@commander-js/extra-typings": "^13.0.0",
+    "@google/genai": "^1.29.1",
     "@inquirer/prompts": "^7.10.0",
     "ai": "^5.0.0",
     "commander": "^13.0.0",

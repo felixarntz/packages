@@ -33,6 +33,12 @@ import {
   handler as optimizeImageHandler,
   options as optimizeImageOptions,
 } from './commands/optimize-image';
+import {
+  name as upscaleImageName,
+  description as upscaleImageDescription,
+  handler as upscaleImageHandler,
+  options as upscaleImageOptions,
+} from './commands/upscale-image';
 
 /**
  * Initializes the application.
@@ -64,6 +70,11 @@ function initialize() {
     .alias('imageopt')
     .description(optimizeImageDescription)
     .action(withErrorHandling(optimizeImageHandler));
+
+  withOptions(program.command(upscaleImageName), upscaleImageOptions)
+    .alias('imageupscale')
+    .description(upscaleImageDescription)
+    .action(withErrorHandling(upscaleImageHandler));
 }
 
 /**
