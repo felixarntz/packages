@@ -27,6 +27,12 @@ import {
   handler as cropImageHandler,
   options as cropImageOptions,
 } from './commands/crop-image';
+import {
+  name as optimizeImageName,
+  description as optimizeImageDescription,
+  handler as optimizeImageHandler,
+  options as optimizeImageOptions,
+} from './commands/optimize-image';
 
 /**
  * Initializes the application.
@@ -53,6 +59,11 @@ function initialize() {
     .alias('imagecrop')
     .description(cropImageDescription)
     .action(withErrorHandling(cropImageHandler));
+
+  withOptions(program.command(optimizeImageName), optimizeImageOptions)
+    .alias('imageopt')
+    .description(optimizeImageDescription)
+    .action(withErrorHandling(optimizeImageHandler));
 }
 
 /**
