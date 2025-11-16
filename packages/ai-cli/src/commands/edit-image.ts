@@ -2,6 +2,7 @@ import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 import { fileTypeFromBuffer } from 'file-type';
 import {
+  getArgs,
   getOpt,
   type HandlerArgs,
   type OptionsInput,
@@ -28,8 +29,9 @@ export const description =
 
 const actualOptions: Option[] = [
   {
-    argname: '-i, --input <input>',
+    argname: 'input',
     description: 'Input image file to edit',
+    positional: true,
     required: true,
     parse: (value: string) => normalizeAbsolutePath(value),
   },
@@ -56,7 +58,6 @@ export const options = injectFileOptionsForCommander(actualOptions, [
 ]).map((option) => stripOptionFieldsForCommander(option));
 
 type CommandConfig = {
-  input: string;
   prompt: string;
   model: string;
   output: string;
@@ -64,7 +65,6 @@ type CommandConfig = {
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
   const config: CommandConfig = {
-    input: String(opt['input']),
     prompt: String(opt['prompt']),
     model: String(opt['model']),
     output: String(opt['output'] ?? 'output'),
@@ -73,8 +73,8 @@ const parseOptions = (opt: OptionsInput): CommandConfig => {
 };
 
 export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
+  const [inputImagePath] = getArgs(handlerArgs);
   const {
-    input: inputImagePath,
     prompt: textPrompt,
     model,
     output,

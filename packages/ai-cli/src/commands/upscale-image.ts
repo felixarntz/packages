@@ -1,6 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import { fileTypeFromBuffer } from 'file-type';
 import {
+  getArgs,
   getOpt,
   type HandlerArgs,
   type OptionsInput,
@@ -20,8 +21,9 @@ export const description = 'Upscales an input image.';
 
 const actualOptions: Option[] = [
   {
-    argname: '-i, --input <input>',
+    argname: 'input',
     description: 'Input image file to upscale',
+    positional: true,
     required: true,
     parse: (value: string) => normalizeAbsolutePath(value),
   },
@@ -48,14 +50,12 @@ export const options = actualOptions.map((option) =>
 );
 
 type CommandConfig = {
-  input: string;
   model: string;
   output?: string;
 };
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
   const config: CommandConfig = {
-    input: String(opt['input']),
     model: String(opt['model']),
     output: opt['output'] ? String(opt['output']) : undefined,
   };
@@ -63,11 +63,8 @@ const parseOptions = (opt: OptionsInput): CommandConfig => {
 };
 
 export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
-  const {
-    input: inputImagePath,
-    model,
-    output,
-  } = parseOptions(
+  const [inputImagePath] = getArgs(handlerArgs);
+  const { model, output } = parseOptions(
     await promptMissingOptions(actualOptions, getOpt(handlerArgs)),
   );
 

@@ -1,6 +1,7 @@
 import sharp from 'sharp';
 import { fileTypeFromBuffer } from 'file-type';
 import {
+  getArgs,
   getOpt,
   type HandlerArgs,
   type OptionsInput,
@@ -19,8 +20,9 @@ export const description = 'Optimizes an image for web delivery.';
 
 const actualOptions: Option[] = [
   {
-    argname: '-i, --input <input>',
+    argname: 'input',
     description: 'Input image file to optimize',
+    positional: true,
     required: true,
     parse: (value: string) => normalizeAbsolutePath(value),
   },
@@ -43,26 +45,21 @@ export const options = actualOptions.map((option) =>
 );
 
 type CommandConfig = {
-  input: string;
   format: 'png' | 'jpeg' | 'webp' | 'avif';
   output?: string;
 };
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
   const config: CommandConfig = {
-    input: String(opt['input']),
-    format: (opt['format'] as 'png' | 'jpeg' | 'webp' | 'avif') || 'jpeg',
+    format: (opt['format'] as 'png' | 'jpeg' | 'webp' | 'avif') ?? 'jpeg',
     output: opt['output'] ? String(opt['output']) : undefined,
   };
   return config;
 };
 
 export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
-  const {
-    input: inputImagePath,
-    format,
-    output,
-  } = parseOptions(
+  const [inputImagePath] = getArgs(handlerArgs);
+  const { format, output } = parseOptions(
     await promptMissingOptions(actualOptions, getOpt(handlerArgs)),
   );
 

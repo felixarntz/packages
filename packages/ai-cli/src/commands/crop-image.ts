@@ -3,6 +3,7 @@ import { generateObject } from 'ai';
 import { fileTypeFromBuffer } from 'file-type';
 import { z } from 'zod';
 import {
+  getArgs,
   getOpt,
   type HandlerArgs,
   type OptionsInput,
@@ -23,8 +24,9 @@ export const description = 'Crops an input image to a given aspect ratio.';
 
 const actualOptions: Option[] = [
   {
-    argname: '-i, --input <input>',
+    argname: 'input',
     description: 'Input image file to crop',
+    positional: true,
     required: true,
     parse: (value: string) => normalizeAbsolutePath(value),
   },
@@ -50,7 +52,6 @@ export const options = actualOptions.map((option) =>
 );
 
 type CommandConfig = {
-  input: string;
   aspectRatio: string;
   model: string;
   output?: string;
@@ -58,7 +59,6 @@ type CommandConfig = {
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
   const config: CommandConfig = {
-    input: String(opt['input']),
     aspectRatio: String(opt['aspectRatio']),
     model: String(opt['model']),
     output: opt['output'] ? String(opt['output']) : undefined,
@@ -67,12 +67,8 @@ const parseOptions = (opt: OptionsInput): CommandConfig => {
 };
 
 export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
-  const {
-    input: inputImagePath,
-    aspectRatio,
-    model,
-    output,
-  } = parseOptions(
+  const [inputImagePath] = getArgs(handlerArgs);
+  const { aspectRatio, model, output } = parseOptions(
     await promptMissingOptions(actualOptions, getOpt(handlerArgs)),
   );
 
