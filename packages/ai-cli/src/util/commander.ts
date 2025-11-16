@@ -72,7 +72,16 @@ export const withOptions = (
           argument.default(defaults);
         }
         if (typeof parse === 'function') {
-          argument.argParser(parse);
+          if (variadic) {
+            argument.argParser((value: string, previous: string[]) => {
+              if (!previous || !Array.isArray(previous)) {
+                return [parse(value)];
+              }
+              return [...previous, parse(value)];
+            });
+          } else {
+            argument.argParser(parse);
+          }
         }
         if (choices) {
           argument.choices(choices);

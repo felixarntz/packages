@@ -2,7 +2,7 @@ import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 import { fileTypeFromBuffer } from 'file-type';
 import {
-  getArgs,
+  getVariadicArgs,
   getOpt,
   type HandlerArgs,
   type OptionsInput,
@@ -33,6 +33,7 @@ const actualOptions: Option[] = [
     description: 'Input image file to edit',
     positional: true,
     required: true,
+    variadic: true,
     parse: (value: string) => normalizeAbsolutePath(value),
   },
   {
@@ -73,7 +74,7 @@ const parseOptions = (opt: OptionsInput): CommandConfig => {
 };
 
 export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
-  const [inputImagePath] = getArgs(handlerArgs);
+  const inputImagePaths = getVariadicArgs(handlerArgs, 0);
   const {
     prompt: textPrompt,
     model,
@@ -85,20 +86,31 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     ),
   );
 
-  const inputImageBuffer = await readBinaryFile(inputImagePath);
-  const inputImageFileType = await fileTypeFromBuffer(inputImageBuffer);
-  if (!inputImageFileType) {
-    throw new Error(
-      `Unable to determine file type of input image ${inputImagePath}`,
-    );
-  }
-  if (!inputImageFileType.mime.startsWith('image/')) {
-    throw new Error(
-      `Input file ${inputImagePath} is not an image (detected type: ${inputImageFileType.mime})`,
-    );
+  const imageContents = [];
+  for (const inputImagePath of inputImagePaths) {
+    const inputImageBuffer = await readBinaryFile(inputImagePath);
+    const inputImageFileType = await fileTypeFromBuffer(inputImageBuffer);
+    if (!inputImageFileType) {
+      throw new Error(
+        `Unable to determine file type of input image ${inputImagePath}`,
+      );
+    }
+    if (!inputImageFileType.mime.startsWith('image/')) {
+      throw new Error(
+        `Input file ${inputImagePath} is not an image (detected type: ${inputImageFileType.mime})`,
+      );
+    }
+
+    imageContents.push({
+      type: 'image' as const,
+      image: inputImageBuffer,
+      mediaType: inputImageFileType.mime,
+    });
   }
 
-  logger.info(`Prompting model ${model} to edit the image...`);
+  logger.info(
+    `Prompting model ${model} to edit the ${imageContents.length > 1 ? 'images' : 'image'}...`,
+  );
 
   const providerMap = { google };
   const [providerName, modelName] = model.split('/', 2);
@@ -118,11 +130,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
           type: 'text' as const,
           text: textPrompt,
         },
-        {
-          type: 'image' as const,
-          image: inputImageBuffer,
-          mediaType: inputImageFileType.mime,
-        },
+        ...imageContents,
       ],
     },
   ];
@@ -139,11 +147,15 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
 
     // If no image was generated, try again with an explicit system prompt.
     if (images.length === 0) {
+      logger.debug(
+        'No image was generated; retrying with explicit system prompt...',
+      );
+      const system = `You are Nano Banana. You MUST generate a new image based on the input ${imageContents.length > 1 ? 'images' : 'image'} and user prompt.`;
+
       const contentResult = await generateText({
         model: providerMap[providerName as keyof typeof providerMap](modelName),
         prompt,
-        system:
-          'You are Nano Banana. You MUST generate a new image based on the input image and user prompt.',
+        system,
       });
       images = contentResult.files.filter((file) =>
         file.mediaType.startsWith('image/'),
