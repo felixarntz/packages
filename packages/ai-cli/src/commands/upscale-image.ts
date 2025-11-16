@@ -1,5 +1,4 @@
 import { GoogleGenAI } from '@google/genai';
-import { fileTypeFromBuffer } from 'file-type';
 import {
   getArgs,
   getOpt,
@@ -13,7 +12,8 @@ import {
 } from '../util/inquirer';
 import { logger } from '../util/logger';
 import { normalizeAbsolutePath } from '../util/paths';
-import { readBinaryFile, writeBinaryFile } from '../util/fs';
+import { writeBinaryFile } from '../util/fs';
+import { readImageFile } from '../util/images';
 import { bufferToBase64, base64ToBuffer } from '../util/binary';
 
 export const name = 'upscale-image';
@@ -74,18 +74,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     );
   }
 
-  const inputImageBuffer = await readBinaryFile(inputImagePath);
-  const inputImageFileType = await fileTypeFromBuffer(inputImageBuffer);
-  if (!inputImageFileType) {
-    throw new Error(
-      `Unable to determine file type of input image ${inputImagePath}`,
-    );
-  }
-  if (!inputImageFileType.mime.startsWith('image/')) {
-    throw new Error(
-      `Input file ${inputImagePath} is not an image (detected type: ${inputImageFileType.mime})`,
-    );
-  }
+  const inputImage = await readImageFile(inputImagePath);
 
   logger.info(`Upscaling image using model ${model}...`);
 
@@ -98,7 +87,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   const response = await client.models.upscaleImage({
     model: modelName,
     image: {
-      imageBytes: bufferToBase64(inputImageBuffer),
+      imageBytes: bufferToBase64(inputImage.buffer),
     },
     upscaleFactor: 'x2',
     config: {

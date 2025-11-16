@@ -1,6 +1,5 @@
 import sharp from 'sharp';
 import { generateObject } from 'ai';
-import { fileTypeFromBuffer } from 'file-type';
 import { z } from 'zod';
 import {
   getArgs,
@@ -15,7 +14,8 @@ import {
 } from '../util/inquirer';
 import { logger } from '../util/logger';
 import { normalizeAbsolutePath } from '../util/paths';
-import { readBinaryFile, writeBinaryFile } from '../util/fs';
+import { writeBinaryFile } from '../util/fs';
+import { readImageFile } from '../util/images';
 import { getReasoningProviderOptions } from '../util/reasoning';
 import { logTokenUsage, logCost } from '../util/ai-usage';
 
@@ -88,21 +88,10 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     throw new Error('Aspect ratio values must be positive integers');
   }
 
-  const inputImageBuffer = await readBinaryFile(inputImagePath);
-  const inputImageFileType = await fileTypeFromBuffer(inputImageBuffer);
-  if (!inputImageFileType) {
-    throw new Error(
-      `Unable to determine file type of input image ${inputImagePath}`,
-    );
-  }
-  if (!inputImageFileType.mime.startsWith('image/')) {
-    throw new Error(
-      `Input file ${inputImagePath} is not an image (detected type: ${inputImageFileType.mime})`,
-    );
-  }
+  const inputImage = await readImageFile(inputImagePath);
 
   // Get image metadata
-  const metadata = await sharp(inputImageBuffer).metadata();
+  const metadata = await sharp(inputImage.buffer).metadata();
   const originalWidth = metadata.width!;
   const originalHeight = metadata.height!;
 
@@ -156,8 +145,8 @@ Return only the pixel offset value.`;
         },
         {
           type: 'image' as const,
-          image: inputImageBuffer,
-          mediaType: inputImageFileType.mime,
+          image: inputImage.buffer,
+          mediaType: inputImage.mime,
         },
       ],
     },
@@ -182,7 +171,7 @@ Return only the pixel offset value.`;
   );
 
   // Crop the image
-  const croppedBuffer = await sharp(inputImageBuffer)
+  const croppedBuffer = await sharp(inputImage.buffer)
     .extract({ left, top, width: cropWidth, height: cropHeight })
     .toBuffer();
 

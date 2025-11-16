@@ -1,5 +1,4 @@
 import sharp from 'sharp';
-import { fileTypeFromBuffer } from 'file-type';
 import {
   getArgs,
   getOpt,
@@ -13,7 +12,8 @@ import {
 } from '../util/inquirer';
 import { logger } from '../util/logger';
 import { normalizeAbsolutePath } from '../util/paths';
-import { readBinaryFile, writeBinaryFile } from '../util/fs';
+import { writeBinaryFile } from '../util/fs';
+import { readImageFile } from '../util/images';
 
 export const name = 'optimize-image';
 export const description = 'Optimizes an image for web delivery.';
@@ -63,23 +63,12 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     await promptMissingOptions(actualOptions, getOpt(handlerArgs)),
   );
 
-  const inputImageBuffer = await readBinaryFile(inputImagePath);
-  const inputImageFileType = await fileTypeFromBuffer(inputImageBuffer);
-  if (!inputImageFileType) {
-    throw new Error(
-      `Unable to determine file type of input image ${inputImagePath}`,
-    );
-  }
-  if (!inputImageFileType.mime.startsWith('image/')) {
-    throw new Error(
-      `Input file ${inputImagePath} is not an image (detected type: ${inputImageFileType.mime})`,
-    );
-  }
+  const inputImage = await readImageFile(inputImagePath);
 
   logger.info(`Optimizing image to ${format} format...`);
 
   // Create sharp instance and apply optimization based on format
-  let sharpInstance = sharp(inputImageBuffer);
+  let sharpInstance = sharp(inputImage.buffer);
 
   switch (format) {
     case 'jpeg':

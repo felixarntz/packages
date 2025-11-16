@@ -19,7 +19,8 @@ import {
 import { logger } from '../util/logger';
 import { runWithHeartbeat } from '../util/heartbeat';
 import { normalizeAbsolutePath } from '../util/paths';
-import { readBinaryFile, writeBinaryFile } from '../util/fs';
+import { writeBinaryFile } from '../util/fs';
+import { readImageFile } from '../util/images';
 import { base64ToBuffer, uint8ArrayToBuffer } from '../util/binary';
 import { logTokenUsage, logCost } from '../util/ai-usage';
 
@@ -88,23 +89,11 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
 
   const imageContents = [];
   for (const inputImagePath of inputImagePaths) {
-    const inputImageBuffer = await readBinaryFile(inputImagePath);
-    const inputImageFileType = await fileTypeFromBuffer(inputImageBuffer);
-    if (!inputImageFileType) {
-      throw new Error(
-        `Unable to determine file type of input image ${inputImagePath}`,
-      );
-    }
-    if (!inputImageFileType.mime.startsWith('image/')) {
-      throw new Error(
-        `Input file ${inputImagePath} is not an image (detected type: ${inputImageFileType.mime})`,
-      );
-    }
-
+    const inputImage = await readImageFile(inputImagePath);
     imageContents.push({
       type: 'image' as const,
-      image: inputImageBuffer,
-      mediaType: inputImageFileType.mime,
+      image: inputImage.buffer,
+      mediaType: inputImage.mime,
     });
   }
 
