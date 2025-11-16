@@ -21,6 +21,12 @@ import {
   handler as editImageHandler,
   options as editImageOptions,
 } from './commands/edit-image';
+import {
+  name as cropImageName,
+  description as cropImageDescription,
+  handler as cropImageHandler,
+  options as cropImageOptions,
+} from './commands/crop-image';
 
 /**
  * Initializes the application.
@@ -42,6 +48,11 @@ function initialize() {
     .alias('imageedit')
     .description(editImageDescription)
     .action(withErrorHandling(editImageHandler));
+
+  withOptions(program.command(cropImageName), cropImageOptions)
+    .alias('imagecrop')
+    .description(cropImageDescription)
+    .action(withErrorHandling(cropImageHandler));
 }
 
 /**
