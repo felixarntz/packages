@@ -139,13 +139,24 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     [cropDirection === 'horizontal' ? 'left' : 'top']: z.number().int().min(0),
   });
 
+  const system = `You are an expert image analyst. Given an image and a target crop size, you will determine the optimal ${cropDirection === 'horizontal' ? 'left' : 'top'} offset (in pixels) to crop the image to the target size while keeping the primary subject as visible as possible.
+ALWAYS review the contents of the image carefully before providing your answer.
+NEVER simply return an offset to get a center crop; instead, analyze the image content to find the best offset where the primary subject is best preserved.
+If there is a person in the image or a small group of people, PRIORITIZE keeping their faces fully visible in the cropped area. DO NOT cut off their heads.
+If the primary is subject is almost impossible to keep fully visible due to the aspect ratio, provide the offset that preserves as much of the subject as possible.
+`;
+
+  const cropPrompt = `Analyze this image and determine the optimal ${cropDirection === 'horizontal' ? 'left' : 'top'} offset (in pixels) to crop it to ${cropWidth}x${cropHeight} while keeping the primary subject as visible as possible.
+The image is ${originalWidth}x${originalHeight} and we're cropping to aspect ratio ${targetWidth}:${targetHeight}.
+Return only the pixel offset value.`;
+
   const prompt = [
     {
       role: 'user' as const,
       content: [
         {
           type: 'text' as const,
-          text: `Analyze this image and determine the optimal ${cropDirection === 'horizontal' ? 'left' : 'top'} offset (in pixels) to crop it to ${cropWidth}x${cropHeight} while keeping the primary subject as visible as possible. The image is ${originalWidth}x${originalHeight} and we're cropping to aspect ratio ${targetWidth}:${targetHeight}. Return only the pixel offset value.`,
+          text: cropPrompt,
         },
         {
           type: 'image' as const,
@@ -159,6 +170,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   const result = await generateObject({
     model,
     schema,
+    system,
     prompt,
     providerOptions: getReasoningProviderOptions('low', model),
   });
