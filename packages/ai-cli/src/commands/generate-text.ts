@@ -1,5 +1,4 @@
 import { streamText } from 'ai';
-import type { SharedV2ProviderOptions } from '@ai-sdk/provider';
 import {
   getOpt,
   type HandlerArgs,
@@ -16,6 +15,7 @@ import {
 } from '../util/inquirer';
 import { logger } from '../util/logger';
 import { outputStream } from '../util/output';
+import { getReasoningProviderOptions } from '../util/reasoning';
 
 export const name = 'generate-text';
 export const description = 'Sends a prompt to generate text.';
@@ -105,56 +105,16 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     `Prompting model ${model} to generate text${thinkingSuffix}${temperatureSuffix}...`,
   );
 
-  let providerOptions: SharedV2ProviderOptions | undefined;
-  if (thinking === true) {
-    providerOptions = {
-      anthropic: {
-        thinking: {
-          type: 'enabled',
-        },
-      },
-      google: {
-        thinkingConfig: {
-          thinkingBudget: 512,
-        },
-      },
-      openai: {
-        reasoningEffort: 'high',
-      },
-      xai: {
-        reasoningEffort: 'high',
-      },
-    };
-  } else if (thinking === false) {
-    providerOptions = {
-      anthropic: {
-        thinking: {
-          type: 'disabled',
-          budgetTokens: 0,
-        },
-      },
-      google: {
-        thinkingConfig: {
-          // Can't disable thinking for Gemini 2.5 Pro.
-          thinkingBudget: model === 'google/gemini-2.5-pro' ? 128 : 0,
-        },
-      },
-      openai: {
-        reasoningEffort: 'minimal',
-      },
-      xai: {
-        reasoningEffort: 'low',
-      },
-    };
-  }
-
   // Stream text result.
   const streamResult = streamText({
     model,
     prompt,
     temperature,
     system,
-    providerOptions,
+    providerOptions:
+      thinking !== undefined
+        ? getReasoningProviderOptions(thinking ? 'high' : 'minimal', model)
+        : undefined,
   });
   const { textStream } = streamResult;
   await outputStream(textStream);

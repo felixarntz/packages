@@ -15,6 +15,7 @@ import {
 import { logger } from '../util/logger';
 import { normalizeAbsolutePath } from '../util/paths';
 import { readBinaryFile, writeBinaryFile } from '../util/fs';
+import { getReasoningProviderOptions } from '../util/reasoning';
 
 export const name = 'crop-image';
 export const description = 'Crops an image to a given aspect ratio.';
@@ -158,24 +159,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     model,
     schema,
     prompt,
-    providerOptions: {
-      anthropic: {
-        thinking: {
-          budgetTokens: 1024,
-        },
-      },
-      google: {
-        thinkingConfig: {
-          thinkingBudget: 1024,
-        },
-      },
-      openai: {
-        reasoningEffort: 'low',
-      },
-      xai: {
-        reasoningEffort: 'low',
-      },
-    },
+    providerOptions: getReasoningProviderOptions('low', model),
   });
 
   if (cropDirection === 'horizontal') {
