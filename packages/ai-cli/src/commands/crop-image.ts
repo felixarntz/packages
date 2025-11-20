@@ -38,7 +38,6 @@ const actualOptions: Option[] = [
     argname: '-m, --model <model>',
     description: 'Model to use for determining optimal crop position',
     required: true,
-    defaults: 'google/gemini-2.5-flash-image',
   },
   {
     argname: '-o, --output <output>',
