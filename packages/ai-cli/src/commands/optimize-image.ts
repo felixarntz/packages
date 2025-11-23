@@ -30,7 +30,7 @@ const actualOptions: Option[] = [
     description: 'Output format',
     required: false,
     defaults: 'jpeg',
-    choices: ['png', 'jpeg', 'webp', 'avif'],
+    choices: ['jpeg', 'webp', 'avif', 'png'],
   },
   {
     argname: '-o, --output <output>',
@@ -43,13 +43,13 @@ export const options = actualOptions.map((option) =>
 );
 
 type CommandConfig = {
-  format: 'png' | 'jpeg' | 'webp' | 'avif';
+  format: 'jpeg' | 'webp' | 'avif' | 'png';
   output?: string;
 };
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
   const config: CommandConfig = {
-    format: (opt['format'] as 'png' | 'jpeg' | 'webp' | 'avif') ?? 'jpeg',
+    format: (opt['format'] as 'jpeg' | 'webp' | 'avif' | 'png') ?? 'jpeg',
     output: opt['output'] ? String(opt['output']) : undefined,
   };
   return config;
@@ -67,19 +67,29 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
 
   // Create sharp instance and apply optimization based on format
   let sharpInstance = sharp(inputImage.buffer);
+  let ext: string;
+  let mime: string;
 
   switch (format) {
     case 'jpeg':
       sharpInstance = sharpInstance.jpeg({ quality: 80, progressive: true });
+      ext = 'jpg';
+      mime = 'image/jpeg';
       break;
     case 'png':
       sharpInstance = sharpInstance.png({ compressionLevel: 6 });
+      ext = 'png';
+      mime = 'image/png';
       break;
     case 'webp':
       sharpInstance = sharpInstance.webp({ quality: 80 });
+      ext = 'webp';
+      mime = 'image/webp';
       break;
     case 'avif':
       sharpInstance = sharpInstance.avif({ quality: 50 });
+      ext = 'avif';
+      mime = 'image/avif';
       break;
   }
 
@@ -94,8 +104,8 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   const filePath = await writeImageFile({
     fileBase,
     buffer: optimizedBuffer,
-    ext: inputImage.ext,
-    mime: inputImage.mime,
+    ext,
+    mime,
   });
 
   logger.info(`Optimized image saved to ${filePath}`);

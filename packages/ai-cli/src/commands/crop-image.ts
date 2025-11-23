@@ -41,10 +41,6 @@ const actualOptions: Option[] = [
   },
   {
     argname: '-o, --output <output>',
-    description: 'Output filename (optional)',
-  },
-  {
-    argname: '-o, --output <output>',
     description: 'Output filename prefix, to place the output file elsewhere',
   },
 ];
