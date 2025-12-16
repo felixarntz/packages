@@ -31,7 +31,7 @@
     "@ai-sdk/provider": ">=3.0.0-beta",
     "@ai-sdk/xai": ">=3.0.0-beta",
     "@commander-js/extra-typings": "^13.0.0",
-    "@felixarntz/cli-utils": "file:../cli-utils",
+    "@felixarntz/cli-utils": "workspace:^",
     "@google/genai": "^1.29.1",
     "@inquirer/prompts": "^7.10.0",
     "ai": "^6.0.0-beta",
