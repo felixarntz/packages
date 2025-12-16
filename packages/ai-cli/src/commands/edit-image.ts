@@ -39,7 +39,10 @@ const actualOptions: Option[] = [
   {
     argname: '-m, --model <model>',
     description: 'Model to use',
-    choices: ['google/gemini-3-pro-image-preview', 'google/gemini-2.5-flash-image'],
+    choices: [
+      'google/gemini-3-pro-image-preview',
+      'google/gemini-2.5-flash-image',
+    ],
     required: true,
   },
   {
