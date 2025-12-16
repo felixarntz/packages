@@ -3,6 +3,8 @@ import type {
   LanguageModelV2Usage,
   SharedV2ProviderMetadata,
   ImageModelV2ProviderMetadata,
+  SharedV3ProviderMetadata,
+  ImageModelV3ProviderMetadata,
   JSONValue,
 } from '@ai-sdk/provider';
 import { logger } from './logger';
@@ -38,6 +40,8 @@ export function logCost(
   providerMetadata:
     | SharedV2ProviderMetadata
     | ImageModelV2ProviderMetadata
+    | SharedV3ProviderMetadata
+    | ImageModelV3ProviderMetadata
     | undefined,
 ): void {
   if (typeof providerMetadata?.['gateway'] !== 'object') {
