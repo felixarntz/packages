@@ -6,18 +6,14 @@ import {
   type HandlerArgs,
   type OptionsInput,
   type Option,
-} from '../util/commander';
-import {
   parseFileOptions,
   injectFileOptionsForCommander,
-} from '../util/file-options';
-import {
   promptMissingOptions,
   stripOptionFieldsForCommander,
-} from '../util/inquirer';
-import { logger } from '../util/logger';
-import { runWithHeartbeat } from '../util/heartbeat';
-import { normalizeAbsolutePath } from '../util/paths';
+  logger,
+  runWithHeartbeat,
+  normalizeAbsolutePath,
+} from '@felixarntz/cli-utils';
 import { readImageFile, writeImageFile } from '../util/images';
 import { base64ToBuffer, uint8ArrayToBuffer } from '../util/binary';
 import { logTokenUsage, logCost } from '../util/ai-usage';

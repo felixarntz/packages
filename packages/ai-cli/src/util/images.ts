@@ -1,7 +1,5 @@
+import { readBinaryFile, writeBinaryFile, normalizeAbsolutePath, logger } from '@felixarntz/cli-utils';
 import { fileTypeFromBuffer } from 'file-type';
-import { readBinaryFile, writeBinaryFile } from './fs';
-import { normalizeAbsolutePath } from './paths';
-import { logger } from './logger';
 
 export type ImageData = {
   buffer: Buffer<ArrayBufferLike>;

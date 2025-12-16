@@ -120,6 +120,9 @@ importers:
       '@commander-js/extra-typings':
         specifier: ^13.0.0
         version: 13.1.0(commander@13.1.0)
+      '@felixarntz/cli-utils':
+        specifier: file:../cli-utils
+        version: file:packages/cli-utils(@types/node@24.10.4)
       '@google/genai':
         specifier: ^1.29.1
         version: 1.29.1
@@ -148,6 +151,28 @@ importers:
       tsup:
         specifier: ^8.5.0
         version: 8.5.0(postcss@8.5.6)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.1.1
+        version: 3.2.4(@types/node@24.10.4)
+
+  packages/cli-utils:
+    dependencies:
+      '@commander-js/extra-typings':
+        specifier: ^13.0.0
+        version: 13.1.0(commander@13.1.0)
+      '@inquirer/prompts':
+        specifier: ^7.10.0
+        version: 7.10.1(@types/node@24.10.4)
+      commander:
+        specifier: ^13.0.0
+        version: 13.1.0
+    devDependencies:
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.1(postcss@8.5.6)(typescript@5.9.3)
       typescript:
         specifier: ^5.3.3
         version: 5.9.3
@@ -602,6 +627,10 @@ packages:
   '@eslint/plugin-kit@0.4.1':
     resolution: {integrity: sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@felixarntz/cli-utils@file:packages/cli-utils':
+    resolution: {directory: packages/cli-utils, type: directory}
+    engines: {node: '>=20.0.0'}
 
   '@google/genai@1.29.1':
     resolution: {integrity: sha512-Buywpq0A6xf9cOdhiWCi5KUiDBbZkjCH5xbl+xxNQRItoYQgd31p0OKyn5cUnT0YNzC/pAmszqXoOc7kncqfFQ==}
@@ -3472,6 +3501,14 @@ snapshots:
     dependencies:
       '@eslint/core': 0.17.0
       levn: 0.4.1
+
+  '@felixarntz/cli-utils@file:packages/cli-utils(@types/node@24.10.4)':
+    dependencies:
+      '@commander-js/extra-typings': 13.1.0(commander@13.1.0)
+      '@inquirer/prompts': 7.10.0(@types/node@24.10.4)
+      commander: 13.1.0
+    transitivePeerDependencies:
+      - '@types/node'
 
   '@google/genai@1.29.1':
     dependencies:

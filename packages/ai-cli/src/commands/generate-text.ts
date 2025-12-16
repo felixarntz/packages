@@ -4,17 +4,13 @@ import {
   type HandlerArgs,
   type OptionsInput,
   type Option,
-} from '../util/commander';
-import {
   parseFileOptions,
   injectFileOptionsForCommander,
-} from '../util/file-options';
-import {
   promptMissingOptions,
   stripOptionFieldsForCommander,
-} from '../util/inquirer';
-import { logger } from '../util/logger';
-import { outputStream } from '../util/output';
+  logger,
+  outputStream,
+} from '@felixarntz/cli-utils';
 import { getReasoningProviderOptions } from '../util/reasoning';
 import { logTokenUsage, logCost } from '../util/ai-usage';
 

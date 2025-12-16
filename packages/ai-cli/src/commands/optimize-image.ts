@@ -5,13 +5,11 @@ import {
   type HandlerArgs,
   type OptionsInput,
   type Option,
-} from '../util/commander';
-import {
   promptMissingOptions,
   stripOptionFieldsForCommander,
-} from '../util/inquirer';
-import { logger } from '../util/logger';
-import { normalizeAbsolutePath } from '../util/paths';
+  logger,
+  normalizeAbsolutePath,
+} from '@felixarntz/cli-utils';
 import { readImageFile, writeImageFile } from '../util/images';
 
 export const name = 'optimize-image';

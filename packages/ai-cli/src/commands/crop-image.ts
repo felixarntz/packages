@@ -7,13 +7,11 @@ import {
   type HandlerArgs,
   type OptionsInput,
   type Option,
-} from '../util/commander';
-import {
   promptMissingOptions,
   stripOptionFieldsForCommander,
-} from '../util/inquirer';
-import { logger } from '../util/logger';
-import { normalizeAbsolutePath } from '../util/paths';
+  logger,
+  normalizeAbsolutePath,
+} from '@felixarntz/cli-utils';
 import { readImageFile, writeImageFile } from '../util/images';
 import { getReasoningProviderOptions } from '../util/reasoning';
 import { logTokenUsage, logCost } from '../util/ai-usage';
