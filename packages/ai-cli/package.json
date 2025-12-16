@@ -16,7 +16,7 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "homepage": "https://github.com/felixarntz/packages#readme",
+  "homepage": "https://github.com/felixarntz/packages/blob/main/packages/ai-cli/README.md",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/felixarntz/packages.git",
@@ -26,14 +26,14 @@
     "url": "https://github.com/felixarntz/packages/issues"
   },
   "dependencies": {
-    "@ai-sdk/google": ">=2.0.0",
-    "@ai-sdk/openai": ">=2.0.0",
-    "@ai-sdk/provider": ">=2.0.0",
-    "@ai-sdk/xai": ">=2.0.0",
+    "@ai-sdk/google": ">=3.0.0-beta",
+    "@ai-sdk/openai": ">=3.0.0-beta",
+    "@ai-sdk/provider": ">=3.0.0-beta",
+    "@ai-sdk/xai": ">=3.0.0-beta",
     "@commander-js/extra-typings": "^13.0.0",
     "@google/genai": "^1.29.1",
     "@inquirer/prompts": "^7.10.0",
-    "ai": "^5.0.0",
+    "ai": "^6.0.0-beta",
     "commander": "^13.0.0",
     "dotenv": "^16.6.1",
     "file-type": "^21.1.0",
