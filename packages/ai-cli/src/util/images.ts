@@ -3,7 +3,7 @@ import {
   writeBinaryFile,
   normalizeAbsolutePath,
   logger,
-} from 'fa-cli-utils';
+} from '@felixarntz/cli-utils';
 import { fileTypeFromBuffer } from 'file-type';
 
 export type ImageData = {

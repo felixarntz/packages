@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { program } from '@commander-js/extra-typings';
-import { withOptions, withErrorHandling } from 'fa-cli-utils';
+import { withOptions, withErrorHandling } from '@felixarntz/cli-utils';
 import dotenv from 'dotenv';
 import {
   name as generateTextName,

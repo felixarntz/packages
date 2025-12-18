@@ -13,7 +13,7 @@ import {
   logger,
   runWithHeartbeat,
   normalizeAbsolutePath,
-} from 'fa-cli-utils';
+} from '@felixarntz/cli-utils';
 import { readImageFile, writeImageFile } from '../util/images';
 import { base64ToBuffer, uint8ArrayToBuffer } from '../util/binary';
 import { logTokenUsage, logCost } from '../util/ai-usage';
