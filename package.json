@@ -24,7 +24,7 @@
     "@ai-sdk/provider-utils": "4.0.0-beta.45",
     "@ai-sdk/xai": "3.0.0-beta.53",
     "@commander-js/extra-typings": "^13.1.0",
-    "@google/genai": "^1.33.0",
+    "@google/genai": "^1.34.0",
     "@inquirer/prompts": "^7.10.1",
     "ai": "6.0.0-beta.139",
     "commander": "^13.1.0",
