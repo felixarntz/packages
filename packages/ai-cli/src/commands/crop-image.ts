@@ -11,6 +11,7 @@ import {
   stripOptionFieldsForCommander,
   logger,
   normalizeAbsolutePath,
+  runWithHeartbeat,
 } from '@felixarntz/cli-utils';
 import { readImageFile, writeImageFile } from '../util/images';
 import { getReasoningProviderOptions } from '../util/reasoning';
@@ -35,6 +36,16 @@ const actualOptions: Option[] = [
   {
     argname: '-m, --model <model>',
     description: 'Model to use for determining optimal crop position',
+    choices: [
+      'google/gemini-3-pro-preview',
+      'google/gemini-3-flash-preview',
+      'google/gemini-2.5-pro',
+      'google/gemini-2.5-flash',
+      'google/gemini-2.5-flash-lite',
+      'openai/gpt-5',
+      'openai/gpt-5-mini',
+      'openai/gpt-5-nano',
+    ],
     required: true,
   },
   {
@@ -148,13 +159,17 @@ Return only the pixel offset value.`;
     },
   ];
 
-  const result = await generateText({
-    model,
-    output: Output.object({ schema }),
-    system,
-    prompt,
-    providerOptions: getReasoningProviderOptions('low', model),
-  });
+  const result = await runWithHeartbeat(
+    async () =>
+      await generateText({
+        model,
+        output: Output.object({ schema }),
+        system,
+        prompt,
+        providerOptions: getReasoningProviderOptions('low', model),
+      }),
+    'Still analyzing image...',
+  );
 
   if (cropDirection === 'horizontal') {
     left = result.output['left'];

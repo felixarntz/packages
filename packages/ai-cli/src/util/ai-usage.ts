@@ -22,26 +22,36 @@ export function logTokenUsage(
   let outputTokens: number | undefined;
   let reasoningTokens: number | undefined;
   let totalTokens: number | undefined;
-  if (typeof tokenUsage.inputTokens === 'object') { // V3 Usage.
+  if (typeof tokenUsage.inputTokens === 'object') {
+    // V3 Usage.
     inputTokens = tokenUsage.inputTokens.total;
   } else {
     inputTokens = tokenUsage.inputTokens;
   }
-  if (typeof tokenUsage.outputTokens === 'object') { // V3 Usage.
+  if (typeof tokenUsage.outputTokens === 'object') {
+    // V3 Usage.
     outputTokens = tokenUsage.outputTokens.total;
     if (tokenUsage.outputTokens.reasoning !== undefined) {
       reasoningTokens = tokenUsage.outputTokens.reasoning;
     }
   } else {
     outputTokens = tokenUsage.outputTokens;
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    if ('reasoningTokens' in tokenUsage && tokenUsage.reasoningTokens !== undefined) {
+
+    if (
+      'reasoningTokens' in tokenUsage &&
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
+      tokenUsage.reasoningTokens !== undefined
+    ) {
       // eslint-disable-next-line @typescript-eslint/no-deprecated
       reasoningTokens = tokenUsage.reasoningTokens;
     }
   }
-  if (!('totalTokens' in tokenUsage) || tokenUsage.totalTokens === undefined) { // V3 Usage.
-    totalTokens = inputTokens !== undefined && outputTokens !== undefined ? inputTokens + outputTokens : undefined;
+  if (!('totalTokens' in tokenUsage) || tokenUsage.totalTokens === undefined) {
+    // V3 Usage.
+    totalTokens =
+      inputTokens !== undefined && outputTokens !== undefined
+        ? inputTokens + outputTokens
+        : undefined;
   } else {
     totalTokens = tokenUsage.totalTokens;
   }
@@ -52,9 +62,7 @@ export function logTokenUsage(
     `  Output tokens: ${outputTokens}`,
   ];
   if (reasoningTokens !== undefined) {
-    tokenUsageLogLines.push(
-      `  Reasoning tokens: ${reasoningTokens}`,
-    );
+    tokenUsageLogLines.push(`  Reasoning tokens: ${reasoningTokens}`);
   }
   tokenUsageLogLines.push(`  Total tokens: ${totalTokens}`);
   logger.debug(tokenUsageLogLines.join('\n'));
