@@ -9,7 +9,7 @@ import {
   stripOptionFieldsForCommander,
   logger,
   normalizeAbsolutePath,
-} from '@felixarntz/cli-utils';
+} from 'fa-cli-utils';
 import { readImageFile, writeImageFile } from '../util/images';
 import { bufferToBase64, base64ToBuffer } from '../util/binary';
 

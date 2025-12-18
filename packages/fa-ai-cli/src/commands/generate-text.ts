@@ -10,7 +10,7 @@ import {
   stripOptionFieldsForCommander,
   logger,
   outputStream,
-} from '@felixarntz/cli-utils';
+} from 'fa-cli-utils';
 import { getReasoningProviderOptions } from '../util/reasoning';
 import { logTokenUsage, logCost } from '../util/ai-usage';
 

@@ -1,31 +1,45 @@
 {
-  "name": "@felixarntz/cli-utils",
+  "name": "fa-ai-cli",
   "version": "0.1.0",
-  "description": "Utility functions for TypeScript CLI tools",
+  "description": "CLI with various AI-driven personal tools",
   "license": "MIT",
   "type": "module",
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "bin": {
+    "ai": "dist/ai-cli.js"
+  },
+  "main": "dist/ai-cli.cjs",
+  "module": "dist/ai-cli.js",
+  "types": "dist/ai-cli.d.ts",
   "files": [
     "dist/**/*"
   ],
   "engines": {
     "node": ">=20.0.0"
   },
-  "homepage": "https://github.com/felixarntz/packages/blob/main/packages/cli-utils/README.md",
+  "homepage": "https://github.com/felixarntz/packages/blob/main/packages/fa-ai-cli/README.md",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/felixarntz/packages.git",
-    "directory": "packages/cli-utils"
+    "directory": "packages/fa-ai-cli"
   },
   "bugs": {
     "url": "https://github.com/felixarntz/packages/issues"
   },
   "dependencies": {
+    "@ai-sdk/google": ">=3.0.0-beta",
+    "@ai-sdk/openai": ">=3.0.0-beta",
+    "@ai-sdk/provider": ">=3.0.0-beta",
+    "@ai-sdk/xai": ">=3.0.0-beta",
     "@commander-js/extra-typings": "^13.0.0",
+    "fa-cli-utils": "workspace:^",
+    "@google/genai": "^1.29.1",
     "@inquirer/prompts": "^7.10.0",
-    "commander": "^13.0.0"
+    "ai": "^6.0.0-beta",
+    "commander": "^13.0.0",
+    "dotenv": "^16.6.1",
+    "file-type": "^21.1.0",
+    "sharp": "^0.34.5",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "tsup": "^8.5.0",

@@ -12,7 +12,7 @@ import {
   logger,
   normalizeAbsolutePath,
   runWithHeartbeat,
-} from '@felixarntz/cli-utils';
+} from 'fa-cli-utils';
 import { readImageFile, writeImageFile } from '../util/images';
 import { getReasoningProviderOptions } from '../util/reasoning';
 import { logTokenUsage, logCost } from '../util/ai-usage';

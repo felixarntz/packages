@@ -13,7 +13,7 @@ import {
   stripOptionFieldsForCommander,
   logger,
   runWithHeartbeat,
-} from '@felixarntz/cli-utils';
+} from 'fa-cli-utils';
 import { writeImageFile } from '../util/images';
 import { base64ToBuffer, uint8ArrayToBuffer } from '../util/binary';
 import { logTokenUsage, logCost } from '../util/ai-usage';

@@ -9,7 +9,7 @@ import {
   stripOptionFieldsForCommander,
   logger,
   normalizeAbsolutePath,
-} from '@felixarntz/cli-utils';
+} from 'fa-cli-utils';
 import { readImageFile, writeImageFile } from '../util/images';
 
 export const name = 'optimize-image';

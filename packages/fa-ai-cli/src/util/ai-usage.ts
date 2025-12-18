@@ -8,7 +8,7 @@ import type {
   ImageModelV3ProviderMetadata,
   JSONValue,
 } from '@ai-sdk/provider';
-import { logger } from '@felixarntz/cli-utils';
+import { logger } from 'fa-cli-utils';
 
 /**
  * Logs the token usage details from a language model response.
