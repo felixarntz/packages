@@ -3,6 +3,7 @@ import type {
   LanguageModelV2Usage,
   SharedV2ProviderMetadata,
   ImageModelV2ProviderMetadata,
+  LanguageModelV3Usage,
   SharedV3ProviderMetadata,
   ImageModelV3ProviderMetadata,
   JSONValue,
@@ -15,19 +16,47 @@ import { logger } from '@felixarntz/cli-utils';
  * @param tokenUsage - The token usage object containing input, output, reasoning (optional), and total token counts.
  */
 export function logTokenUsage(
-  tokenUsage: LanguageModelUsage | LanguageModelV2Usage,
+  tokenUsage: LanguageModelUsage | LanguageModelV2Usage | LanguageModelV3Usage,
 ): void {
+  let inputTokens: number | undefined;
+  let outputTokens: number | undefined;
+  let reasoningTokens: number | undefined;
+  let totalTokens: number | undefined;
+  if (typeof tokenUsage.inputTokens === 'object') { // V3 Usage.
+    inputTokens = tokenUsage.inputTokens.total;
+  } else {
+    inputTokens = tokenUsage.inputTokens;
+  }
+  if (typeof tokenUsage.outputTokens === 'object') { // V3 Usage.
+    outputTokens = tokenUsage.outputTokens.total;
+    if (tokenUsage.outputTokens.reasoning !== undefined) {
+      reasoningTokens = tokenUsage.outputTokens.reasoning;
+    }
+  } else {
+    outputTokens = tokenUsage.outputTokens;
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    if ('reasoningTokens' in tokenUsage && tokenUsage.reasoningTokens !== undefined) {
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
+      reasoningTokens = tokenUsage.reasoningTokens;
+    }
+  }
+  if (!('totalTokens' in tokenUsage) || tokenUsage.totalTokens === undefined) { // V3 Usage.
+    totalTokens = inputTokens !== undefined && outputTokens !== undefined ? inputTokens + outputTokens : undefined;
+  } else {
+    totalTokens = tokenUsage.totalTokens;
+  }
+
   const tokenUsageLogLines = [
     `Token usage:`,
-    `  Input tokens: ${tokenUsage.inputTokens}`,
-    `  Output tokens: ${tokenUsage.outputTokens}`,
+    `  Input tokens: ${inputTokens}`,
+    `  Output tokens: ${outputTokens}`,
   ];
-  if (tokenUsage.reasoningTokens !== undefined) {
+  if (reasoningTokens !== undefined) {
     tokenUsageLogLines.push(
-      `  Reasoning tokens: ${tokenUsage.reasoningTokens}`,
+      `  Reasoning tokens: ${reasoningTokens}`,
     );
   }
-  tokenUsageLogLines.push(`  Total tokens: ${tokenUsage.totalTokens}`);
+  tokenUsageLogLines.push(`  Total tokens: ${totalTokens}`);
   logger.debug(tokenUsageLogLines.join('\n'));
 }
 

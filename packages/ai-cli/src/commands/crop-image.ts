@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { generateObject } from 'ai';
+import { generateText, Output } from 'ai';
 import { z } from 'zod';
 import {
   getArgs,
@@ -148,18 +148,18 @@ Return only the pixel offset value.`;
     },
   ];
 
-  const result = await generateObject({
+  const result = await generateText({
     model,
-    schema,
+    output: Output.object({ schema }),
     system,
     prompt,
     providerOptions: getReasoningProviderOptions('low', model),
   });
 
   if (cropDirection === 'horizontal') {
-    left = result.object['left'];
+    left = result.output['left'];
   } else {
-    top = result.object['top'];
+    top = result.output['top'];
   }
 
   logger.info(
