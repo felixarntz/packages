@@ -10,6 +10,12 @@ import {
   options as generateChangelogOptions,
 } from './commands/generate-changelog';
 import {
+  name as updateSinceName,
+  description as updateSinceDescription,
+  handler as updateSinceHandler,
+  options as updateSinceOptions,
+} from './commands/update-since';
+import {
   name as verifyVersionsName,
   description as verifyVersionsDescription,
   handler as verifyVersionsHandler,
@@ -26,6 +32,11 @@ function initialize() {
     .alias('changelog')
     .description(generateChangelogDescription)
     .action(withErrorHandling(generateChangelogHandler));
+
+  withOptions(program.command(updateSinceName), updateSinceOptions)
+    .alias('since')
+    .description(updateSinceDescription)
+    .action(withErrorHandling(updateSinceHandler));
 
   withOptions(program.command(verifyVersionsName), verifyVersionsOptions)
     .alias('versions')
