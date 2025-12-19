@@ -9,6 +9,12 @@ import {
   handler as generateChangelogHandler,
   options as generateChangelogOptions,
 } from './commands/generate-changelog';
+import {
+  name as verifyVersionsName,
+  description as verifyVersionsDescription,
+  handler as verifyVersionsHandler,
+  options as verifyVersionsOptions,
+} from './commands/verify-versions';
 
 /**
  * Initializes the application.
@@ -20,6 +26,11 @@ function initialize() {
     .alias('changelog')
     .description(generateChangelogDescription)
     .action(withErrorHandling(generateChangelogHandler));
+
+  withOptions(program.command(verifyVersionsName), verifyVersionsOptions)
+    .alias('versions')
+    .description(verifyVersionsDescription)
+    .action(withErrorHandling(verifyVersionsHandler));
 }
 
 /**
