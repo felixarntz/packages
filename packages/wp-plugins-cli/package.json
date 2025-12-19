@@ -1,44 +1,38 @@
 {
-  "name": "@felixarntz/ai-cli",
+  "name": "@felixarntz/wp-plugins-cli",
   "version": "0.1.0",
-  "description": "CLI with various AI-driven personal tools",
+  "description": "CLI with various tools for WordPress plugin maintenance",
   "license": "MIT",
   "type": "module",
   "bin": {
-    "ai": "dist/ai-cli.js"
+    "wp-plugins": "dist/wp-plugins-cli.js"
   },
-  "main": "dist/ai-cli.cjs",
-  "module": "dist/ai-cli.js",
-  "types": "dist/ai-cli.d.ts",
+  "main": "dist/wp-plugins-cli.cjs",
+  "module": "dist/wp-plugins-cli.js",
+  "types": "dist/wp-plugins-cli.d.ts",
   "files": [
     "dist/**/*"
   ],
   "engines": {
     "node": ">=20.0.0"
   },
-  "homepage": "https://github.com/felixarntz/packages/blob/main/packages/ai-cli/README.md",
+  "homepage": "https://github.com/felixarntz/packages/blob/main/packages/wp-plugins-cli/README.md",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/felixarntz/packages.git",
-    "directory": "packages/ai-cli"
+    "directory": "packages/wp-plugins-cli"
   },
   "bugs": {
     "url": "https://github.com/felixarntz/packages/issues"
   },
   "dependencies": {
-    "@ai-sdk/google": ">=3.0.0-beta",
-    "@ai-sdk/openai": ">=3.0.0-beta",
-    "@ai-sdk/provider": ">=3.0.0-beta",
-    "@ai-sdk/xai": ">=3.0.0-beta",
     "@commander-js/extra-typings": "^13.0.0",
     "@felixarntz/cli-utils": "workspace:^",
-    "@google/genai": "^1.29.1",
-    "ai": "^6.0.0-beta",
+    "@octokit/rest": "^22.0.0",
     "commander": "^13.0.0",
     "dotenv": "^16.6.1",
-    "file-type": "^21.1.0",
-    "sharp": "^0.34.5",
-    "zod": "^4.1.12"
+    "fast-glob": "^3.3.3",
+    "simple-git": "^3.30.0"
   },
   "devDependencies": {
     "tsup": "^8.5.0",
