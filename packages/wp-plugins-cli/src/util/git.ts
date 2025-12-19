@@ -1,20 +1,23 @@
 import { simpleGit, type SimpleGit, type SimpleGitOptions } from 'simple-git';
 
-let gitInstance: SimpleGit | undefined;
+const gitInstances: Record<string, SimpleGit> = {};
 
 /**
  * Returns a singleton instance of SimpleGit.
  *
+ * @param baseDir - Optional base directory for the git instance. Defaults to the current working directory.
  * @returns The SimpleGit instance.
  */
-export function git(): SimpleGit {
-  if (!gitInstance) {
+export function git(baseDir?: string): SimpleGit {
+  const gitBaseDir = baseDir || process.cwd();
+
+  if (!gitInstances[gitBaseDir]) {
     const options: Partial<SimpleGitOptions> = {
-      baseDir: process.cwd(),
+      baseDir: gitBaseDir,
       binary: 'git',
     };
-    gitInstance = simpleGit(options);
+    gitInstances[gitBaseDir] = simpleGit(options);
   }
 
-  return gitInstance;
+  return gitInstances[gitBaseDir];
 }

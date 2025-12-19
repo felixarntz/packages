@@ -1,16 +1,34 @@
 import path from 'node:path';
-import { logger, fileExists, readTextFile } from '@felixarntz/cli-utils';
+import {
+  getArgs,
+  type HandlerArgs,
+  type Option,
+  logger,
+  fileExists,
+  readTextFile,
+  normalizeAbsolutePath,
+} from '@felixarntz/cli-utils';
 import glob from 'fast-glob';
 
 export const name = 'verify-versions';
 export const description = 'Verifies consistency of versions in a plugin.';
 
-export const options = [];
+export const options: Option[] = [
+  {
+    argname: 'path',
+    description: 'Path to the WordPress plugin folder',
+    positional: true,
+    parse: (value: string) => normalizeAbsolutePath(value),
+  },
+];
 
-export const handler = async (): Promise<void> => {
+export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
+  const [path] = getArgs(handlerArgs);
+  const pluginPath = path ? path : process.cwd();
+
   const allVersions = {
-    ...(await getReadmeVersions()),
-    ...(await getPhpFileVersions()),
+    ...(await getReadmeVersions(pluginPath)),
+    ...(await getPhpFileVersions(pluginPath)),
   };
 
   const version = Object.values(allVersions)[0];
@@ -31,14 +49,14 @@ export const handler = async (): Promise<void> => {
   }
 };
 
-const getReadmeVersions = async () => {
+const getReadmeVersions = async (pluginPath: string) => {
   let readmeFilePath: string;
-  if (await fileExists(path.join(process.cwd(), 'readme.txt'))) {
-    readmeFilePath = path.join(process.cwd(), 'readme.txt');
-  } else if (await fileExists(path.join(process.cwd(), 'readme.md'))) {
-    readmeFilePath = path.join(process.cwd(), 'readme.md');
-  } else if (await fileExists(path.join(process.cwd(), 'README.md'))) {
-    readmeFilePath = path.join(process.cwd(), 'README.md');
+  if (await fileExists(path.join(pluginPath, 'readme.txt'))) {
+    readmeFilePath = path.join(pluginPath, 'readme.txt');
+  } else if (await fileExists(path.join(pluginPath, 'readme.md'))) {
+    readmeFilePath = path.join(pluginPath, 'readme.md');
+  } else if (await fileExists(path.join(pluginPath, 'README.md'))) {
+    readmeFilePath = path.join(pluginPath, 'README.md');
   } else {
     throw new Error(
       'No readme.txt or readme.md file found in the current directory.',
@@ -70,10 +88,10 @@ const getReadmeVersions = async () => {
   };
 };
 
-const getPhpFileVersions = async () => {
-  const pluginSlug = path.basename(process.cwd());
+const getPhpFileVersions = async (pluginPath: string) => {
+  const pluginSlug = path.basename(pluginPath);
 
-  const mainFilePath = path.join(process.cwd(), `${pluginSlug}.php`);
+  const mainFilePath = path.join(pluginPath, `${pluginSlug}.php`);
   if (!(await fileExists(mainFilePath))) {
     throw new Error(`Main plugin file not found at ${mainFilePath}`);
   }
@@ -96,7 +114,7 @@ const getPhpFileVersions = async () => {
   );
 
   let constantVersion = null;
-  for (const phpFile of await glob(path.join(process.cwd(), '*.php'))) {
+  for (const phpFile of await glob(path.join(pluginPath, '*.php'))) {
     const phpFileContents = await readTextFile(phpFile);
     const constantVersionMatches = phpFileContents.match(constantRegexp);
     if (constantVersionMatches) {

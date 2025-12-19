@@ -25,11 +25,14 @@ export type Commit = Awaited<
 /**
  * Detects the GitHub repository from the git remotes.
  *
+ * @param baseDir - Optional base directory for the git instance. Defaults to the current working directory.
  * @returns The GitHub repository details.
  * @throws If no GitHub repository could be detected.
  */
-export async function detectGithubRepository(): Promise<GithubRepository> {
-  const remotes = await git().getRemotes(true);
+export async function detectGithubRepository(
+  baseDir?: string,
+): Promise<GithubRepository> {
+  const remotes = await git(baseDir).getRemotes(true);
   for (const remote of remotes) {
     if (remote.name !== 'origin') {
       continue;

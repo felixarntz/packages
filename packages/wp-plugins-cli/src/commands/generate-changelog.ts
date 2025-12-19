@@ -1,4 +1,5 @@
 import {
+  getArgs,
   getOpt,
   type HandlerArgs,
   type OptionsInput,
@@ -6,6 +7,7 @@ import {
   logger,
   output,
   runWithHeartbeat,
+  normalizeAbsolutePath,
 } from '@felixarntz/cli-utils';
 import { Octokit } from '@octokit/rest';
 import {
@@ -24,6 +26,12 @@ export const description =
   'Generates a changelog based on the commit history since the last tag.';
 
 export const options: Option[] = [
+  {
+    argname: 'path',
+    description: 'Path to the WordPress plugin folder',
+    positional: true,
+    parse: (value: string) => normalizeAbsolutePath(value),
+  },
   {
     argname: '-r, --repository <repository>',
     description:
@@ -53,7 +61,10 @@ const parseOptions = (opt: OptionsInput): CommandConfig => {
 };
 
 export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
+  const [path] = getArgs(handlerArgs);
   const { repository, tag } = parseOptions(getOpt(handlerArgs));
+
+  const pluginPath = path ? path : process.cwd();
 
   let githubRepository: GithubRepository;
   if (repository) {
@@ -62,8 +73,12 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
       owner,
       repo,
     };
+    logger.debug(`Using given repository ${owner}/${repo}`);
   } else {
-    githubRepository = await detectGithubRepository();
+    githubRepository = await detectGithubRepository(pluginPath);
+    logger.debug(
+      `Using detected repository ${githubRepository.owner}/${githubRepository.repo}`,
+    );
   }
 
   const token = process.env['GITHUB_TOKEN'];
