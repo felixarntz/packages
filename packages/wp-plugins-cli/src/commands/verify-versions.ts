@@ -9,6 +9,7 @@ import {
   normalizeAbsolutePath,
 } from '@felixarntz/cli-utils';
 import glob from 'fast-glob';
+import { getReadmeFilePath } from '../util/readme';
 
 export const name = 'verify-versions';
 export const description = 'Verifies consistency of versions in a plugin.';
@@ -50,18 +51,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
 };
 
 const getReadmeVersions = async (pluginPath: string) => {
-  let readmeFilePath: string;
-  if (await fileExists(path.join(pluginPath, 'readme.txt'))) {
-    readmeFilePath = path.join(pluginPath, 'readme.txt');
-  } else if (await fileExists(path.join(pluginPath, 'readme.md'))) {
-    readmeFilePath = path.join(pluginPath, 'readme.md');
-  } else if (await fileExists(path.join(pluginPath, 'README.md'))) {
-    readmeFilePath = path.join(pluginPath, 'README.md');
-  } else {
-    throw new Error(
-      'No readme.txt or readme.md file found in the current directory.',
-    );
-  }
+  const readmeFilePath = await getReadmeFilePath(pluginPath);
   const readmeFileContents = await readTextFile(readmeFilePath);
 
   const stableTagVersionMatches = readmeFileContents.match(
