@@ -1,6 +1,6 @@
 {
   "name": "@felixarntz/ai-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI with various AI-driven personal tools",
   "license": "MIT",
   "type": "module",
