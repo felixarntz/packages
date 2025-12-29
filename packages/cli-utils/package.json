@@ -1,7 +1,7 @@
 {
   "name": "@felixarntz/cli-utils",
   "version": "0.1.0",
-  "description": "Utility functions for TypeScript CLI tools",
+  "description": "Utility functions for TypeScript CLI tools, using Commander and Inquirer",
   "license": "MIT",
   "type": "module",
   "main": "dist/index.cjs",
