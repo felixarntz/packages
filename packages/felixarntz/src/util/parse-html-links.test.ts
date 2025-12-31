@@ -67,4 +67,25 @@ describe('parseHtmlLinks', () => {
     const result = parseHtmlLinks(html, 'test');
     expect(result).toBe('');
   });
+
+  it('uses img alt text if link text is empty', () => {
+    const html =
+      '<div id="test"><a href="https://example.com"><img src="image.png" alt="Image Link" /></a></div>';
+    const result = parseHtmlLinks(html, 'test');
+    expect(result).toBe('- Image Link: https://example.com');
+  });
+
+  it('prefers text content over img alt text', () => {
+    const html =
+      '<div id="test"><a href="https://example.com"><img src="image.png" alt="Image Link" />Text Link</a></div>';
+    const result = parseHtmlLinks(html, 'test');
+    expect(result).toBe('- Text Link: https://example.com');
+  });
+
+  it('sanitizes HTML entities in img alt text', () => {
+    const html =
+      '<div id="test"><a href="https://example.com"><img src="image.png" alt="Image&nbsp;Link" /></a></div>';
+    const result = parseHtmlLinks(html, 'test');
+    expect(result).toBe('- Image Link: https://example.com');
+  });
 });

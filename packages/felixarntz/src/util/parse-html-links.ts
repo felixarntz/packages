@@ -74,6 +74,15 @@ export function parseHtmlLinks(html: string, id: string): string {
     // Strip tags from inner content to get label
     let label = innerContent.replace(/<[^>]+>/g, '');
 
+    if (!label.trim()) {
+      const imgMatch = innerContent.match(
+        /<img\b[^>]*alt\s*=\s*(["'])(.*?)\1/i,
+      );
+      if (imgMatch) {
+        label = imgMatch[2];
+      }
+    }
+
     // Decode entities in label
     label = label
       .replace(/&nbsp;/g, ' ')

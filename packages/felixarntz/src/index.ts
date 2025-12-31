@@ -24,12 +24,17 @@ const fetchAndParseContent = async (): Promise<string> => {
   const introText = parseHtml(html, 'felixarntz-intro');
   const socialLinksText = parseHtmlLinks(html, 'felixarntz-social');
   const websiteText = `Visit my website @ ${WEBSITE_DOMAIN}`;
+  const projectsText = parseHtmlLinks(html, 'felixarntz-projects');
 
-  if (!socialLinksText) {
+  if (!socialLinksText && !projectsText) {
     return `${introText}\n\n${websiteText}`;
   }
 
-  return `${introText}\n\nConnect with me on socials:\n\n${socialLinksText}\n\n${websiteText}`;
+  if (!socialLinksText) {
+    return `${introText}\n\n${websiteText}\n\nSome of the projects I have contributed to:\n\n${projectsText}`;
+  }
+
+  return `${introText}\n\nConnect with me on socials:\n\n${socialLinksText}\n\n${websiteText}\n\nSome of the projects I have contributed to:\n\n${projectsText}`;
 };
 
 const formatContentLines = (content: string): string[] => {
