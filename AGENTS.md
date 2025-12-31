@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This monorepo contains various NPM packages maintained by Felix Arntz, primarily for personal use. It includes CLI tools for AI operations, WordPress plugin management, and shared CLI utilities. The project is structured as a monorepo using pnpm workspaces.
+This monorepo contains various NPM packages maintained by Felix Arntz, primarily for personal use. It includes CLI tools for AI operations, WordPress plugin management, a personal card CLI, and shared CLI utilities. The project is structured as a monorepo using pnpm workspaces.
 
 ## Commands & Scripts
 
@@ -38,7 +38,7 @@ For more details on contribution guidelines, please refer to [CONTRIBUTING.md](.
 ## Project Architecture Overview
 
 The project is a collection of independent packages that may share common utilities.
-*   **CLI Tools:** `ai-cli` and `wp-plugins-cli` are executable CLI applications.
+*   **CLI Tools:** `ai-cli`, `felixarntz`, and `wp-plugins-cli` are executable CLI applications.
 *   **Shared Libraries:** `cli-utils` provides common functionality used by the CLI tools, such as logging, file system operations, and command-line interface helpers.
 
 ## Directory Structure
@@ -46,6 +46,7 @@ The project is a collection of independent packages that may share common utilit
 *   `packages/` - Contains all the packages in the monorepo.
     *   `packages/ai-cli/` - CLI tool for AI-related tasks (image generation, text generation, etc.).
     *   `packages/cli-utils/` - Shared utilities for building CLI applications.
+    *   `packages/felixarntz/` - Personal card CLI tool that displays bio and social links.
     *   `packages/wp-plugins-cli/` - CLI tool for managing WordPress plugins.
 *   `CONTRIBUTING.md` - Guidelines for contributing to the project.
 *   `package.json` - Root configuration and scripts.

@@ -34,7 +34,7 @@
     "file-type": "^21.2.0",
     "sharp": "^0.34.5",
     "simple-git": "^3.30.0",
-    "zod": "^4.2.1"
+    "zod": "^4.3.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
@@ -52,11 +52,12 @@
     "mock-fs": "^5.5.0",
     "prettier": "^3.7.4",
     "tsup": "^8.5.1",
-    "typescript-eslint": "^8.50.1",
+    "typescript-eslint": "^8.51.0",
     "vitest": "^3.2.4"
   },
   "scripts": {
     "ai": "DEBUG=true node ./packages/ai-cli/dist/ai-cli.js",
+    "felixarntz": "DEBUG=true node ./packages/felixarntz/dist/index.js",
     "wp-plugins": "DEBUG=true node ./packages/wp-plugins-cli/dist/wp-plugins-cli.js",
     "build": "pnpm --recursive build",
     "lint": "eslint .",

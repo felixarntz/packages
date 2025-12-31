@@ -1,0 +1,48 @@
+{
+  "name": "felixarntz",
+  "version": "0.1.0",
+  "description": "Meet me in my personal CLI",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "felixarntz": "dist/index.js"
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "homepage": "https://github.com/felixarntz/packages/blob/main/packages/felixarntz/README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/felixarntz/packages.git",
+    "directory": "packages/felixarntz"
+  },
+  "bugs": {
+    "url": "https://github.com/felixarntz/packages/issues"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "typescript": "^5.3.3",
+    "vitest": "^3.1.1"
+  },
+  "scripts": {
+    "build": "tsup",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:ci": "eslint . --max-warnings 0",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "test": "vitest run",
+    "test:ci": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
