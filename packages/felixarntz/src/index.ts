@@ -18,6 +18,12 @@ const bootLines = [
 ];
 
 const fetchAndParseContent = async (): Promise<string> => {
+  const removeCategoryLinks = (text: string): string =>
+    text
+      .split('\n')
+      .filter((line) => !line.includes('/category/'))
+      .join('\n');
+
   const response = await fetch(HTML_URL);
   const html = await response.text();
 
@@ -25,16 +31,24 @@ const fetchAndParseContent = async (): Promise<string> => {
   const socialLinksText = parseHtmlLinks(html, 'felixarntz-social');
   const websiteText = `Visit my website @ ${WEBSITE_DOMAIN}`;
   const projectsText = parseHtmlLinks(html, 'felixarntz-projects');
+  const latestPostsText = removeCategoryLinks(
+    parseHtmlLinks(html, 'felixarntz-latest-posts'),
+  );
 
-  if (!socialLinksText && !projectsText) {
-    return `${introText}\n\n${websiteText}`;
+  const parts: string[] = [introText];
+  if (socialLinksText) {
+    parts.push(`Connect with me on socials:\n\n${socialLinksText}`);
   }
-
-  if (!socialLinksText) {
-    return `${introText}\n\n${websiteText}\n\nSome of the projects I have contributed to:\n\n${projectsText}`;
+  parts.push(websiteText);
+  if (projectsText) {
+    parts.push(
+      `Some of the projects I have contributed to:\n\n${projectsText}`,
+    );
   }
-
-  return `${introText}\n\nConnect with me on socials:\n\n${socialLinksText}\n\n${websiteText}\n\nSome of the projects I have contributed to:\n\n${projectsText}`;
+  if (latestPostsText) {
+    parts.push(`My latest blog posts:\n\n${latestPostsText}`);
+  }
+  return parts.join('\n\n');
 };
 
 const formatContentLines = (content: string): string[] => {

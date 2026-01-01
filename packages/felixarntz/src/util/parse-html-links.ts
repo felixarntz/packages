@@ -47,7 +47,7 @@ export function parseHtmlLinks(html: string, id: string): string {
   }
 
   const content = html.substring(startIndex, endIndex);
-  const links: string[] = [];
+  const linksMap = new Map<string, { label: string; isFromAlt: boolean }>();
 
   // Regex to find <a> tags
   // We capture the opening tag attributes and the inner content
@@ -73,6 +73,7 @@ export function parseHtmlLinks(html: string, id: string): string {
 
     // Strip tags from inner content to get label
     let label = innerContent.replace(/<[^>]+>/g, '');
+    let isFromAlt = false;
 
     if (!label.trim()) {
       const imgMatch = innerContent.match(
@@ -80,6 +81,7 @@ export function parseHtmlLinks(html: string, id: string): string {
       );
       if (imgMatch) {
         label = imgMatch[2];
+        isFromAlt = true;
       }
     }
 
@@ -96,8 +98,17 @@ export function parseHtmlLinks(html: string, id: string): string {
     // Collapse whitespace in label
     label = label.replace(/\s+/g, ' ').trim();
 
-    links.push(`- ${label}: ${href}`);
+    if (!linksMap.has(href)) {
+      linksMap.set(href, { label, isFromAlt });
+    } else {
+      const existing = linksMap.get(href)!;
+      if (existing.isFromAlt && !isFromAlt) {
+        linksMap.set(href, { label, isFromAlt });
+      }
+    }
   }
 
-  return links.join('\n');
+  return Array.from(linksMap.entries())
+    .map(([href, { label }]) => `- ${label}: ${href}`)
+    .join('\n');
 }

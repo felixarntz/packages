@@ -88,4 +88,21 @@ describe('parseHtmlLinks', () => {
     const result = parseHtmlLinks(html, 'test');
     expect(result).toBe('- Image Link: https://example.com');
   });
+
+  it('deduplicates links and prefers text label over alt text', () => {
+    const html = `
+      <div id="test">
+        <a href="https://example.com"><img src="img.png" alt="Alt Label" /></a>
+        <a href="https://other.com">Other</a>
+        <a href="https://example.com">Text Label</a>
+        <a href="https://example.com">Another Text Label</a>
+      </div>
+    `;
+    const result = parseHtmlLinks(html, 'test');
+    const lines = result.split('\n');
+
+    expect(lines).toHaveLength(2);
+    expect(lines[0]).toBe('- Text Label: https://example.com');
+    expect(lines[1]).toBe('- Other: https://other.com');
+  });
 });
