@@ -9,20 +9,20 @@ importers:
   .:
     dependencies:
       '@ai-sdk/google':
-        specifier: 3.0.0-beta.68
-        version: 3.0.0-beta.68(zod@4.3.4)
+        specifier: ^3.0.2
+        version: 3.0.2(zod@4.3.4)
       '@ai-sdk/openai':
-        specifier: 3.0.0-beta.89
-        version: 3.0.0-beta.89(zod@4.3.4)
+        specifier: ^3.0.2
+        version: 3.0.2(zod@4.3.4)
       '@ai-sdk/provider':
-        specifier: 3.0.0-beta.26
-        version: 3.0.0-beta.26
+        specifier: ^3.0.1
+        version: 3.0.1
       '@ai-sdk/provider-utils':
-        specifier: 4.0.0-beta.45
-        version: 4.0.0-beta.45(zod@4.3.4)
+        specifier: ^4.0.2
+        version: 4.0.2(zod@4.3.4)
       '@ai-sdk/xai':
-        specifier: 3.0.0-beta.53
-        version: 3.0.0-beta.53(zod@4.3.4)
+        specifier: ^3.0.3
+        version: 3.0.3(zod@4.3.4)
       '@commander-js/extra-typings':
         specifier: ^13.1.0
         version: 13.1.0(commander@13.1.0)
@@ -36,8 +36,8 @@ importers:
         specifier: ^22.0.1
         version: 22.0.1
       ai:
-        specifier: 6.0.0-beta.139
-        version: 6.0.0-beta.139(zod@4.3.4)
+        specifier: ^6.0.5
+        version: 6.0.5(zod@4.3.4)
       commander:
         specifier: ^13.1.0
         version: 13.1.0
@@ -115,17 +115,17 @@ importers:
   packages/ai-cli:
     dependencies:
       '@ai-sdk/google':
-        specifier: '>=3.0.0-beta'
-        version: 3.0.0-beta.68(zod@4.1.12)
+        specifier: ^3.0.0
+        version: 3.0.2(zod@4.1.12)
       '@ai-sdk/openai':
-        specifier: '>=3.0.0-beta'
-        version: 3.0.0-beta.89(zod@4.1.12)
+        specifier: ^3.0.0
+        version: 3.0.2(zod@4.1.12)
       '@ai-sdk/provider':
-        specifier: '>=3.0.0-beta'
-        version: 3.0.0-beta.26
+        specifier: ^3.0.0
+        version: 3.0.1
       '@ai-sdk/xai':
-        specifier: '>=3.0.0-beta'
-        version: 3.0.0-beta.53(zod@4.1.12)
+        specifier: ^3.0.0
+        version: 3.0.3(zod@4.1.12)
       '@commander-js/extra-typings':
         specifier: ^13.0.0
         version: 13.1.0(commander@13.1.0)
@@ -136,8 +136,8 @@ importers:
         specifier: ^1.29.1
         version: 1.29.1
       ai:
-        specifier: ^6.0.0-beta
-        version: 6.0.0-beta.139(zod@4.1.12)
+        specifier: ^6.0.0
+        version: 6.0.5(zod@4.1.12)
       commander:
         specifier: ^13.0.0
         version: 13.1.0
@@ -234,52 +234,42 @@ importers:
 
 packages:
 
-  '@ai-sdk/gateway@2.0.0-beta.74':
-    resolution: {integrity: sha512-txkhwB1MijDiHuNJkS4RqWe8M8vSVMGMsHmssNLwlIKtmLCvW8rVUywsPt7oKd9WHHi2t8eh5dhk5bBR9Kt1Sg==}
+  '@ai-sdk/gateway@3.0.4':
+    resolution: {integrity: sha512-OlccjNYZ5+4FaNyvs0kb3N5H6U/QCKlKPTGsgUo8IZkqfMQu8ALI1XD6l/BCuTKto+OO9xUPObT/W7JhbqJ5nA==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/google@3.0.0-beta.68':
-    resolution: {integrity: sha512-DnPCaa47dXeQCaqT1Cii32yzTQ+pbBVMpIWEx6xUOqK8b5nq+1mBdQrNkJK5krhYBoY4pusKi14UX08r5NSTPg==}
+  '@ai-sdk/google@3.0.2':
+    resolution: {integrity: sha512-KyV4AR8fBKVCABfav3zGn/PY7cMDMt9m7yYhH+FJ7jLfBrEVdjT4sM0ojPFRHYUelXHl42oOAgpy3GWkeG6vtw==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/openai-compatible@2.0.0-beta.46':
-    resolution: {integrity: sha512-6nDegc2vh3OAreLijCAep6rosIAEgKv4ty4jFPrMO4nkiqyijvalGv+14tAlgOL3tCl5nqeIjLWtqHe5Mnd7YQ==}
+  '@ai-sdk/openai-compatible@2.0.2':
+    resolution: {integrity: sha512-9HFztZv9FBC7UxdLaA+gGKKEQjVNnI3nRmc6mRDPW5z5czvVKMrRgoXqjsYGbv+3giOXsVlRITHsrPswGn6O1w==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/openai@3.0.0-beta.89':
-    resolution: {integrity: sha512-MNzyOy3yR5/4R/lYCA/k9Z31qL+JcwdVsxLrhRgMkfTmdniNHzt+huEgtMtgd1kcCW0duMbygRO102XehISNyw==}
+  '@ai-sdk/openai@3.0.2':
+    resolution: {integrity: sha512-GONwavgSWtcWO+t9+GpGK8l7nIYh+zNtCL/NYDSeHxHiw6ksQS9XMRWrZyE5NpJ0EXNxSAWCHIDmb1WvTqhq9Q==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/provider-utils@4.0.0-beta.45':
-    resolution: {integrity: sha512-h84K/LF26wL285mgSBpvRxbdH9B21mUCRHzuWCnsS6EH4aI9sF94QwKNEvMA+vAScfBpdjJ35k5m0aoRtgKokg==}
+  '@ai-sdk/provider-utils@4.0.2':
+    resolution: {integrity: sha512-KaykkuRBdF/ffpI5bwpL4aSCmO/99p8/ci+VeHwJO8tmvXtiVAb99QeyvvvXmL61e9Zrvv4GBGoajW19xdjkVQ==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@valibot/to-json-schema': ^1.3.0
-      arktype: ^2.1.22
-      effect: ^3.18.4
       zod: ^3.25.76 || ^4.1.8
-    peerDependenciesMeta:
-      '@valibot/to-json-schema':
-        optional: true
-      arktype:
-        optional: true
-      effect:
-        optional: true
 
-  '@ai-sdk/provider@3.0.0-beta.26':
-    resolution: {integrity: sha512-UQyOlrpahFL1CZ/QA0ZpFhAkE32fw1XXBx+6gu23YWSCMJCjaf/fiJUPV7xUhp/nXqVO/IC+PIIfLomx55D16A==}
+  '@ai-sdk/provider@3.0.1':
+    resolution: {integrity: sha512-2lR4w7mr9XrydzxBSjir4N6YMGdXD+Np1Sh0RXABh7tWdNFFwIeRI1Q+SaYZMbfL8Pg8RRLcrxQm51yxTLhokg==}
     engines: {node: '>=18'}
 
-  '@ai-sdk/xai@3.0.0-beta.53':
-    resolution: {integrity: sha512-ZH49ey2UOCGNGBnY4Vju+58F3onmjVjz9+vkUj5cnnWUCROL3XQXHp9bJuHyXfHSwzLrv8jCS0HG8jVfLa8beA==}
+  '@ai-sdk/xai@3.0.3':
+    resolution: {integrity: sha512-Ts0RQ2yNlgX/mIj+1cvJvh/GYPZnXLe8Lzr4VFn9QNRjWJmRCQ1TSGymdmSB2dRHyBQU10acuem/bkkxFmL8vQ==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -1577,8 +1567,8 @@ packages:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
     engines: {node: '>= 14'}
 
-  ai@6.0.0-beta.139:
-    resolution: {integrity: sha512-PfNG62f2p3Pd7xCM6T22o/zRnZARF35gPh2CJL7b14CZGcbD/UjmrDQeuweSiZFh6gtDDavOspSRtS2lQpKwHA==}
+  ai@6.0.5:
+    resolution: {integrity: sha512-CKL3dDHedWskC6EY67LrULonZBU9vL+Bwa+xQEcprBhJfxpogntG3utjiAkYuy5ZQatyWk+SmWG8HLvcnhvbRg==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -3202,127 +3192,87 @@ packages:
 
 snapshots:
 
-  '@ai-sdk/gateway@2.0.0-beta.74(zod@4.1.12)':
+  '@ai-sdk/gateway@3.0.4(zod@4.1.12)':
     dependencies:
-      '@ai-sdk/provider': 3.0.0-beta.26
-      '@ai-sdk/provider-utils': 4.0.0-beta.45(zod@4.1.12)
+      '@ai-sdk/provider': 3.0.1
+      '@ai-sdk/provider-utils': 4.0.2(zod@4.1.12)
       '@vercel/oidc': 3.0.5
       zod: 4.1.12
-    transitivePeerDependencies:
-      - '@valibot/to-json-schema'
-      - arktype
-      - effect
 
-  '@ai-sdk/gateway@2.0.0-beta.74(zod@4.3.4)':
+  '@ai-sdk/gateway@3.0.4(zod@4.3.4)':
     dependencies:
-      '@ai-sdk/provider': 3.0.0-beta.26
-      '@ai-sdk/provider-utils': 4.0.0-beta.45(zod@4.3.4)
+      '@ai-sdk/provider': 3.0.1
+      '@ai-sdk/provider-utils': 4.0.2(zod@4.3.4)
       '@vercel/oidc': 3.0.5
       zod: 4.3.4
-    transitivePeerDependencies:
-      - '@valibot/to-json-schema'
-      - arktype
-      - effect
 
-  '@ai-sdk/google@3.0.0-beta.68(zod@4.1.12)':
+  '@ai-sdk/google@3.0.2(zod@4.1.12)':
     dependencies:
-      '@ai-sdk/provider': 3.0.0-beta.26
-      '@ai-sdk/provider-utils': 4.0.0-beta.45(zod@4.1.12)
+      '@ai-sdk/provider': 3.0.1
+      '@ai-sdk/provider-utils': 4.0.2(zod@4.1.12)
       zod: 4.1.12
-    transitivePeerDependencies:
-      - '@valibot/to-json-schema'
-      - arktype
-      - effect
 
-  '@ai-sdk/google@3.0.0-beta.68(zod@4.3.4)':
+  '@ai-sdk/google@3.0.2(zod@4.3.4)':
     dependencies:
-      '@ai-sdk/provider': 3.0.0-beta.26
-      '@ai-sdk/provider-utils': 4.0.0-beta.45(zod@4.3.4)
+      '@ai-sdk/provider': 3.0.1
+      '@ai-sdk/provider-utils': 4.0.2(zod@4.3.4)
       zod: 4.3.4
-    transitivePeerDependencies:
-      - '@valibot/to-json-schema'
-      - arktype
-      - effect
 
-  '@ai-sdk/openai-compatible@2.0.0-beta.46(zod@4.1.12)':
+  '@ai-sdk/openai-compatible@2.0.2(zod@4.1.12)':
     dependencies:
-      '@ai-sdk/provider': 3.0.0-beta.26
-      '@ai-sdk/provider-utils': 4.0.0-beta.45(zod@4.1.12)
+      '@ai-sdk/provider': 3.0.1
+      '@ai-sdk/provider-utils': 4.0.2(zod@4.1.12)
       zod: 4.1.12
-    transitivePeerDependencies:
-      - '@valibot/to-json-schema'
-      - arktype
-      - effect
 
-  '@ai-sdk/openai-compatible@2.0.0-beta.46(zod@4.3.4)':
+  '@ai-sdk/openai-compatible@2.0.2(zod@4.3.4)':
     dependencies:
-      '@ai-sdk/provider': 3.0.0-beta.26
-      '@ai-sdk/provider-utils': 4.0.0-beta.45(zod@4.3.4)
+      '@ai-sdk/provider': 3.0.1
+      '@ai-sdk/provider-utils': 4.0.2(zod@4.3.4)
       zod: 4.3.4
-    transitivePeerDependencies:
-      - '@valibot/to-json-schema'
-      - arktype
-      - effect
 
-  '@ai-sdk/openai@3.0.0-beta.89(zod@4.1.12)':
+  '@ai-sdk/openai@3.0.2(zod@4.1.12)':
     dependencies:
-      '@ai-sdk/provider': 3.0.0-beta.26
-      '@ai-sdk/provider-utils': 4.0.0-beta.45(zod@4.1.12)
+      '@ai-sdk/provider': 3.0.1
+      '@ai-sdk/provider-utils': 4.0.2(zod@4.1.12)
       zod: 4.1.12
-    transitivePeerDependencies:
-      - '@valibot/to-json-schema'
-      - arktype
-      - effect
 
-  '@ai-sdk/openai@3.0.0-beta.89(zod@4.3.4)':
+  '@ai-sdk/openai@3.0.2(zod@4.3.4)':
     dependencies:
-      '@ai-sdk/provider': 3.0.0-beta.26
-      '@ai-sdk/provider-utils': 4.0.0-beta.45(zod@4.3.4)
+      '@ai-sdk/provider': 3.0.1
+      '@ai-sdk/provider-utils': 4.0.2(zod@4.3.4)
       zod: 4.3.4
-    transitivePeerDependencies:
-      - '@valibot/to-json-schema'
-      - arktype
-      - effect
 
-  '@ai-sdk/provider-utils@4.0.0-beta.45(zod@4.1.12)':
+  '@ai-sdk/provider-utils@4.0.2(zod@4.1.12)':
     dependencies:
-      '@ai-sdk/provider': 3.0.0-beta.26
+      '@ai-sdk/provider': 3.0.1
       '@standard-schema/spec': 1.1.0
       eventsource-parser: 3.0.6
       zod: 4.1.12
 
-  '@ai-sdk/provider-utils@4.0.0-beta.45(zod@4.3.4)':
+  '@ai-sdk/provider-utils@4.0.2(zod@4.3.4)':
     dependencies:
-      '@ai-sdk/provider': 3.0.0-beta.26
+      '@ai-sdk/provider': 3.0.1
       '@standard-schema/spec': 1.1.0
       eventsource-parser: 3.0.6
       zod: 4.3.4
 
-  '@ai-sdk/provider@3.0.0-beta.26':
+  '@ai-sdk/provider@3.0.1':
     dependencies:
       json-schema: 0.4.0
 
-  '@ai-sdk/xai@3.0.0-beta.53(zod@4.1.12)':
+  '@ai-sdk/xai@3.0.3(zod@4.1.12)':
     dependencies:
-      '@ai-sdk/openai-compatible': 2.0.0-beta.46(zod@4.1.12)
-      '@ai-sdk/provider': 3.0.0-beta.26
-      '@ai-sdk/provider-utils': 4.0.0-beta.45(zod@4.1.12)
+      '@ai-sdk/openai-compatible': 2.0.2(zod@4.1.12)
+      '@ai-sdk/provider': 3.0.1
+      '@ai-sdk/provider-utils': 4.0.2(zod@4.1.12)
       zod: 4.1.12
-    transitivePeerDependencies:
-      - '@valibot/to-json-schema'
-      - arktype
-      - effect
 
-  '@ai-sdk/xai@3.0.0-beta.53(zod@4.3.4)':
+  '@ai-sdk/xai@3.0.3(zod@4.3.4)':
     dependencies:
-      '@ai-sdk/openai-compatible': 2.0.0-beta.46(zod@4.3.4)
-      '@ai-sdk/provider': 3.0.0-beta.26
-      '@ai-sdk/provider-utils': 4.0.0-beta.45(zod@4.3.4)
+      '@ai-sdk/openai-compatible': 2.0.2(zod@4.3.4)
+      '@ai-sdk/provider': 3.0.1
+      '@ai-sdk/provider-utils': 4.0.2(zod@4.3.4)
       zod: 4.3.4
-    transitivePeerDependencies:
-      - '@valibot/to-json-schema'
-      - arktype
-      - effect
 
   '@ampproject/remapping@2.3.0':
     dependencies:
@@ -4363,29 +4313,21 @@ snapshots:
 
   agent-base@7.1.4: {}
 
-  ai@6.0.0-beta.139(zod@4.1.12):
+  ai@6.0.5(zod@4.1.12):
     dependencies:
-      '@ai-sdk/gateway': 2.0.0-beta.74(zod@4.1.12)
-      '@ai-sdk/provider': 3.0.0-beta.26
-      '@ai-sdk/provider-utils': 4.0.0-beta.45(zod@4.1.12)
+      '@ai-sdk/gateway': 3.0.4(zod@4.1.12)
+      '@ai-sdk/provider': 3.0.1
+      '@ai-sdk/provider-utils': 4.0.2(zod@4.1.12)
       '@opentelemetry/api': 1.9.0
       zod: 4.1.12
-    transitivePeerDependencies:
-      - '@valibot/to-json-schema'
-      - arktype
-      - effect
 
-  ai@6.0.0-beta.139(zod@4.3.4):
+  ai@6.0.5(zod@4.3.4):
     dependencies:
-      '@ai-sdk/gateway': 2.0.0-beta.74(zod@4.3.4)
-      '@ai-sdk/provider': 3.0.0-beta.26
-      '@ai-sdk/provider-utils': 4.0.0-beta.45(zod@4.3.4)
+      '@ai-sdk/gateway': 3.0.4(zod@4.3.4)
+      '@ai-sdk/provider': 3.0.1
+      '@ai-sdk/provider-utils': 4.0.2(zod@4.3.4)
       '@opentelemetry/api': 1.9.0
       zod: 4.3.4
-    transitivePeerDependencies:
-      - '@valibot/to-json-schema'
-      - arktype
-      - effect
 
   ajv@6.12.6:
     dependencies:

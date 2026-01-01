@@ -1,4 +1,4 @@
-import { generateText, experimental_generateImage as generateImage } from 'ai';
+import { generateText, generateImage } from 'ai';
 import { google } from '@ai-sdk/google';
 import { openai } from '@ai-sdk/openai';
 import { xai } from '@ai-sdk/xai';

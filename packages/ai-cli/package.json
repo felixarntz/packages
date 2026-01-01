@@ -1,6 +1,6 @@
 {
   "name": "@felixarntz/ai-cli",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "CLI with various AI-driven personal tools",
   "license": "MIT",
   "type": "module",
@@ -26,14 +26,14 @@
     "url": "https://github.com/felixarntz/packages/issues"
   },
   "dependencies": {
-    "@ai-sdk/google": ">=3.0.0-beta",
-    "@ai-sdk/openai": ">=3.0.0-beta",
-    "@ai-sdk/provider": ">=3.0.0-beta",
-    "@ai-sdk/xai": ">=3.0.0-beta",
+    "@ai-sdk/google": "^3.0.0",
+    "@ai-sdk/openai": "^3.0.0",
+    "@ai-sdk/provider": "^3.0.0",
+    "@ai-sdk/xai": "^3.0.0",
     "@commander-js/extra-typings": "^13.0.0",
     "@felixarntz/cli-utils": "workspace:^",
     "@google/genai": "^1.29.1",
-    "ai": "^6.0.0-beta",
+    "ai": "^6.0.0",
     "commander": "^13.0.0",
     "dotenv": "^16.6.1",
     "file-type": "^21.1.0",
