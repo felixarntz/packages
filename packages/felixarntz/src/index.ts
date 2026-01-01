@@ -29,7 +29,6 @@ const fetchAndParseContent = async (): Promise<string> => {
 
   const introText = parseHtml(html, 'felixarntz-intro');
   const socialLinksText = parseHtmlLinks(html, 'felixarntz-social');
-  const websiteText = `Visit my website @ ${WEBSITE_DOMAIN}`;
   const projectsText = parseHtmlLinks(html, 'felixarntz-projects');
   const latestPostsText = removeCategoryLinks(
     parseHtmlLinks(html, 'felixarntz-latest-posts'),
@@ -38,8 +37,10 @@ const fetchAndParseContent = async (): Promise<string> => {
   const parts: string[] = [introText];
   if (socialLinksText) {
     parts.push(`Connect with me on socials:\n\n${socialLinksText}`);
+    parts.push(`Or visit my website @ ${WEBSITE_DOMAIN}`);
+  } else {
+    parts.push(`Visit my website @ ${WEBSITE_DOMAIN}`);
   }
-  parts.push(websiteText);
   if (projectsText) {
     parts.push(
       `Some of the projects I have contributed to:\n\n${projectsText}`,
