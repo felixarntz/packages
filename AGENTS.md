@@ -15,6 +15,11 @@ This monorepo contains various NPM packages maintained by Felix Arntz, primarily
 *   `pnpm format:fix` - Auto-fix formatting.
 *   `pnpm typecheck` - Run TypeScript type checking.
 
+To run any of these commands for a specific package, use `pnpm --filter <package> <command>`. Examples:
+
+- `pnpm --filter felixarntz test` - Run tests only for the `felixarntz` package
+- `pnpm --filter @felixarntz/wp-plugins-cli build` - Build only the `@felixarntz/wp-plugins-cli` package
+
 For a comprehensive list and more details, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## Coding Standards & Compatibility Constraints
