@@ -46,17 +46,6 @@ The project is a collection of independent packages that may share common utilit
 *   **CLI Tools:** `ai-cli`, `felixarntz`, and `wp-plugins-cli` are executable CLI applications.
 *   **Shared Libraries:** `cli-utils` provides common functionality used by the CLI tools, such as logging, file system operations, and command-line interface helpers.
 
-## Directory Structure
-
-*   `packages/` - Contains all the packages in the monorepo.
-    *   `packages/ai-cli/` - CLI tool for AI-related tasks (image generation, text generation, etc.).
-    *   `packages/cli-utils/` - Shared utilities for building CLI applications.
-    *   `packages/felixarntz/` - Digital business card CLI tool that displays bio and social links.
-    *   `packages/wp-plugins-cli/` - CLI tool for managing WordPress plugins.
-*   `CONTRIBUTING.md` - Guidelines for contributing to the project.
-*   `package.json` - Root configuration and scripts.
-*   `pnpm-workspace.yaml` - Workspace configuration.
-
 ## Git Repo
 
 The main branch for this project is called "main".
