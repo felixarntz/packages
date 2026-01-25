@@ -26,25 +26,25 @@
     "url": "https://github.com/felixarntz/packages/issues"
   },
   "dependencies": {
-    "@ai-sdk/google": "^3.0.0",
-    "@ai-sdk/openai": "^3.0.0",
-    "@ai-sdk/provider": "^3.0.0",
-    "@ai-sdk/xai": "^3.0.0",
-    "@commander-js/extra-typings": "^13.0.0",
+    "@ai-sdk/google": "^3.0.13",
+    "@ai-sdk/openai": "^3.0.18",
+    "@ai-sdk/provider": "^3.0.5",
+    "@ai-sdk/xai": "^3.0.34",
+    "@commander-js/extra-typings": "^13.1.0",
     "@felixarntz/cli-utils": "workspace:^",
-    "@google/genai": "^1.29.1",
-    "ai": "^6.0.5",
+    "@google/genai": "^1.38.0",
+    "ai": "^6.0.49",
     "ai-code-agents": "^0.2.0",
-    "commander": "^13.0.0",
+    "commander": "^13.1.0",
     "dotenv": "^16.6.1",
-    "file-type": "^21.1.0",
+    "file-type": "^21.3.0",
     "sharp": "^0.34.5",
-    "zod": "^4.1.12"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "tsup": "^8.5.0",
-    "typescript": "^5.3.3",
-    "vitest": "^3.1.1"
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
   },
   "scripts": {
     "build": "tsup",
