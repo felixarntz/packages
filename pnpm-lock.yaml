@@ -38,6 +38,9 @@ importers:
       ai:
         specifier: ^6.0.5
         version: 6.0.5(zod@4.3.4)
+      ai-code-agents:
+        specifier: ^0.2.0
+        version: 0.2.0(ai@6.0.5(zod@4.3.4))(zod@4.3.4)
       commander:
         specifier: ^13.1.0
         version: 13.1.0
@@ -136,8 +139,11 @@ importers:
         specifier: ^1.29.1
         version: 1.29.1
       ai:
-        specifier: ^6.0.0
+        specifier: ^6.0.5
         version: 6.0.5(zod@4.1.12)
+      ai-code-agents:
+        specifier: ^0.2.0
+        version: 0.2.0(ai@6.0.5(zod@4.1.12))(zod@4.1.12)
       commander:
         specifier: ^13.0.0
         version: 13.1.0
@@ -233,6 +239,13 @@ importers:
         version: 3.2.4(@types/node@24.10.4)
 
 packages:
+
+  '@ai-code-agents/environment-utils@0.1.0':
+    resolution: {integrity: sha512-s1JuROrgLZ4ndFmP+frVCmZuKPbLV12abr2nmM5T9Q2EJLcono9qxivYcy1ldNMACzOnxOAS50IxdPDDwgh2yA==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      ai: ^6.0.0
+      zod: ^4.0.0
 
   '@ai-sdk/gateway@3.0.4':
     resolution: {integrity: sha512-OlccjNYZ5+4FaNyvs0kb3N5H6U/QCKlKPTGsgUo8IZkqfMQu8ALI1XD6l/BCuTKto+OO9xUPObT/W7JhbqJ5nA==}
@@ -1566,6 +1579,13 @@ packages:
   agent-base@7.1.4:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
     engines: {node: '>= 14'}
+
+  ai-code-agents@0.2.0:
+    resolution: {integrity: sha512-N6LZHXmCu0+zudzrajXZRqbXzJU3UJ5b8Ou/mDi0faqEtP+PcO+1sYDNE/wfEJJiCumjAj3PeFBihd7EkVhl3A==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      ai: ^6.0.0
+      zod: ^4.0.0
 
   ai@6.0.5:
     resolution: {integrity: sha512-CKL3dDHedWskC6EY67LrULonZBU9vL+Bwa+xQEcprBhJfxpogntG3utjiAkYuy5ZQatyWk+SmWG8HLvcnhvbRg==}
@@ -3192,6 +3212,18 @@ packages:
 
 snapshots:
 
+  '@ai-code-agents/environment-utils@0.1.0(ai@6.0.5(zod@4.1.12))(zod@4.1.12)':
+    dependencies:
+      '@ai-sdk/provider-utils': 4.0.2(zod@4.1.12)
+      ai: 6.0.5(zod@4.1.12)
+      zod: 4.1.12
+
+  '@ai-code-agents/environment-utils@0.1.0(ai@6.0.5(zod@4.3.4))(zod@4.3.4)':
+    dependencies:
+      '@ai-sdk/provider-utils': 4.0.2(zod@4.3.4)
+      ai: 6.0.5(zod@4.3.4)
+      zod: 4.3.4
+
   '@ai-sdk/gateway@3.0.4(zod@4.1.12)':
     dependencies:
       '@ai-sdk/provider': 3.0.1
@@ -4312,6 +4344,20 @@ snapshots:
   acorn@8.15.0: {}
 
   agent-base@7.1.4: {}
+
+  ai-code-agents@0.2.0(ai@6.0.5(zod@4.1.12))(zod@4.1.12):
+    dependencies:
+      '@ai-code-agents/environment-utils': 0.1.0(ai@6.0.5(zod@4.1.12))(zod@4.1.12)
+      '@ai-sdk/provider-utils': 4.0.2(zod@4.1.12)
+      ai: 6.0.5(zod@4.1.12)
+      zod: 4.1.12
+
+  ai-code-agents@0.2.0(ai@6.0.5(zod@4.3.4))(zod@4.3.4):
+    dependencies:
+      '@ai-code-agents/environment-utils': 0.1.0(ai@6.0.5(zod@4.3.4))(zod@4.3.4)
+      '@ai-sdk/provider-utils': 4.0.2(zod@4.3.4)
+      ai: 6.0.5(zod@4.3.4)
+      zod: 4.3.4
 
   ai@6.0.5(zod@4.1.12):
     dependencies:

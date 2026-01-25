@@ -39,6 +39,12 @@ import {
   handler as upscaleImageHandler,
   options as upscaleImageOptions,
 } from './commands/upscale-image';
+import {
+  name as explainCodeName,
+  description as explainCodeDescription,
+  handler as explainCodeHandler,
+  options as explainCodeOptions,
+} from './commands/explain-code';
 
 /**
  * Initializes the application.
@@ -75,6 +81,11 @@ function initialize() {
     .alias('imageupscale')
     .description(upscaleImageDescription)
     .action(withErrorHandling(upscaleImageHandler));
+
+  withOptions(program.command(explainCodeName), explainCodeOptions)
+    .alias('codeexp')
+    .description(explainCodeDescription)
+    .action(withErrorHandling(explainCodeHandler));
 }
 
 /**
