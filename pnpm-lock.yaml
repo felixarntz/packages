@@ -4,6 +4,27 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@commander-js/extra-typings':
+      specifier: ^13.1.0
+      version: 13.1.0
+    commander:
+      specifier: ^13.1.0
+      version: 13.1.0
+    dotenv:
+      specifier: ^16.6.1
+      version: 16.6.1
+    tsup:
+      specifier: ^8.5.1
+      version: 8.5.1
+    typescript:
+      specifier: ^5.9.3
+      version: 5.9.3
+    vitest:
+      specifier: ^3.2.4
+      version: 3.2.4
+
 importers:
 
   .:
@@ -50,14 +71,17 @@ importers:
       prettier:
         specifier: ^3.8.1
         version: 3.8.1
+      syncpack:
+        specifier: ^15.2.0
+        version: 15.2.0
       tsup:
-        specifier: ^8.5.1
+        specifier: 'catalog:'
         version: 8.5.1(postcss@8.5.6)(typescript@5.9.3)
       typescript-eslint:
         specifier: ^8.53.1
         version: 8.53.1(eslint@9.39.2)(typescript@5.9.3)
       vitest:
-        specifier: ^3.2.4
+        specifier: 'catalog:'
         version: 3.2.4(@types/node@24.10.9)
 
   packages/ai-cli:
@@ -75,7 +99,7 @@ importers:
         specifier: ^3.0.34
         version: 3.0.34(zod@4.3.6)
       '@commander-js/extra-typings':
-        specifier: ^13.1.0
+        specifier: 'catalog:'
         version: 13.1.0(commander@13.1.0)
       '@felixarntz/cli-utils':
         specifier: workspace:^
@@ -90,10 +114,10 @@ importers:
         specifier: ^0.2.0
         version: 0.2.0(ai@6.0.49(zod@4.3.6))(zod@4.3.6)
       commander:
-        specifier: ^13.1.0
+        specifier: 'catalog:'
         version: 13.1.0
       dotenv:
-        specifier: ^16.6.1
+        specifier: 'catalog:'
         version: 16.6.1
       file-type:
         specifier: ^21.3.0
@@ -106,53 +130,53 @@ importers:
         version: 4.3.6
     devDependencies:
       tsup:
-        specifier: ^8.5.1
+        specifier: 'catalog:'
         version: 8.5.1(postcss@8.5.6)(typescript@5.9.3)
       typescript:
-        specifier: ^5.9.3
+        specifier: 'catalog:'
         version: 5.9.3
       vitest:
-        specifier: ^3.2.4
+        specifier: 'catalog:'
         version: 3.2.4(@types/node@25.0.10)
 
   packages/cli-utils:
     dependencies:
       '@commander-js/extra-typings':
-        specifier: ^13.1.0
+        specifier: 'catalog:'
         version: 13.1.0(commander@13.1.0)
       '@inquirer/prompts':
         specifier: ^7.10.1
         version: 7.10.1(@types/node@25.0.10)
       commander:
-        specifier: ^13.1.0
+        specifier: 'catalog:'
         version: 13.1.0
     devDependencies:
       tsup:
-        specifier: ^8.5.1
+        specifier: 'catalog:'
         version: 8.5.1(postcss@8.5.6)(typescript@5.9.3)
       typescript:
-        specifier: ^5.9.3
+        specifier: 'catalog:'
         version: 5.9.3
       vitest:
-        specifier: ^3.2.4
+        specifier: 'catalog:'
         version: 3.2.4(@types/node@25.0.10)
 
   packages/felixarntz:
     devDependencies:
       tsup:
-        specifier: ^8.5.1
+        specifier: 'catalog:'
         version: 8.5.1(postcss@8.5.6)(typescript@5.9.3)
       typescript:
-        specifier: ^5.9.3
+        specifier: 'catalog:'
         version: 5.9.3
       vitest:
-        specifier: ^3.2.4
+        specifier: 'catalog:'
         version: 3.2.4(@types/node@25.0.10)
 
   packages/wp-plugins-cli:
     dependencies:
       '@commander-js/extra-typings':
-        specifier: ^13.1.0
+        specifier: 'catalog:'
         version: 13.1.0(commander@13.1.0)
       '@felixarntz/cli-utils':
         specifier: workspace:^
@@ -161,10 +185,10 @@ importers:
         specifier: ^22.0.1
         version: 22.0.1
       commander:
-        specifier: ^13.1.0
+        specifier: 'catalog:'
         version: 13.1.0
       dotenv:
-        specifier: ^16.6.1
+        specifier: 'catalog:'
         version: 16.6.1
       fast-glob:
         specifier: ^3.3.3
@@ -174,13 +198,13 @@ importers:
         version: 3.30.0
     devDependencies:
       tsup:
-        specifier: ^8.5.1
+        specifier: 'catalog:'
         version: 8.5.1(postcss@8.5.6)(typescript@5.9.3)
       typescript:
-        specifier: ^5.9.3
+        specifier: 'catalog:'
         version: 5.9.3
       vitest:
-        specifier: ^3.2.4
+        specifier: 'catalog:'
         version: 3.2.4(@types/node@25.0.10)
 
 packages:
@@ -2582,6 +2606,51 @@ packages:
   supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
+
+  syncpack-darwin-arm64@15.2.0:
+    resolution: {integrity: sha512-7bvEQO8vwMen5Jn0HyHSj3Yke4ZOtle44XRKNPR4znY0p6RIJHxADLOT7yETYtkM7e2Oupi7WoGpFYT50iwaxQ==}
+    cpu: [arm64]
+    os: [darwin]
+
+  syncpack-darwin-x64@15.2.0:
+    resolution: {integrity: sha512-Wvry6LE/idjsKlOsNk3syNWoQqeWB/hLYKqY5rIivvL+FGJOsYWUADwSTz8ThflNTefoIRvohapLlvt5ffA75g==}
+    cpu: [x64]
+    os: [darwin]
+
+  syncpack-linux-arm64-musl@15.2.0:
+    resolution: {integrity: sha512-yuvghI2+TBQmYX3AsrVFQOhgq84QyRePFVQSRQp25I5BADppts1I/3ZQ06WITzBrKsOsbm2Ds74UhKdBSIW6Ug==}
+    cpu: [arm64]
+    os: [linux]
+
+  syncpack-linux-arm64@15.2.0:
+    resolution: {integrity: sha512-jBLPNEAyTBbGXJCMqnMY0KJg5MuihpHRod/ZihddLZin18/hk82GYXm9wk2YchFM3CwKD8Vti2SHxSweWUOcVg==}
+    cpu: [arm64]
+    os: [linux]
+
+  syncpack-linux-x64-musl@15.2.0:
+    resolution: {integrity: sha512-F75wqGiW6l1amXXK0JSmtN6eg5syUz1SHMUNw6FkSBqZirdvltz/iBZc76Ms6ZMbleThV/QFZOinH0CL3bAKTg==}
+    cpu: [x64]
+    os: [linux]
+
+  syncpack-linux-x64@15.2.0:
+    resolution: {integrity: sha512-5B3iqrdRKAUvXhmUAKbQHiJ3VpgKfkRR1yOpdxEBZmj18nopKwMME5EEVD7vaHvuqzajjyFmSdXaxRM1JIX0pg==}
+    cpu: [x64]
+    os: [linux]
+
+  syncpack-windows-arm64@15.2.0:
+    resolution: {integrity: sha512-vzFz5WfHN6wgSBjmWxUoHRAIjKseCLClXxIxxYTnWfFKkP6vtnTJKV9/LM7HK3cAfz1GDa49dNL70DrYFMyeGw==}
+    cpu: [arm64]
+    os: [win32]
+
+  syncpack-windows-x64@15.2.0:
+    resolution: {integrity: sha512-i5Ygq8GNPAuTZoftmR8VBdYsWKmpOcKKGKZkPqLPtEOuiSp56Dgievm+asR2DLMtm/qwkFE+tqYTVlKWw133Rw==}
+    cpu: [x64]
+    os: [win32]
+
+  syncpack@15.2.0:
+    resolution: {integrity: sha512-bRknhaR2FaVlFO62U8jy5+KYlZx3j8wTD4Z51GdzPWPfGY9Zj8xXwC07TYqz8ypQLaEXT4yB6xrRyi/GaiBsZQ==}
+    engines: {node: '>=14.17.0'}
+    hasBin: true
 
   test-exclude@7.0.1:
     resolution: {integrity: sha512-pFYqmTw68LXVjeWJMST4+borgQP2AyMNbg1BpZh9LbyhUeNkeaPF9gzfPGUAnSMV3qPYdWUwDIjjCLiSDOl7vg==}
@@ -5356,6 +5425,41 @@ snapshots:
       has-flag: 4.0.0
 
   supports-preserve-symlinks-flag@1.0.0: {}
+
+  syncpack-darwin-arm64@15.2.0:
+    optional: true
+
+  syncpack-darwin-x64@15.2.0:
+    optional: true
+
+  syncpack-linux-arm64-musl@15.2.0:
+    optional: true
+
+  syncpack-linux-arm64@15.2.0:
+    optional: true
+
+  syncpack-linux-x64-musl@15.2.0:
+    optional: true
+
+  syncpack-linux-x64@15.2.0:
+    optional: true
+
+  syncpack-windows-arm64@15.2.0:
+    optional: true
+
+  syncpack-windows-x64@15.2.0:
+    optional: true
+
+  syncpack@15.2.0:
+    optionalDependencies:
+      syncpack-darwin-arm64: 15.2.0
+      syncpack-darwin-x64: 15.2.0
+      syncpack-linux-arm64: 15.2.0
+      syncpack-linux-arm64-musl: 15.2.0
+      syncpack-linux-x64: 15.2.0
+      syncpack-linux-x64-musl: 15.2.0
+      syncpack-windows-arm64: 15.2.0
+      syncpack-windows-x64: 15.2.0
 
   test-exclude@7.0.1:
     dependencies:

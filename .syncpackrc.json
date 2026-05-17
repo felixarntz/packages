@@ -1,0 +1,28 @@
+{
+  "$schema": "./node_modules/syncpack/schema.json",
+  "versionGroups": [
+    {
+      "label": "Internal monorepo packages must use workspace:^ protocol",
+      "dependencies": ["$LOCAL"],
+      "dependencyTypes": ["prod", "dev"],
+      "pinVersion": "workspace:^"
+    },
+    {
+      "label": "Shared deps must come from the catalog",
+      "dependencies": [
+        "@commander-js/extra-typings",
+        "commander",
+        "dotenv",
+        "tsup",
+        "typescript",
+        "vitest"
+      ],
+      "dependencyTypes": ["prod", "dev"],
+      "policy": "catalog"
+    },
+    {
+      "label": "Ignore everything else",
+      "isIgnored": true
+    }
+  ]
+}

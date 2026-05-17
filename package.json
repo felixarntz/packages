@@ -32,9 +32,10 @@
     "globals": "^16.5.0",
     "mock-fs": "^5.5.0",
     "prettier": "^3.8.1",
-    "tsup": "^8.5.1",
+    "syncpack": "^15.2.0",
+    "tsup": "catalog:",
     "typescript-eslint": "^8.53.1",
-    "vitest": "^3.2.4"
+    "vitest": "catalog:"
   },
   "scripts": {
     "ai": "DEBUG=true node ./packages/ai-cli/dist/ai-cli.js",
@@ -48,6 +49,7 @@
     "format:fix": "prettier --experimental-cli --write packages",
     "test": "pnpm --recursive test",
     "test:ci": "pnpm --recursive test:ci",
-    "typecheck": "pnpm --recursive typecheck"
+    "typecheck": "pnpm --recursive typecheck",
+    "check:deps": "syncpack lint"
   }
 }

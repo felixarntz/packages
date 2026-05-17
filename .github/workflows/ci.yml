@@ -37,6 +37,30 @@ jobs:
       - name: Run ESLint check
         run: pnpm lint:ci
 
+  deps:
+    name: 'Dependencies (Syncpack) - Node.js 22'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Syncpack check
+        run: pnpm check:deps
+
   format:
     name: 'Format (Prettier) - Node.js 22'
     runs-on: ubuntu-latest

@@ -26,18 +26,18 @@
     "url": "https://github.com/felixarntz/packages/issues"
   },
   "dependencies": {
-    "@commander-js/extra-typings": "^13.1.0",
+    "@commander-js/extra-typings": "catalog:",
     "@felixarntz/cli-utils": "workspace:^",
     "@octokit/rest": "^22.0.1",
-    "commander": "^13.1.0",
-    "dotenv": "^16.6.1",
+    "commander": "catalog:",
+    "dotenv": "catalog:",
     "fast-glob": "^3.3.3",
     "simple-git": "^3.30.0"
   },
   "devDependencies": {
-    "tsup": "^8.5.1",
-    "typescript": "^5.9.3",
-    "vitest": "^3.2.4"
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "scripts": {
     "build": "tsup",
