@@ -1,6 +1,6 @@
 {
   "name": "@felixarntz/wp-plugins-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI with various tools for WordPress plugin maintenance",
   "license": "MIT",
   "type": "module",
