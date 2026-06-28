@@ -13,6 +13,6 @@ catalog:
   dotenv: ^16.6.1
   tsup: ^8.5.1
   typescript: ^6.0.3
-  vitest: ^3.2.4
+  vitest: ^3.2.6
 
 minimumReleaseAge: 2880 # 2 days
