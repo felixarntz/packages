@@ -17,7 +17,7 @@
         "typescript",
         "vitest"
       ],
-      "dependencyTypes": ["prod", "dev"],
+      "dependencyTypes": ["prod", "dev", "peer"],
       "policy": "catalog"
     },
     {

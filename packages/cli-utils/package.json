@@ -23,11 +23,15 @@
     "url": "https://github.com/felixarntz/packages/issues"
   },
   "dependencies": {
+    "@inquirer/prompts": "^7.10.1"
+  },
+  "peerDependencies": {
     "@commander-js/extra-typings": "catalog:",
-    "@inquirer/prompts": "^7.10.1",
     "commander": "catalog:"
   },
   "devDependencies": {
+    "@commander-js/extra-typings": "catalog:",
+    "commander": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
