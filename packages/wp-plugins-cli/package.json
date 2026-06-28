@@ -32,7 +32,7 @@
     "commander": "catalog:",
     "dotenv": "catalog:",
     "fast-glob": "^3.3.3",
-    "simple-git": "^3.30.0"
+    "simple-git": "^3.36.0"
   },
   "devDependencies": {
     "tsup": "catalog:",
