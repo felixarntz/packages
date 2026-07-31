@@ -67,10 +67,10 @@ interface CommandConfig {
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
   const config: CommandConfig = {
-    prompt: String(opt.prompt),
-    model: String(opt.model),
-    number: Number(opt.number ?? 1),
-    output: String(opt.output ?? "output"),
+    prompt: String(opt["prompt"]),
+    model: String(opt["model"]),
+    number: Number(opt["number"] ?? 1),
+    output: String(opt["output"] ?? "output"),
   };
   return config;
 };

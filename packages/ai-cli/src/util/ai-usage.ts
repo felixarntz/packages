@@ -81,13 +81,16 @@ export function logCost(
     | ImageModelV3ProviderMetadata
     | undefined
 ): void {
-  if (typeof providerMetadata?.gateway !== "object") {
+  if (typeof providerMetadata?.["gateway"] !== "object") {
     return;
   }
 
-  const gatewayMetadata = providerMetadata.gateway as Record<string, JSONValue>;
+  const gatewayMetadata = providerMetadata["gateway"] as Record<
+    string,
+    JSONValue
+  >;
 
-  if (gatewayMetadata.cost !== undefined) {
-    logger.debug(`Cost: $${gatewayMetadata.cost}`);
+  if (gatewayMetadata["cost"] !== undefined) {
+    logger.debug(`Cost: $${gatewayMetadata["cost"]}`);
   }
 }

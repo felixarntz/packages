@@ -41,10 +41,10 @@ interface CommandConfig {
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
   const config: CommandConfig = {
-    nesting: opt.nesting ? Number.parseInt(String(opt.nesting), 10) : 1,
+    nesting: opt["nesting"] ? Number.parseInt(String(opt["nesting"]), 10) : 1,
   };
-  if (opt.vendor) {
-    config.vendor = String(opt.vendor);
+  if (opt["vendor"]) {
+    config.vendor = String(opt["vendor"]);
   }
   return config;
 };

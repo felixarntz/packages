@@ -24,6 +24,10 @@ export type Commit = Awaited<
   ReturnType<Octokit["repos"]["listCommits"]>
 >["data"][number];
 
+export type PullRequest = Awaited<
+  ReturnType<Octokit["pulls"]["list"]>
+>["data"][number];
+
 /**
  * Detects the GitHub repository from the git remotes.
  *

@@ -66,9 +66,9 @@ interface CommandConfig {
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
   const config: CommandConfig = {
-    aspectRatio: String(opt.aspectRatio),
-    model: String(opt.model),
-    output: opt.output ? String(opt.output) : undefined,
+    aspectRatio: String(opt["aspectRatio"]),
+    model: String(opt["model"]),
+    output: opt["output"] ? String(opt["output"]) : undefined,
   };
   return config;
 };
@@ -175,9 +175,9 @@ Return only the pixel offset value.`;
   );
 
   if (cropDirection === "horizontal") {
-    left = result.output.left;
+    left = result.output["left"];
   } else {
-    top = result.output.top;
+    top = result.output["top"];
   }
 
   logger.info(

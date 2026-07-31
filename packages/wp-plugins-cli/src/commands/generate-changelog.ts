@@ -19,6 +19,7 @@ import {
   getPaginatedPullRequestCommits,
   getPaginatedPullRequests,
   getPaginatedTags,
+  type PullRequest,
 } from "../util/github";
 
 export const name = "generate-changelog";
@@ -63,11 +64,11 @@ interface CommandConfig {
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
   const config: CommandConfig = {};
-  if (opt.repository) {
-    config.repository = String(opt.repository);
+  if (opt["repository"]) {
+    config.repository = String(opt["repository"]);
   }
-  if (opt.tag) {
-    config.tag = String(opt.tag);
+  if (opt["tag"]) {
+    config.tag = String(opt["tag"]);
   }
   return config;
 };
@@ -93,7 +94,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     );
   }
 
-  const token = process.env.GITHUB_TOKEN;
+  const token = process.env["GITHUB_TOKEN"];
   if (!token) {
     throw new Error("GITHUB_TOKEN not found in environment variables");
   }
@@ -417,7 +418,7 @@ const removePrCommitsFromEntries = async (
 const applyPullRequestToEntries = async (
   octokit: Octokit,
   githubRepository: GithubRepository,
-  pr: Awaited<ReturnType<typeof getPaginatedPullRequests>>[number][number],
+  pr: PullRequest,
   commitShaLookup: IndexLookup,
   entriesWithPrs: Array<ChangelogEntry | null>
 ): Promise<void> => {

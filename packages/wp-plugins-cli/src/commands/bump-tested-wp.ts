@@ -38,7 +38,7 @@ interface CommandConfig {
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
   const config: CommandConfig = {
-    version: String(opt.version),
+    version: String(opt["version"]),
   };
   return config;
 };

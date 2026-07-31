@@ -47,8 +47,8 @@ interface CommandConfig {
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
   const config: CommandConfig = {
-    format: (opt.format as "jpeg" | "webp" | "avif" | "png") ?? "jpeg",
-    output: opt.output ? String(opt.output) : undefined,
+    format: (opt["format"] as "jpeg" | "webp" | "avif" | "png") ?? "jpeg",
+    output: opt["output"] ? String(opt["output"]) : undefined,
   };
   return config;
 };

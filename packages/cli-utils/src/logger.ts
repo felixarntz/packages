@@ -49,13 +49,11 @@ const formatLogMessage = (text: string, level: LogLevel): string => {
 
 const DEFAULT_LOG_LEVEL = LogLevel.INFO;
 let CURRENT_LOG_LEVEL: LogLevel = DEFAULT_LOG_LEVEL;
-// biome-ignore lint/complexity/useLiteralKeys: noPropertyAccessFromIndexSignature requires bracket notation
 if (
   process.env["NODE_ENV"] === "development" ||
   process.env["DEBUG"] === "true"
 ) {
   CURRENT_LOG_LEVEL = LogLevel.DEBUG;
-  // biome-ignore lint/complexity/useLiteralKeys: noPropertyAccessFromIndexSignature requires bracket notation
 } else if (process.env["SILENT"] === "true") {
   CURRENT_LOG_LEVEL = LogLevel.SILENT;
 }

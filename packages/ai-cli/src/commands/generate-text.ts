@@ -63,20 +63,20 @@ interface CommandConfig {
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
   const config: CommandConfig = {
-    prompt: String(opt.prompt),
-    model: String(opt.model),
+    prompt: String(opt["prompt"]),
+    model: String(opt["model"]),
   };
-  if (opt.temperature !== undefined) {
-    config.temperature = Number(opt.temperature);
+  if (opt["temperature"] !== undefined) {
+    config.temperature = Number(opt["temperature"]);
   }
-  if (opt.system) {
-    config.system = String(opt.system);
+  if (opt["system"]) {
+    config.system = String(opt["system"]);
   }
-  if (opt.thinking !== undefined) {
-    config.thinking = Boolean(opt.thinking);
+  if (opt["thinking"] !== undefined) {
+    config.thinking = Boolean(opt["thinking"]);
   }
-  if (opt.noThinking !== undefined) {
-    config.thinking = !opt.noThinking;
+  if (opt["noThinking"] !== undefined) {
+    config.thinking = !opt["noThinking"];
   }
   return config;
 };
