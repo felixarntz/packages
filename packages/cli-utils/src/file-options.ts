@@ -1,15 +1,15 @@
 import {
+  camelCaseFlagName,
   type Option,
   type OptionsInput,
   parseFlagName,
-  camelCaseFlagName,
-} from './commander';
-import { readTextFile } from './fs';
-import { normalizeAbsolutePath } from './paths';
+} from "./commander";
+import { readTextFile } from "./fs";
+import { normalizeAbsolutePath } from "./paths";
 
 export const parseFileOptions = async (
   optionsInput: OptionsInput,
-  fileOptionNames: string[],
+  fileOptionNames: string[]
 ): Promise<OptionsInput> => {
   const completeOptionsInput: OptionsInput = { ...optionsInput };
 
@@ -36,20 +36,20 @@ export const parseFileOptions = async (
 export const parseAndValidateFileOptions = async (
   options: Option[],
   optionsInput: OptionsInput,
-  fileOptionNames: string[],
+  fileOptionNames: string[]
 ): Promise<OptionsInput> => {
   const completeOptionsInput = await parseFileOptions(
     optionsInput,
-    fileOptionNames,
+    fileOptionNames
   );
 
-  options.forEach((option) => {
+  for (const option of options) {
     if (option.positional) {
-      return;
+      continue;
     }
 
     if (!option.required && option.defaults === undefined) {
-      return;
+      continue;
     }
 
     const argname = parseFlagName(option.argname);
@@ -60,36 +60,36 @@ export const parseAndValidateFileOptions = async (
         throw new Error(`Missing required option: --${argname}`);
       }
     }
-  });
+  }
 
   return completeOptionsInput;
 };
 
 export const injectFileOptionsForCommander = (
   options: Option[],
-  fileOptionNames: string[],
+  fileOptionNames: string[]
 ): Option[] => {
   const fileOptionNamesMap = new Set(fileOptionNames);
 
   const newOptions: Option[] = [];
 
-  options.forEach((option) => {
+  for (const option of options) {
     if (
       option.positional ||
       !fileOptionNamesMap.has(parseFlagName(option.argname))
     ) {
       newOptions.push(option);
-      return;
+      continue;
     }
 
     const argname = parseFlagName(option.argname);
 
     const modifiedOption: Option = { ...option };
-    delete modifiedOption.required;
-    delete modifiedOption.defaults;
+    modifiedOption.required = undefined;
+    modifiedOption.defaults = undefined;
     newOptions.push(modifiedOption);
 
-    let newDescription = '';
+    let newDescription = "";
     if (option.description) {
       newDescription = `Path to a file containing the ${lowercaseFirstLetter(option.description)}`;
     } else {
@@ -102,7 +102,7 @@ export const injectFileOptionsForCommander = (
       description: newDescription,
       parse: (value: string) => normalizeAbsolutePath(value),
     });
-  });
+  }
 
   return newOptions;
 };

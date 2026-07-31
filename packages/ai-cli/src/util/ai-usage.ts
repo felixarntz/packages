@@ -1,14 +1,14 @@
-import type { LanguageModelUsage } from 'ai';
 import type {
-  LanguageModelV2Usage,
-  SharedV2ProviderMetadata,
   ImageModelV2ProviderMetadata,
-  LanguageModelV3Usage,
-  SharedV3ProviderMetadata,
   ImageModelV3ProviderMetadata,
   JSONValue,
-} from '@ai-sdk/provider';
-import { logger } from '@felixarntz/cli-utils';
+  LanguageModelV2Usage,
+  LanguageModelV3Usage,
+  SharedV2ProviderMetadata,
+  SharedV3ProviderMetadata,
+} from "@ai-sdk/provider";
+import { logger } from "@felixarntz/cli-utils";
+import type { LanguageModelUsage } from "ai";
 
 /**
  * Logs the token usage details from a language model response.
@@ -16,19 +16,19 @@ import { logger } from '@felixarntz/cli-utils';
  * @param tokenUsage - The token usage object containing input, output, reasoning (optional), and total token counts.
  */
 export function logTokenUsage(
-  tokenUsage: LanguageModelUsage | LanguageModelV2Usage | LanguageModelV3Usage,
+  tokenUsage: LanguageModelUsage | LanguageModelV2Usage | LanguageModelV3Usage
 ): void {
   let inputTokens: number | undefined;
   let outputTokens: number | undefined;
   let reasoningTokens: number | undefined;
   let totalTokens: number | undefined;
-  if (typeof tokenUsage.inputTokens === 'object') {
+  if (typeof tokenUsage.inputTokens === "object") {
     // V3 Usage.
     inputTokens = tokenUsage.inputTokens.total;
   } else {
     inputTokens = tokenUsage.inputTokens;
   }
-  if (typeof tokenUsage.outputTokens === 'object') {
+  if (typeof tokenUsage.outputTokens === "object") {
     // V3 Usage.
     outputTokens = tokenUsage.outputTokens.total;
     if (tokenUsage.outputTokens.reasoning !== undefined) {
@@ -38,7 +38,7 @@ export function logTokenUsage(
     outputTokens = tokenUsage.outputTokens;
 
     if (
-      'reasoningTokens' in tokenUsage &&
+      "reasoningTokens" in tokenUsage &&
       // eslint-disable-next-line @typescript-eslint/no-deprecated
       tokenUsage.reasoningTokens !== undefined
     ) {
@@ -46,7 +46,7 @@ export function logTokenUsage(
       reasoningTokens = tokenUsage.reasoningTokens;
     }
   }
-  if (!('totalTokens' in tokenUsage) || tokenUsage.totalTokens === undefined) {
+  if (!("totalTokens" in tokenUsage) || tokenUsage.totalTokens === undefined) {
     // V3 Usage.
     totalTokens =
       inputTokens !== undefined && outputTokens !== undefined
@@ -57,7 +57,7 @@ export function logTokenUsage(
   }
 
   const tokenUsageLogLines = [
-    `Token usage:`,
+    "Token usage:",
     `  Input tokens: ${inputTokens}`,
     `  Output tokens: ${outputTokens}`,
   ];
@@ -65,7 +65,7 @@ export function logTokenUsage(
     tokenUsageLogLines.push(`  Reasoning tokens: ${reasoningTokens}`);
   }
   tokenUsageLogLines.push(`  Total tokens: ${totalTokens}`);
-  logger.debug(tokenUsageLogLines.join('\n'));
+  logger.debug(tokenUsageLogLines.join("\n"));
 }
 
 /**
@@ -79,18 +79,15 @@ export function logCost(
     | ImageModelV2ProviderMetadata
     | SharedV3ProviderMetadata
     | ImageModelV3ProviderMetadata
-    | undefined,
+    | undefined
 ): void {
-  if (typeof providerMetadata?.['gateway'] !== 'object') {
+  if (typeof providerMetadata?.gateway !== "object") {
     return;
   }
 
-  const gatewayMetadata = providerMetadata['gateway'] as Record<
-    string,
-    JSONValue
-  >;
+  const gatewayMetadata = providerMetadata.gateway as Record<string, JSONValue>;
 
-  if (gatewayMetadata['cost'] !== undefined) {
-    logger.debug(`Cost: $${gatewayMetadata['cost']}`);
+  if (gatewayMetadata.cost !== undefined) {
+    logger.debug(`Cost: $${gatewayMetadata.cost}`);
   }
 }

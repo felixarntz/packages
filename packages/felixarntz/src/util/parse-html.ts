@@ -8,30 +8,33 @@
 export function parseHtml(html: string, id: string): string {
   const idRegex = new RegExp(
     `<([a-zA-Z0-9]+)\\s+[^>]*id\\s*=\\s*["']${id}["'][^>]*>`,
-    'i',
+    "i"
   );
   const match = html.match(idRegex);
 
   if (!match) {
-    return '';
+    return "";
   }
 
   const tagName = match[1];
-  const startIndex = match.index! + match[0].length;
+  const startIndex = (match.index ?? 0) + match[0].length;
   let depth = 1;
 
   // We need to find the closing tag matching this specific opening tag.
   // We scan forward from startIndex.
-  const tagRegex = new RegExp(`</?${tagName}\\b[^>]*>`, 'gi');
+  const tagRegex = new RegExp(`</?${tagName}\\b[^>]*>`, "gi");
   tagRegex.lastIndex = startIndex;
 
   let endIndex = -1;
-  let tagMatch;
 
-  while ((tagMatch = tagRegex.exec(html)) !== null) {
-    if (tagMatch[0].startsWith('</')) {
+  for (;;) {
+    const tagMatch = tagRegex.exec(html);
+    if (tagMatch === null) {
+      break;
+    }
+    if (tagMatch[0].startsWith("</")) {
       depth--;
-    } else if (!tagMatch[0].endsWith('/>')) {
+    } else if (!tagMatch[0].endsWith("/>")) {
       // Assume non-void if it's the same tag name as the container which has an ID (so likely a container)
       depth++;
     }
@@ -43,14 +46,14 @@ export function parseHtml(html: string, id: string): string {
   }
 
   if (endIndex === -1) {
-    return '';
+    return "";
   }
 
-  let content = html.substring(startIndex, endIndex);
+  let content = html.slice(startIndex, endIndex);
 
   // Placeholders
-  const BR_PLACEHOLDER = '___BR___';
-  const P_SEP_PLACEHOLDER = '___P_SEP___';
+  const BR_PLACEHOLDER = "___BR___";
+  const P_SEP_PLACEHOLDER = "___P_SEP___";
 
   // Replace <br> variants
   content = content.replace(/<br\s*\/?>/gi, BR_PLACEHOLDER);
@@ -59,28 +62,28 @@ export function parseHtml(html: string, id: string): string {
   content = content.replace(/<\/?p(\s+[^>]*)?>/gi, P_SEP_PLACEHOLDER);
 
   // Strip all other tags
-  content = content.replace(/<[^>]+>/g, '');
+  content = content.replace(/<[^>]+>/g, "");
 
   // Decode entities
   content = content
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
     .replace(/&quot;/g, '"')
     .replace(/&#8217;/g, "'")
     .replace(/&#039;/g, "'");
 
   // Collapse whitespace
-  content = content.replace(/\s+/g, ' ');
+  content = content.replace(/\s+/g, " ");
 
   // Restore placeholders
-  content = content.replace(new RegExp(BR_PLACEHOLDER, 'g'), '\n');
+  content = content.replace(new RegExp(BR_PLACEHOLDER, "g"), "\n");
 
   // Split by P separator
   const parts = content.split(P_SEP_PLACEHOLDER);
 
   const paragraphs = parts.map((p) => p.trim()).filter((p) => p.length > 0);
 
-  return paragraphs.join('\n\n');
+  return paragraphs.join("\n\n");
 }

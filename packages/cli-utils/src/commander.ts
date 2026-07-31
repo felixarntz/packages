@@ -1,8 +1,10 @@
 import type {
   CommandUnknownOpts,
   OptionValues,
-} from '@commander-js/extra-typings';
-import { logger } from './logger';
+} from "@commander-js/extra-typings";
+import { logger } from "./logger";
+
+const FLAG_NAME_REGEX = /--([a-zA-Z0-9-]+)/;
 
 export type HandlerArgs = [...unknown[], OptionValues, CommandUnknownOpts];
 
@@ -19,7 +21,7 @@ export const getArgs = (handlerArgs: HandlerArgs): string[] => {
 
 export const getVariadicArgs = (
   handlerArgs: HandlerArgs,
-  index: number,
+  index: number
 ): string[] => {
   if (handlerArgs.length <= index) {
     return [];
@@ -31,81 +33,76 @@ export const getOpt = (handlerArgs: HandlerArgs): OptionsInput => {
   if (handlerArgs.length <= 1) {
     return {};
   }
-  return handlerArgs[handlerArgs.length - 2] as OptionsInput;
+  return handlerArgs.at(-2) as OptionsInput;
 };
 
-export type Option = {
-  description: string;
+export interface Option {
   argname: string;
+  choices?: string[];
+  defaults?: string;
+  description: string;
+  parse?: (value: string) => string;
   positional?: boolean;
   required?: boolean;
-  defaults?: string;
-  choices?: string[];
-  parse?: (value: string) => string;
   variadic?: boolean; // For now, only supported for positional arguments.
+}
+
+const addPositionalArgument = (
+  command: CommandUnknownOpts,
+  { argname, required, defaults, parse, variadic, choices, description }: Option
+): void => {
+  const variadicSuffix = variadic ? "..." : "";
+  const argument = command.createArgument(
+    required
+      ? `<${argname}${variadicSuffix}>`
+      : `[${argname}${variadicSuffix}]`,
+    description
+  );
+  if (defaults) {
+    argument.default(defaults);
+  }
+  if (typeof parse === "function") {
+    if (variadic) {
+      argument.argParser((value: string, previous: string[]) => {
+        if (!(previous && Array.isArray(previous))) {
+          return [parse(value)];
+        }
+        return [...previous, parse(value)];
+      });
+    } else {
+      argument.argParser(parse);
+    }
+  }
+  if (choices) {
+    argument.choices(choices);
+  }
+  command.addArgument(argument);
 };
 
 export const withOptions = (
   command: CommandUnknownOpts,
-  options: Option[],
+  options: Option[]
 ): CommandUnknownOpts => {
-  options.forEach(
-    ({
-      description,
-      argname,
-      positional,
-      required,
-      defaults,
-      choices,
-      parse,
-      variadic,
-    }) => {
-      if (positional) {
-        const variadicSuffix = variadic ? '...' : '';
-        const argument = command.createArgument(
-          required
-            ? `<${argname}${variadicSuffix}>`
-            : `[${argname}${variadicSuffix}]`,
-          description,
-        );
-        if (defaults) {
-          argument.default(defaults);
-        }
-        if (typeof parse === 'function') {
-          if (variadic) {
-            argument.argParser((value: string, previous: string[]) => {
-              if (!previous || !Array.isArray(previous)) {
-                return [parse(value)];
-              }
-              return [...previous, parse(value)];
-            });
-          } else {
-            argument.argParser(parse);
-          }
-        }
-        if (choices) {
-          argument.choices(choices);
-        }
-        command.addArgument(argument);
-        return;
-      }
-
-      const option = command.createOption(argname, description);
-      if (required) {
-        option.makeOptionMandatory(true);
-      }
-      if (defaults) {
-        option.default(defaults);
-      }
-      if (typeof parse === 'function') {
-        option.argParser(parse);
-      }
-      if (choices) {
-        option.choices(choices);
-      }
-      command.addOption(option);
-    },
-  );
+  for (const opt of options) {
+    if (opt.positional) {
+      addPositionalArgument(command, opt);
+      continue;
+    }
+    const option = command.createOption(opt.argname, opt.description);
+    if (opt.required) {
+      option.makeOptionMandatory(true);
+    }
+    if (opt.defaults) {
+      option.default(opt.defaults);
+    }
+    if (typeof opt.parse === "function") {
+      option.argParser(opt.parse);
+    }
+    if (opt.choices) {
+      option.choices(opt.choices);
+    }
+    command.addOption(option);
+  }
   return command;
 };
 
@@ -126,7 +123,7 @@ export const withErrorHandling =
   };
 
 export const parseFlagName = (argname: string): string => {
-  const match = argname.match(/--([a-zA-Z0-9-]+)/);
+  const match = argname.match(FLAG_NAME_REGEX);
   if (match) {
     return match[1];
   }
@@ -134,7 +131,7 @@ export const parseFlagName = (argname: string): string => {
 };
 
 export const isBooleanFlag = (argname: string): boolean =>
-  argname.includes('--') && !argname.includes('<') && !argname.includes('[');
+  argname.includes("--") && !argname.includes("<") && !argname.includes("[");
 
 export const camelCaseFlagName = (flagName: string): string =>
   flagName.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());

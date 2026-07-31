@@ -1,21 +1,21 @@
-import { input, select, confirm } from '@inquirer/prompts';
+import { confirm, input, select } from "@inquirer/prompts";
 import {
+  camelCaseFlagName,
+  isBooleanFlag,
   type Option,
   type OptionsInput,
   parseFlagName,
-  isBooleanFlag,
-  camelCaseFlagName,
-} from './commander';
+} from "./commander";
 
-export const promptMissingOption = async (
+export const promptMissingOption = (
   option: Option,
-  inputValue?: string | boolean,
+  inputValue?: string | boolean
 ): Promise<string | boolean> => {
   if (inputValue !== undefined) {
-    return inputValue;
+    return Promise.resolve(inputValue);
   }
 
-  let message = '';
+  let message = "";
   if (option.description) {
     if (isBooleanFlag(option.argname)) {
       message = `Set ${lowercaseFirstLetter(option.description)}`;
@@ -62,7 +62,7 @@ export const promptMissingOption = async (
 export const promptMissingOptions = async (
   options: Option[],
   optionsInput: OptionsInput,
-  inquireBooleanFlags?: boolean,
+  inquireBooleanFlags?: boolean
 ): Promise<OptionsInput> => {
   const completeOptionsInput: OptionsInput = { ...optionsInput };
 
@@ -76,7 +76,7 @@ export const promptMissingOptions = async (
     const argname = parseFlagName(option.argname);
     completeOptionsInput[argname] = await promptMissingOption(
       option,
-      optionsInput[camelCaseFlagName(argname)],
+      optionsInput[camelCaseFlagName(argname)]
     );
   }
 
@@ -85,7 +85,7 @@ export const promptMissingOptions = async (
 
 export const stripOptionFieldsForCommander = (
   option: Option,
-  inquireBooleanFlags?: boolean,
+  inquireBooleanFlags?: boolean
 ): Option => {
   if (option.positional) {
     return option;

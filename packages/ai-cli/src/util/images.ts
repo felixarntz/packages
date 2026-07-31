@@ -1,24 +1,24 @@
 import {
+  logger,
+  normalizeAbsolutePath,
   readBinaryFile,
   writeBinaryFile,
-  normalizeAbsolutePath,
-  logger,
-} from '@felixarntz/cli-utils';
-import { fileTypeFromBuffer } from 'file-type';
+} from "@felixarntz/cli-utils";
+import { fileTypeFromBuffer } from "file-type";
 
-export type ImageData = {
+export interface ImageData {
   buffer: Buffer<ArrayBufferLike>;
-  mime: string;
   ext: string;
-};
+  mime: string;
+}
 
-type ImageOutputData = {
-  fileBase: string;
+interface ImageOutputData {
   buffer: Buffer<ArrayBufferLike>;
-  mime?: string;
   ext?: string;
+  fileBase: string;
   index?: number;
-};
+  mime?: string;
+}
 
 /**
  * Reads an image file from the specified file path and returns its data.
@@ -33,9 +33,9 @@ export async function readImageFile(filePath: string): Promise<ImageData> {
   if (!fileType) {
     throw new Error(`Unable to determine file type of ${filePath}`);
   }
-  if (!fileType.mime.startsWith('image/')) {
+  if (!fileType.mime.startsWith("image/")) {
     throw new Error(
-      `File ${filePath} is not an image (detected type: ${fileType.mime})`,
+      `File ${filePath} is not an image (detected type: ${fileType.mime})`
     );
   }
 
@@ -56,33 +56,33 @@ export async function readImageFile(filePath: string): Promise<ImageData> {
  * @returns A promise that resolves to the absolute file path of the written image file.
  */
 export async function writeImageFile(
-  outputData: ImageOutputData,
+  outputData: ImageOutputData
 ): Promise<string> {
-  let extension = 'png';
+  let extension = "png";
   if (outputData.ext) {
     extension = outputData.ext;
   } else if (outputData.mime) {
     extension =
-      outputData.mime === 'image/jpeg' ? 'jpg' : outputData.mime.split('/')[1];
+      outputData.mime === "image/jpeg" ? "jpg" : outputData.mime.split("/")[1];
   } else {
     logger.debug(
-      'No MIME type or extension provided for image; trying to detect from buffer',
+      "No MIME type or extension provided for image; trying to detect from buffer"
     );
     const fileType = await fileTypeFromBuffer(outputData.buffer);
     if (fileType) {
       extension = fileType.ext;
     } else {
       logger.debug(
-        'Unable to detect file type from buffer; defaulting to png extension',
+        "Unable to detect file type from buffer; defaulting to png extension"
       );
     }
   }
 
   let filename: string;
-  if (outputData.index !== undefined) {
-    filename = `${outputData.fileBase.replace('%%number%%', String(outputData.index + 1))}.${extension}`;
-  } else {
+  if (outputData.index === undefined) {
     filename = `${outputData.fileBase}.${extension}`;
+  } else {
+    filename = `${outputData.fileBase.replace("%%number%%", String(outputData.index + 1))}.${extension}`;
   }
 
   const filePath = normalizeAbsolutePath(filename);

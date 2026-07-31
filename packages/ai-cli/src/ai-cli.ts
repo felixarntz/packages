@@ -1,50 +1,50 @@
 #!/usr/bin/env node
 
-import { program } from '@commander-js/extra-typings';
-import { withOptions, withErrorHandling } from '@felixarntz/cli-utils';
-import dotenv from 'dotenv';
+import { program } from "@commander-js/extra-typings";
+import { withErrorHandling, withOptions } from "@felixarntz/cli-utils";
+import dotenv from "dotenv";
 import {
-  name as generateTextName,
-  description as generateTextDescription,
-  handler as generateTextHandler,
-  options as generateTextOptions,
-} from './commands/generate-text';
-import {
-  name as generateImageName,
-  description as generateImageDescription,
-  handler as generateImageHandler,
-  options as generateImageOptions,
-} from './commands/generate-image';
-import {
-  name as editImageName,
-  description as editImageDescription,
-  handler as editImageHandler,
-  options as editImageOptions,
-} from './commands/edit-image';
-import {
-  name as cropImageName,
   description as cropImageDescription,
   handler as cropImageHandler,
+  name as cropImageName,
   options as cropImageOptions,
-} from './commands/crop-image';
+} from "./commands/crop-image";
 import {
-  name as optimizeImageName,
-  description as optimizeImageDescription,
-  handler as optimizeImageHandler,
-  options as optimizeImageOptions,
-} from './commands/optimize-image';
+  description as editImageDescription,
+  handler as editImageHandler,
+  name as editImageName,
+  options as editImageOptions,
+} from "./commands/edit-image";
 import {
-  name as upscaleImageName,
-  description as upscaleImageDescription,
-  handler as upscaleImageHandler,
-  options as upscaleImageOptions,
-} from './commands/upscale-image';
-import {
-  name as explainCodeName,
   description as explainCodeDescription,
   handler as explainCodeHandler,
+  name as explainCodeName,
   options as explainCodeOptions,
-} from './commands/explain-code';
+} from "./commands/explain-code";
+import {
+  description as generateImageDescription,
+  handler as generateImageHandler,
+  name as generateImageName,
+  options as generateImageOptions,
+} from "./commands/generate-image";
+import {
+  description as generateTextDescription,
+  handler as generateTextHandler,
+  name as generateTextName,
+  options as generateTextOptions,
+} from "./commands/generate-text";
+import {
+  description as optimizeImageDescription,
+  handler as optimizeImageHandler,
+  name as optimizeImageName,
+  options as optimizeImageOptions,
+} from "./commands/optimize-image";
+import {
+  description as upscaleImageDescription,
+  handler as upscaleImageHandler,
+  name as upscaleImageName,
+  options as upscaleImageOptions,
+} from "./commands/upscale-image";
 
 /**
  * Initializes the application.
@@ -53,37 +53,37 @@ function initialize() {
   dotenv.config();
 
   withOptions(program.command(generateTextName), generateTextOptions)
-    .alias('textgen')
+    .alias("textgen")
     .description(generateTextDescription)
     .action(withErrorHandling(generateTextHandler));
 
   withOptions(program.command(generateImageName), generateImageOptions)
-    .alias('imagegen')
+    .alias("imagegen")
     .description(generateImageDescription)
     .action(withErrorHandling(generateImageHandler));
 
   withOptions(program.command(editImageName), editImageOptions)
-    .alias('imageedit')
+    .alias("imageedit")
     .description(editImageDescription)
     .action(withErrorHandling(editImageHandler));
 
   withOptions(program.command(cropImageName), cropImageOptions)
-    .alias('imagecrop')
+    .alias("imagecrop")
     .description(cropImageDescription)
     .action(withErrorHandling(cropImageHandler));
 
   withOptions(program.command(optimizeImageName), optimizeImageOptions)
-    .alias('imageopt')
+    .alias("imageopt")
     .description(optimizeImageDescription)
     .action(withErrorHandling(optimizeImageHandler));
 
   withOptions(program.command(upscaleImageName), upscaleImageOptions)
-    .alias('imageupscale')
+    .alias("imageupscale")
     .description(upscaleImageDescription)
     .action(withErrorHandling(upscaleImageHandler));
 
   withOptions(program.command(explainCodeName), explainCodeOptions)
-    .alias('codeexp')
+    .alias("codeexp")
     .description(explainCodeDescription)
     .action(withErrorHandling(explainCodeHandler));
 }

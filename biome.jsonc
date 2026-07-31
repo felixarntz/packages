@@ -1,7 +1,19 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "extends": [
-    "ultracite/biome/core",
-    "ultracite/biome/vitest"
+  "extends": ["ultracite/biome/core", "ultracite/biome/vitest"],
+  "overrides": [
+    {
+      "includes": ["packages/*/src/**/*.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            // noPropertyAccessFromIndexSignature in tsconfig.json requires bracket notation
+            // for index signature types (e.g. OptionsInput = Record<string, ...>),
+            // which conflicts with useLiteralKeys preferring dot notation.
+            "useLiteralKeys": "off"
+          }
+        }
+      }
+    }
   ]
 }

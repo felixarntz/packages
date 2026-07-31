@@ -1,33 +1,34 @@
-import { styleText } from 'node:util';
+import { styleText } from "node:util";
 
-export enum LogLevel {
-  DEBUG = 0,
-  INFO = 1,
-  SUCCESS = 2,
-  WARN = 3,
-  ERROR = 4,
-  SILENT = 5,
-}
+export const LogLevel = {
+  DEBUG: 0,
+  INFO: 1,
+  SUCCESS: 2,
+  WARN: 3,
+  ERROR: 4,
+  SILENT: 5,
+} as const;
+export type LogLevel = (typeof LogLevel)[keyof typeof LogLevel];
 
 type TextStyles =
-  | 'bold'
-  | 'cyan'
-  | 'magenta'
-  | 'green'
-  | 'red'
-  | 'yellowBright';
+  | "bold"
+  | "cyan"
+  | "magenta"
+  | "green"
+  | "red"
+  | "yellowBright";
 
 const createStyledText =
   (style: TextStyles) =>
   (text: string): string =>
     styleText(style, text);
 
-const formatBold = createStyledText('bold');
-const colorError = createStyledText('red');
-const colorWarning = createStyledText('yellowBright');
-const colorSuccess = createStyledText('green');
-const colorInfo = createStyledText('magenta');
-const colorDebug = createStyledText('cyan');
+const formatBold = createStyledText("bold");
+const colorError = createStyledText("red");
+const colorWarning = createStyledText("yellowBright");
+const colorSuccess = createStyledText("green");
+const colorInfo = createStyledText("magenta");
+const colorDebug = createStyledText("cyan");
 
 const formatLogMessage = (text: string, level: LogLevel): string => {
   switch (level) {
@@ -47,12 +48,17 @@ const formatLogMessage = (text: string, level: LogLevel): string => {
 };
 
 const DEFAULT_LOG_LEVEL = LogLevel.INFO;
-const CURRENT_LOG_LEVEL =
-  process.env['NODE_ENV'] === 'development' || process.env['DEBUG'] === 'true'
-    ? LogLevel.DEBUG
-    : process.env['SILENT'] === 'true'
-      ? LogLevel.SILENT
-      : DEFAULT_LOG_LEVEL;
+let CURRENT_LOG_LEVEL: LogLevel = DEFAULT_LOG_LEVEL;
+// biome-ignore lint/complexity/useLiteralKeys: noPropertyAccessFromIndexSignature requires bracket notation
+if (
+  process.env["NODE_ENV"] === "development" ||
+  process.env["DEBUG"] === "true"
+) {
+  CURRENT_LOG_LEVEL = LogLevel.DEBUG;
+  // biome-ignore lint/complexity/useLiteralKeys: noPropertyAccessFromIndexSignature requires bracket notation
+} else if (process.env["SILENT"] === "true") {
+  CURRENT_LOG_LEVEL = LogLevel.SILENT;
+}
 
 /**
  * Logger class for logging messages with different severity levels.

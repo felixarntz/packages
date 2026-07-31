@@ -1,23 +1,28 @@
-import path from 'node:path';
+import path from "node:path";
 import {
+  fileExists,
   getArgs,
   type HandlerArgs,
-  type Option,
   logger,
-  fileExists,
-  readTextFile,
   normalizeAbsolutePath,
-} from '@felixarntz/cli-utils';
-import glob from 'fast-glob';
-import { getReadmeFilePath } from '../util/readme';
+  type Option,
+  readTextFile,
+} from "@felixarntz/cli-utils";
+import glob from "fast-glob";
+import { getReadmeFilePath } from "../util/readme";
 
-export const name = 'verify-versions';
-export const description = 'Verifies consistency of versions in a plugin.';
+export const name = "verify-versions";
+export const description = "Verifies consistency of versions in a plugin.";
+
+const STABLE_TAG_REGEX = /^Stable tag:\s*(\d+\.\d+\.\d+(?:-\w+)?)$/m;
+const CHANGELOG_VERSION_REGEX =
+  /^== Changelog ==\n+= (\d+\.\d+\.\d+(?:-\w+)?) =$/m;
+const HEADER_VERSION_REGEX = /^ \* Version:\s+(\d+\.\d+\.\d+(?:-\w+)?)$/m;
 
 export const options: Option[] = [
   {
-    argname: 'path',
-    description: 'Path to the WordPress plugin folder',
+    argname: "path",
+    description: "Path to the WordPress plugin folder",
     positional: true,
     parse: (value: string) => normalizeAbsolutePath(value),
   },
@@ -35,15 +40,15 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   const version = Object.values(allVersions)[0];
   if (
     !Object.values(allVersions).every(
-      (anotherVersion) => anotherVersion === version,
+      (anotherVersion) => anotherVersion === version
     )
   ) {
     throw new Error(
-      `Version mismatch: ${JSON.stringify(allVersions, null, 2)}`,
+      `Version mismatch: ${JSON.stringify(allVersions, null, 2)}`
     );
   }
 
-  if (version.includes('-')) {
+  if (version.includes("-")) {
     logger.warn(`${version} (pre-release identifier is present)`);
   } else {
     logger.success(`${version}`);
@@ -54,20 +59,18 @@ const getReadmeVersions = async (pluginPath: string) => {
   const readmeFilePath = await getReadmeFilePath(pluginPath);
   const readmeFileContents = await readTextFile(readmeFilePath);
 
-  const stableTagVersionMatches = readmeFileContents.match(
-    /^Stable tag:\s*(\d+\.\d+\.\d+(?:-\w+)?)$/m,
-  );
+  const stableTagVersionMatches = readmeFileContents.match(STABLE_TAG_REGEX);
   if (!stableTagVersionMatches) {
     throw new Error(`Unable to locate stable tag in ${readmeFilePath}`);
   }
   const stableTagVersion = stableTagVersionMatches[1];
 
   const latestChangelogMatches = readmeFileContents.match(
-    /^== Changelog ==\n+= (\d+\.\d+\.\d+(?:-\w+)?) =$/m,
+    CHANGELOG_VERSION_REGEX
   );
   if (!latestChangelogMatches) {
     throw new Error(
-      `Unable to locate latest version entry in changelog in ${readmeFilePath}.`,
+      `Unable to locate latest version entry in changelog in ${readmeFilePath}.`
     );
   }
   const latestChangelogVersion = latestChangelogMatches[1];
@@ -88,23 +91,21 @@ const getPhpFileVersions = async (pluginPath: string) => {
 
   const mainFileContents = await readTextFile(mainFilePath);
 
-  const headerVersionMatches = mainFileContents.match(
-    /^ \* Version:\s+(\d+\.\d+\.\d+(?:-\w+)?)$/m,
-  );
+  const headerVersionMatches = mainFileContents.match(HEADER_VERSION_REGEX);
   if (!headerVersionMatches) {
     throw new Error(
-      `Unable to locate version in PHP header in ${mainFilePath}.`,
+      `Unable to locate version in PHP header in ${mainFilePath}.`
     );
   }
   const headerVersion = headerVersionMatches[1];
 
   const constantName = `${hyphenCaseToConstantCase(pluginSlug)}_VERSION`;
   const constantRegexp = new RegExp(
-    `define\\(\\s*'${constantName}',\\s*'(.+?)'\\s*\\);`,
+    `define\\(\\s*'${constantName}',\\s*'(.+?)'\\s*\\);`
   );
 
-  let constantVersion = null;
-  for (const phpFile of await glob(path.join(pluginPath, '*.php'))) {
+  let constantVersion: string | null = null;
+  for (const phpFile of await glob(path.join(pluginPath, "*.php"))) {
     const phpFileContents = await readTextFile(phpFile);
     const constantVersionMatches = phpFileContents.match(constantRegexp);
     if (constantVersionMatches) {
@@ -129,6 +130,6 @@ const getPhpFileVersions = async (pluginPath: string) => {
 
 const hyphenCaseToConstantCase = (str: string): string =>
   str
-    .split('-')
+    .split("-")
     .map((part) => part.toUpperCase())
-    .join('_');
+    .join("_");

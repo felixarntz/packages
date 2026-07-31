@@ -1,4 +1,4 @@
-import { simpleGit, type SimpleGit, type SimpleGitOptions } from 'simple-git';
+import { type SimpleGit, type SimpleGitOptions, simpleGit } from "simple-git";
 
 const gitInstances: Record<string, SimpleGit> = {};
 
@@ -14,7 +14,7 @@ export function git(baseDir?: string): SimpleGit {
   if (!gitInstances[gitBaseDir]) {
     const options: Partial<SimpleGitOptions> = {
       baseDir: gitBaseDir,
-      binary: 'git',
+      binary: "git",
     };
     gitInstances[gitBaseDir] = simpleGit(options);
   }
