@@ -1,4 +1,22 @@
 {
+  "name": "@felixarntz/root",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "homepage": "https://github.com/felixarntz/packages#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/felixarntz/packages.git"
+  },
+  "bugs": {
+    "url": "https://github.com/felixarntz/packages/issues"
+  },
   "devDependencies": {
     "@biomejs/biome": "2.4.15",
     "@types/node": "^24.10.9",
@@ -11,7 +29,6 @@
     "ultracite": "7.7.0",
     "vitest": "catalog:"
   },
-  "name": "@felixarntz/root",
   "scripts": {
     "ai": "DEBUG=true node ./packages/ai-cli/dist/ai-cli.js",
     "felixarntz": "DEBUG=true node ./packages/felixarntz/dist/index.js",
@@ -26,22 +43,5 @@
     "doctor": "ultracite doctor",
     "prepare": "husky"
   },
-  "type": "module",
-  "workspaces": [
-    "packages/*"
-  ],
-  "private": true,
-  "license": "MIT",
-  "packageManager": "pnpm@11.1.3",
-  "engines": {
-    "node": ">=22.12.0"
-  },
-  "homepage": "https://github.com/felixarntz/packages#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/felixarntz/packages.git"
-  },
-  "bugs": {
-    "url": "https://github.com/felixarntz/packages/issues"
-  }
+  "packageManager": "pnpm@11.1.3"
 }
