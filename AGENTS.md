@@ -22,7 +22,7 @@ For a comprehensive list and more details, please refer to [CONTRIBUTING.md](./C
 
 ## Coding Standards & Compatibility Constraints
 
-*   **Node.js:** Version 20.0.0 or higher is required.
+*   **Node.js:** Version 22.12.0 or higher is required.
 *   **Package Manager:** `pnpm` is required. Do not use `npm` or `yarn`.
 *   **Language:** All code is written in TypeScript (`pnpm typecheck`).
 *   **Linting:** Code must pass lint checks (`pnpm check`).
@@ -35,7 +35,7 @@ For more details on contribution guidelines, please refer to [CONTRIBUTING.md](.
 *   **TypeScript:** All packages are written in TypeScript. Type safety is a priority.
 *   **Testing:** `vitest` is used for testing. All new features and bug fixes must include tests.
 *   **Linting & Formatting:** `eslint` and `prettier` are used to enforce code style and quality.
-*   **Modern Node.js:** The project targets modern Node.js environments (>=20.0.0) and uses ESM.
+*   **Modern Node.js:** The project targets modern Node.js environments (>=22.12.0) and uses ESM.
 
 ## Project Architecture Overview
 

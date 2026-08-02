@@ -7,6 +7,7 @@ export default defineConfig({
     compilerOptions: {
       // See: https://github.com/egoist/tsup/issues/571#issuecomment-2457920686
       composite: false,
+      ignoreDeprecations: "6.0",
     },
   },
   sourcemap: true,

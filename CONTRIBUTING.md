@@ -20,7 +20,7 @@ If your idea is mostly related to an existing feature, consider suggesting an en
 
 ### Prerequisites
 
-- **Node.js**: Version 20.0.0 or higher
+- **Node.js**: Version 22.12.0 or higher
 - **pnpm**: Package manager (install with `npm install -g pnpm`)
 - **Git**: For version control
 

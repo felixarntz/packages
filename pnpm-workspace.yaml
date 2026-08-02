@@ -1,10 +1,18 @@
 packages:
   - 'packages/*'
 
+allowBuilds:
+  esbuild: true
+  protobufjs: false
+  sharp: true
+  unrs-resolver: true
+
 catalog:
-  '@commander-js/extra-typings': ^13.1.0
-  commander: ^13.1.0
+  '@commander-js/extra-typings': ^15.0.0
+  commander: ^15.0.0
   dotenv: ^16.6.1
   tsup: ^8.5.1
-  typescript: ^5.9.3
+  typescript: ^6.0.3
   vitest: ^3.2.4
+
+minimumReleaseAge: 2880 # 2 days

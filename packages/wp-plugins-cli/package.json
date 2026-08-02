@@ -1,6 +1,6 @@
 {
   "name": "@felixarntz/wp-plugins-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI with various tools for WordPress plugin maintenance",
   "license": "MIT",
   "type": "module",
@@ -14,7 +14,7 @@
     "dist/**/*"
   ],
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.12.0"
   },
   "homepage": "https://github.com/felixarntz/packages/blob/main/packages/wp-plugins-cli/README.md",
   "repository": {
@@ -32,7 +32,7 @@
     "commander": "catalog:",
     "dotenv": "catalog:",
     "fast-glob": "^3.3.3",
-    "simple-git": "^3.30.0"
+    "simple-git": "^3.36.0"
   },
   "devDependencies": {
     "tsup": "catalog:",
