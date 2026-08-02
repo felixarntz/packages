@@ -1,4 +1,4 @@
-import { logger } from './logger';
+import { logger } from "./logger";
 
 /**
  * Runs an asynchronous action while logging a heartbeat message at regular intervals.
@@ -8,10 +8,10 @@ import { logger } from './logger';
  * @param intervalMs - The interval in milliseconds between heartbeat messages. Defaults to 5000 ms.
  * @returns A promise that resolves with the result of the action.
  */
-export async function runWithHeartbeat<T>(
+export function runWithHeartbeat<T>(
   action: () => Promise<T>,
-  heartbeatMessage: string = 'Still working...',
-  intervalMs: number = 5000,
+  heartbeatMessage = "Still working...",
+  intervalMs = 5000
 ): Promise<T> {
   const intervalID = setInterval(() => {
     logger.info(heartbeatMessage);

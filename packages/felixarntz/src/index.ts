@@ -1,37 +1,37 @@
-import { parseHtml } from './util/parse-html';
-import { parseHtmlLinks } from './util/parse-html-links';
+import { parseHtml } from "./util/parse-html";
+import { parseHtmlLinks } from "./util/parse-html-links";
 
-const HTML_URL = 'https://felix-arntz.me/';
-const WEBSITE_DOMAIN = 'felix-arntz.me';
+const HTML_URL = "https://felix-arntz.me/";
+const WEBSITE_DOMAIN = "felix-arntz.me";
 
 const bootLines = [
-  '*************** FELIXARNTZ-CLI(R) V2000 ***************',
-  '',
-  '',
-  '',
-  'WP-ADMIN/INDEX.PHP 200 OK',
-  'AI SDK PROVIDERS INITIALIZED',
-  'LCP UNDER 100MS ACHIEVED',
-  'VECTOR EMBEDDINGS ONLINE',
-  'GUTENBERG BLOCKS PARSED',
-  'EXECUTION MODE: AGENTIC',
+  "*************** FELIXARNTZ-CLI(R) V2000 ***************",
+  "",
+  "",
+  "",
+  "WP-ADMIN/INDEX.PHP 200 OK",
+  "AI SDK PROVIDERS INITIALIZED",
+  "LCP UNDER 100MS ACHIEVED",
+  "VECTOR EMBEDDINGS ONLINE",
+  "GUTENBERG BLOCKS PARSED",
+  "EXECUTION MODE: AGENTIC",
 ];
 
 const fetchAndParseContent = async (): Promise<string> => {
   const removeCategoryLinks = (text: string): string =>
     text
-      .split('\n')
-      .filter((line) => !line.includes('/category/'))
-      .join('\n');
+      .split("\n")
+      .filter((line) => !line.includes("/category/"))
+      .join("\n");
 
   const response = await fetch(HTML_URL);
   const html = await response.text();
 
-  const introText = parseHtml(html, 'felixarntz-intro');
-  const socialLinksText = parseHtmlLinks(html, 'felixarntz-social');
-  const projectsText = parseHtmlLinks(html, 'felixarntz-projects');
+  const introText = parseHtml(html, "felixarntz-intro");
+  const socialLinksText = parseHtmlLinks(html, "felixarntz-social");
+  const projectsText = parseHtmlLinks(html, "felixarntz-projects");
   const latestPostsText = removeCategoryLinks(
-    parseHtmlLinks(html, 'felixarntz-latest-posts'),
+    parseHtmlLinks(html, "felixarntz-latest-posts")
   );
 
   const parts: string[] = [introText];
@@ -43,24 +43,24 @@ const fetchAndParseContent = async (): Promise<string> => {
   }
   if (projectsText) {
     parts.push(
-      `Some of the projects I have contributed to:\n\n${projectsText}`,
+      `Some of the projects I have contributed to:\n\n${projectsText}`
     );
   }
   if (latestPostsText) {
     parts.push(`My latest blog posts:\n\n${latestPostsText}`);
   }
-  return parts.join('\n\n');
+  return parts.join("\n\n");
 };
 
 const formatContentLines = (content: string): string[] => {
-  const lines = content.split('\n').map((line) => line.trim());
+  const lines = content.split("\n").map((line) => line.trim());
 
   const formattedLines: string[] = [];
 
   for (const line of lines) {
-    if (line.startsWith('## ')) {
+    if (line.startsWith("## ")) {
       formattedLines.push(`━━━ ${line.slice(3).toUpperCase()} ━━━`);
-    } else if (line.startsWith('- ')) {
+    } else if (line.startsWith("- ")) {
       formattedLines.push(`  • ${line.slice(2)}`);
     } else {
       formattedLines.push(line);
@@ -82,11 +82,11 @@ const printLine = async (line: string): Promise<void> => {
   for (const char of line) {
     await printCharacter(char);
   }
-  process.stdout.write('\n');
+  process.stdout.write("\n");
 };
 
 const clearScreen = (): void => {
-  process.stdout.write('\x1b[2J\x1b[H');
+  process.stdout.write("\x1b[2J\x1b[H");
 };
 
 const redrawLines = (visibleLines: string[]): void => {
@@ -124,7 +124,9 @@ const main = async (): Promise<void> => {
   }
 };
 
-main().catch((error) => {
-  console.error('Error:', error);
+main().catch((error: unknown) => {
+  process.stderr.write(
+    `Error: ${error instanceof Error ? error.message : String(error)}\n`
+  );
   process.exit(1);
 });

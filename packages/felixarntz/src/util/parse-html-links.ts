@@ -1,3 +1,83 @@
+const LINK_TAG_REGEX = /<a\b([^>]*)>([\s\S]*?)<\/a>/gi;
+const HREF_ATTR_REGEX = /href\s*=\s*(["'])(.*?)\1/i;
+const HTTP_URL_REGEX = /^https?:\/\//i;
+const STRIP_TAGS_REGEX = /<[^>]+>/g;
+const IMG_ALT_REGEX = /<img\b[^>]*alt\s*=\s*(["'])(.*?)\1/i;
+const WHITESPACE_REGEX = /\s+/g;
+
+interface LinkEntry {
+  isFromAlt: boolean;
+  label: string;
+}
+
+function findClosingTagIndex(
+  html: string,
+  tagName: string,
+  startIndex: number
+): number {
+  const tagRegex = new RegExp(`</?${tagName}\\b[^>]*>`, "gi");
+  tagRegex.lastIndex = startIndex;
+  let depth = 1;
+
+  for (;;) {
+    const tagMatch = tagRegex.exec(html);
+    if (tagMatch === null) {
+      break;
+    }
+    if (tagMatch[0].startsWith("</")) {
+      depth--;
+    } else if (!tagMatch[0].endsWith("/>")) {
+      depth++;
+    }
+    if (depth === 0) {
+      return tagMatch.index;
+    }
+  }
+
+  return -1;
+}
+
+function decodeEntities(text: string): string {
+  return text
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#8217;/g, "'")
+    .replace(/&#039;/g, "'");
+}
+
+function extractLinkEntry(
+  attributes: string,
+  innerContent: string
+): (LinkEntry & { href: string }) | null {
+  const hrefMatch = attributes.match(HREF_ATTR_REGEX);
+  if (!hrefMatch) {
+    return null;
+  }
+
+  const href = hrefMatch[2].trim();
+  if (!HTTP_URL_REGEX.test(href)) {
+    return null;
+  }
+
+  let label = innerContent.replace(STRIP_TAGS_REGEX, "");
+  let isFromAlt = false;
+
+  if (!label.trim()) {
+    const imgMatch = innerContent.match(IMG_ALT_REGEX);
+    if (imgMatch) {
+      label = imgMatch[2];
+      isFromAlt = true;
+    }
+  }
+
+  label = decodeEntities(label).replace(WHITESPACE_REGEX, " ").trim();
+
+  return { href, label, isFromAlt };
+}
+
 /**
  * Extracts links from the node with the given ID in an HTML string.
  *
@@ -8,107 +88,45 @@
 export function parseHtmlLinks(html: string, id: string): string {
   const idRegex = new RegExp(
     `<([a-zA-Z0-9]+)\\s+[^>]*id\\s*=\\s*["']${id}["'][^>]*>`,
-    'i',
+    "i"
   );
   const match = html.match(idRegex);
 
   if (!match) {
-    return '';
+    return "";
   }
 
   const tagName = match[1];
-  const startIndex = match.index! + match[0].length;
-  let depth = 1;
-
-  // We need to find the closing tag matching this specific opening tag.
-  // We scan forward from startIndex.
-  const tagRegex = new RegExp(`</?${tagName}\\b[^>]*>`, 'gi');
-  tagRegex.lastIndex = startIndex;
-
-  let endIndex = -1;
-  let tagMatch;
-
-  while ((tagMatch = tagRegex.exec(html)) !== null) {
-    if (tagMatch[0].startsWith('</')) {
-      depth--;
-    } else if (!tagMatch[0].endsWith('/>')) {
-      // Assume non-void if it's the same tag name as the container which has an ID (so likely a container)
-      depth++;
-    }
-
-    if (depth === 0) {
-      endIndex = tagMatch.index;
-      break;
-    }
-  }
+  const startIndex = (match.index ?? 0) + match[0].length;
+  const endIndex = findClosingTagIndex(html, tagName, startIndex);
 
   if (endIndex === -1) {
-    return '';
+    return "";
   }
 
-  const content = html.substring(startIndex, endIndex);
-  const linksMap = new Map<string, { label: string; isFromAlt: boolean }>();
+  const content = html.slice(startIndex, endIndex);
+  const linksMap = new Map<string, LinkEntry>();
 
-  // Regex to find <a> tags
-  // We capture the opening tag attributes and the inner content
-  const linkRegex = /<a\b([^>]*)>([\s\S]*?)<\/a>/gi;
-  let linkMatch;
+  LINK_TAG_REGEX.lastIndex = 0;
+  for (;;) {
+    const linkMatch = LINK_TAG_REGEX.exec(content);
+    if (linkMatch === null) {
+      break;
+    }
 
-  while ((linkMatch = linkRegex.exec(content)) !== null) {
-    const attributes = linkMatch[1];
-    const innerContent = linkMatch[2];
-
-    // Extract href
-    const hrefMatch = attributes.match(/href\s*=\s*(["'])(.*?)\1/i);
-    if (!hrefMatch) {
+    const entry = extractLinkEntry(linkMatch[1], linkMatch[2]);
+    if (!entry) {
       continue;
     }
 
-    const href = hrefMatch[2].trim();
-
-    // Check if it is an actual URL (http/https)
-    if (!/^https?:\/\//i.test(href)) {
-      continue;
-    }
-
-    // Strip tags from inner content to get label
-    let label = innerContent.replace(/<[^>]+>/g, '');
-    let isFromAlt = false;
-
-    if (!label.trim()) {
-      const imgMatch = innerContent.match(
-        /<img\b[^>]*alt\s*=\s*(["'])(.*?)\1/i,
-      );
-      if (imgMatch) {
-        label = imgMatch[2];
-        isFromAlt = true;
-      }
-    }
-
-    // Decode entities in label
-    label = label
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&#8217;/g, "'")
-      .replace(/&#039;/g, "'");
-
-    // Collapse whitespace in label
-    label = label.replace(/\s+/g, ' ').trim();
-
-    if (!linksMap.has(href)) {
+    const { href, label, isFromAlt } = entry;
+    const existing = linksMap.get(href);
+    if (!existing || (existing.isFromAlt && !isFromAlt)) {
       linksMap.set(href, { label, isFromAlt });
-    } else {
-      const existing = linksMap.get(href)!;
-      if (existing.isFromAlt && !isFromAlt) {
-        linksMap.set(href, { label, isFromAlt });
-      }
     }
   }
 
   return Array.from(linksMap.entries())
     .map(([href, { label }]) => `- ${label}: ${href}`)
-    .join('\n');
+    .join("\n");
 }

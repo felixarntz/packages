@@ -1,4 +1,4 @@
-import { fileTypeFromBuffer } from 'file-type';
+import { fileTypeFromBuffer } from "file-type";
 
 /**
  * Converts a base64-encoded string to a Buffer.
@@ -9,10 +9,10 @@ import { fileTypeFromBuffer } from 'file-type';
  */
 export function base64ToBuffer(base64Data: string): Buffer {
   try {
-    return Buffer.from(base64Data, 'base64');
+    return Buffer.from(base64Data, "base64");
   } catch (error) {
     throw new Error(
-      `Failed to convert base64 to Buffer: ${(error as Error).message}`,
+      `Failed to convert base64 to Buffer: ${(error as Error).message}`
     );
   }
 }
@@ -24,7 +24,7 @@ export function base64ToBuffer(base64Data: string): Buffer {
  * @returns The base64-encoded string.
  */
 export function bufferToBase64(buffer: Buffer): string {
-  return buffer.toString('base64');
+  return buffer.toString("base64");
 }
 
 /**
@@ -57,7 +57,7 @@ export function bufferToUint8Array(buffer: Buffer): Uint8Array {
  */
 export async function base64ToDataUri(
   base64Data: string,
-  mime?: string,
+  mime?: string
 ): Promise<string> {
   if (mime) {
     return `data:${mime};base64,${base64Data}`;
@@ -65,10 +65,12 @@ export async function base64ToDataUri(
   const buffer = base64ToBuffer(base64Data);
   const type = await fileTypeFromBuffer(buffer);
   if (!type) {
-    throw new Error('Unable to detect file type from base64 data');
+    throw new Error("Unable to detect file type from base64 data");
   }
   return `data:${type.mime};base64,${base64Data}`;
 }
+
+const DATA_URI_REGEX = /^data:[^;]+;base64,(.+)$/;
 
 /**
  * Converts a data URI to a base64-encoded string.
@@ -78,9 +80,9 @@ export async function base64ToDataUri(
  * @throws Error if the data URI is invalid.
  */
 export function dataUriToBase64(dataUri: string): string {
-  const match = dataUri.match(/^data:[^;]+;base64,(.+)$/);
+  const match = dataUri.match(DATA_URI_REGEX);
   if (!match) {
-    throw new Error('Invalid data URI format');
+    throw new Error("Invalid data URI format");
   }
   return match[1];
 }

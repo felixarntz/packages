@@ -1,56 +1,56 @@
-import { createCodeAgent, createEnvironment } from 'ai-code-agents';
 import {
   getOpt,
   type HandlerArgs,
-  type OptionsInput,
-  type Option,
-  parseFileOptions,
   injectFileOptionsForCommander,
+  logger,
+  normalizeAbsolutePath,
+  type Option,
+  type OptionsInput,
+  outputStream,
+  parseFileOptions,
   promptMissingOptions,
   stripOptionFieldsForCommander,
-  logger,
-  outputStream,
-  normalizeAbsolutePath,
-} from '@felixarntz/cli-utils';
-import { logTokenUsage, logCost } from '../util/ai-usage';
+} from "@felixarntz/cli-utils";
+import { createCodeAgent, createEnvironment } from "ai-code-agents";
+import { logCost, logTokenUsage } from "../util/ai-usage";
 
-export const name = 'explain-code';
-export const description = 'Explains code in response to a prompt.';
+export const name = "explain-code";
+export const description = "Explains code in response to a prompt.";
 
 const actualOptions: Option[] = [
   {
-    argname: '-d, --directory <directory>',
-    description: 'Directory with the code to explain',
+    argname: "-d, --directory <directory>",
+    description: "Directory with the code to explain",
     parse: (value: string) => normalizeAbsolutePath(value),
     required: true,
   },
   {
-    argname: '-p, --prompt <prompt>',
-    description: 'Prompt to send to the model',
+    argname: "-p, --prompt <prompt>",
+    description: "Prompt to send to the model",
     required: true,
   },
   {
-    argname: '-m, --model <model>',
-    description: 'Model to use',
+    argname: "-m, --model <model>",
+    description: "Model to use",
     required: true,
   },
 ];
 
 export const options = injectFileOptionsForCommander(actualOptions, [
-  'prompt',
+  "prompt",
 ]).map((option) => stripOptionFieldsForCommander(option));
 
-type CommandConfig = {
+interface CommandConfig {
   directory: string;
-  prompt: string;
   model: string;
-};
+  prompt: string;
+}
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
   const config: CommandConfig = {
-    directory: String(opt['directory']),
-    prompt: String(opt['prompt']),
-    model: String(opt['model']),
+    directory: String(opt["directory"]),
+    prompt: String(opt["prompt"]),
+    model: String(opt["model"]),
   };
   return config;
 };
@@ -59,22 +59,22 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   const { directory, prompt, model } = parseOptions(
     await promptMissingOptions(
       actualOptions,
-      await parseFileOptions(getOpt(handlerArgs), ['prompt']),
-    ),
+      await parseFileOptions(getOpt(handlerArgs), ["prompt"])
+    )
   );
 
   logger.info(`Prompting model ${model} to explain code in ${directory}...`);
 
   const agent = createCodeAgent({
     model,
-    environment: createEnvironment('unsafe-local', {
+    environment: createEnvironment("unsafe-local", {
       directoryPath: directory,
     }),
-    environmentToolsDefinition: 'readonly',
+    environmentToolsDefinition: "readonly",
     maxSteps: 20,
     instructions: getInstructions(),
     logStep: (log: string) => {
-      logger.debug('\n' + log);
+      logger.debug(`\n${log}`);
     },
   });
 

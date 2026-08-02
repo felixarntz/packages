@@ -56,7 +56,7 @@ If your idea is mostly related to an existing feature, consider suggesting an en
 4. Ensure everything passes:
    ```bash
    pnpm test
-   pnpm lint
+   pnpm check
    pnpm typecheck
    ```
 5. Commit with a clear message and push to your fork
@@ -66,10 +66,6 @@ If your idea is mostly related to an existing feature, consider suggesting an en
 
 - `pnpm build` - Build all packages
 - `pnpm test` - Run all tests
-- `pnpm lint` - Check code style
-- `pnpm lint:fix` - Auto-fix linting issues
-- `pnpm format` - Check formatting
-- `pnpm format:fix` - Auto-fix formatting
 - `pnpm typecheck` - Run TypeScript type checking
 
 ### Pull Request Guidelines

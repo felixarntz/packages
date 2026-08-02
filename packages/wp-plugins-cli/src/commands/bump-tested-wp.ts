@@ -2,41 +2,43 @@ import {
   getArgs,
   getOpt,
   type HandlerArgs,
-  type OptionsInput,
-  type Option,
   logger,
+  normalizeAbsolutePath,
+  type Option,
+  type OptionsInput,
   readTextFile,
   writeTextFile,
-  normalizeAbsolutePath,
-} from '@felixarntz/cli-utils';
-import { getReadmeFilePath } from '../util/readme';
-import { git } from '../util/git';
+} from "@felixarntz/cli-utils";
+import { git } from "../util/git";
+import { getReadmeFilePath } from "../util/readme";
 
-export const name = 'bump-tested-wp';
+export const name = "bump-tested-wp";
 export const description =
-  'Bumps the Tested Up To WordPress version in the plugin readme and commits the change.';
+  "Bumps the Tested Up To WordPress version in the plugin readme and commits the change.";
+
+const TESTED_UP_TO_REGEX = /^Tested up to:(\s+)(.*)$/m;
 
 export const options: Option[] = [
   {
-    argname: 'path',
-    description: 'Path to the WordPress plugin folder',
+    argname: "path",
+    description: "Path to the WordPress plugin folder",
     positional: true,
     parse: (value: string) => normalizeAbsolutePath(value),
   },
   {
-    argname: '-v, --version <version>',
-    description: 'WordPress version number to specify in Tested Up To',
+    argname: "-v, --version <version>",
+    description: "WordPress version number to specify in Tested Up To",
     required: true,
   },
 ];
 
-type CommandConfig = {
+interface CommandConfig {
   version: string;
-};
+}
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
   const config: CommandConfig = {
-    version: String(opt['version']),
+    version: String(opt["version"]),
   };
   return config;
 };
@@ -50,8 +52,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   const readmeFilePath = await getReadmeFilePath(pluginPath);
   const readmeFileContents = await readTextFile(readmeFilePath);
 
-  const testedUpToRegex = /^Tested up to:(\s+)(.*)$/m;
-  const match = readmeFileContents.match(testedUpToRegex);
+  const match = readmeFileContents.match(TESTED_UP_TO_REGEX);
 
   if (!match) {
     logger.error('Could not find "Tested up to" tag in readme file.');
@@ -66,23 +67,23 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   }
 
   logger.info(
-    `Replacing Tested Up To version from ${oldVersion.trim()} to ${version}...`,
+    `Replacing Tested Up To version from ${oldVersion.trim()} to ${version}...`
   );
 
   const gitInstance = git(pluginPath);
   const status = await gitInstance.raw([
-    'status',
-    '--porcelain',
+    "status",
+    "--porcelain",
     readmeFilePath,
   ]);
-  if (status.trim() !== '') {
+  if (status.trim() !== "") {
     logger.error(`Readme file has uncommitted changes: ${readmeFilePath}`);
     return;
   }
 
   const newReadmeFileContents = readmeFileContents.replace(
-    testedUpToRegex,
-    `Tested up to:${separator}${version}`,
+    TESTED_UP_TO_REGEX,
+    `Tested up to:${separator}${version}`
   );
 
   await writeTextFile(readmeFilePath, newReadmeFileContents);
@@ -92,6 +93,6 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   await gitInstance.push();
 
   logger.success(
-    `Updated Tested Up To version from ${oldVersion.trim()} to ${version}, committed and pushed the change.`,
+    `Updated Tested Up To version from ${oldVersion.trim()} to ${version}, committed and pushed the change.`
   );
 };

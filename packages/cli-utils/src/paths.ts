@@ -1,4 +1,4 @@
-import path from 'node:path';
+import path from "node:path";
 
 /**
  * Normalizes the given path to be an absolute path.
@@ -9,13 +9,11 @@ import path from 'node:path';
  */
 export function normalizeAbsolutePath(
   filePath: string,
-  rootDir: string | undefined = undefined,
+  rootDir?: string
 ): string {
-  if (!rootDir) {
-    rootDir = process.cwd();
-  }
+  const resolvedRootDir = rootDir ?? process.cwd();
   if (path.isAbsolute(filePath)) {
     return filePath;
   }
-  return path.join(rootDir, filePath);
+  return path.join(resolvedRootDir, filePath);
 }

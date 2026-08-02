@@ -1,38 +1,38 @@
 #!/usr/bin/env node
 
-import { program } from '@commander-js/extra-typings';
-import { withOptions, withErrorHandling } from '@felixarntz/cli-utils';
-import dotenv from 'dotenv';
+import { program } from "@commander-js/extra-typings";
+import { withErrorHandling, withOptions } from "@felixarntz/cli-utils";
+import dotenv from "dotenv";
 import {
-  name as bumpTestedWpName,
   description as bumpTestedWpDescription,
   handler as bumpTestedWpHandler,
+  name as bumpTestedWpName,
   options as bumpTestedWpOptions,
-} from './commands/bump-tested-wp';
+} from "./commands/bump-tested-wp";
 import {
-  name as generateChangelogName,
   description as generateChangelogDescription,
   handler as generateChangelogHandler,
+  name as generateChangelogName,
   options as generateChangelogOptions,
-} from './commands/generate-changelog';
+} from "./commands/generate-changelog";
 import {
-  name as getPluginsName,
   description as getPluginsDescription,
   handler as getPluginsHandler,
+  name as getPluginsName,
   options as getPluginsOptions,
-} from './commands/get-plugins';
+} from "./commands/get-plugins";
 import {
-  name as updateSinceName,
   description as updateSinceDescription,
   handler as updateSinceHandler,
+  name as updateSinceName,
   options as updateSinceOptions,
-} from './commands/update-since';
+} from "./commands/update-since";
 import {
-  name as verifyVersionsName,
   description as verifyVersionsDescription,
   handler as verifyVersionsHandler,
+  name as verifyVersionsName,
   options as verifyVersionsOptions,
-} from './commands/verify-versions';
+} from "./commands/verify-versions";
 
 /**
  * Initializes the application.
@@ -41,27 +41,27 @@ function initialize() {
   dotenv.config();
 
   withOptions(program.command(bumpTestedWpName), bumpTestedWpOptions)
-    .alias('tested')
+    .alias("tested")
     .description(bumpTestedWpDescription)
     .action(withErrorHandling(bumpTestedWpHandler));
 
   withOptions(program.command(generateChangelogName), generateChangelogOptions)
-    .alias('changelog')
+    .alias("changelog")
     .description(generateChangelogDescription)
     .action(withErrorHandling(generateChangelogHandler));
 
   withOptions(program.command(getPluginsName), getPluginsOptions)
-    .alias('plugins')
+    .alias("plugins")
     .description(getPluginsDescription)
     .action(withErrorHandling(getPluginsHandler));
 
   withOptions(program.command(updateSinceName), updateSinceOptions)
-    .alias('since')
+    .alias("since")
     .description(updateSinceDescription)
     .action(withErrorHandling(updateSinceHandler));
 
   withOptions(program.command(verifyVersionsName), verifyVersionsOptions)
-    .alias('versions')
+    .alias("versions")
     .description(verifyVersionsDescription)
     .action(withErrorHandling(verifyVersionsHandler));
 }

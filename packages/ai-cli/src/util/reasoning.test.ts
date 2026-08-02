@@ -1,14 +1,14 @@
-import { describe, it, expect } from 'vitest';
-import { getReasoningProviderOptions } from './reasoning';
+import { describe, expect, it } from "vitest";
+import { getReasoningProviderOptions } from "./reasoning";
 
-describe('getReasoningProviderOptions', () => {
+describe("getReasoningProviderOptions", () => {
   describe('when reasoningEffort is "minimal"', () => {
-    it('should return correct options without model', () => {
-      const result = getReasoningProviderOptions('minimal');
+    it("should return correct options without model", () => {
+      const result = getReasoningProviderOptions("minimal");
       expect(result).toEqual({
         anthropic: {
           thinking: {
-            type: 'disabled',
+            type: "disabled",
             budgetTokens: 0,
           },
         },
@@ -18,20 +18,20 @@ describe('getReasoningProviderOptions', () => {
           },
         },
         openai: {
-          reasoningEffort: 'minimal',
+          reasoningEffort: "minimal",
         },
         xai: {
-          reasoningEffort: 'low',
+          reasoningEffort: "low",
         },
       });
     });
 
-    it('should return correct options with non-Gemini model', () => {
-      const result = getReasoningProviderOptions('minimal', 'openai/gpt-4');
+    it("should return correct options with non-Gemini model", () => {
+      const result = getReasoningProviderOptions("minimal", "openai/gpt-4");
       expect(result).toEqual({
         anthropic: {
           thinking: {
-            type: 'disabled',
+            type: "disabled",
             budgetTokens: 0,
           },
         },
@@ -41,23 +41,23 @@ describe('getReasoningProviderOptions', () => {
           },
         },
         openai: {
-          reasoningEffort: 'minimal',
+          reasoningEffort: "minimal",
         },
         xai: {
-          reasoningEffort: 'low',
+          reasoningEffort: "low",
         },
       });
     });
 
-    it('should return correct options with Gemini 2.5 Pro model', () => {
+    it("should return correct options with Gemini 2.5 Pro model", () => {
       const result = getReasoningProviderOptions(
-        'minimal',
-        'google/gemini-2.5-pro',
+        "minimal",
+        "google/gemini-2.5-pro"
       );
       expect(result).toEqual({
         anthropic: {
           thinking: {
-            type: 'disabled',
+            type: "disabled",
             budgetTokens: 0,
           },
         },
@@ -67,22 +67,22 @@ describe('getReasoningProviderOptions', () => {
           },
         },
         openai: {
-          reasoningEffort: 'minimal',
+          reasoningEffort: "minimal",
         },
         xai: {
-          reasoningEffort: 'low',
+          reasoningEffort: "low",
         },
       });
     });
   });
 
   describe('when reasoningEffort is "low"', () => {
-    it('should return correct options without model', () => {
-      const result = getReasoningProviderOptions('low');
+    it("should return correct options without model", () => {
+      const result = getReasoningProviderOptions("low");
       expect(result).toEqual({
         anthropic: {
           thinking: {
-            type: 'enabled',
+            type: "enabled",
             budgetTokens: 1024,
           },
         },
@@ -92,20 +92,20 @@ describe('getReasoningProviderOptions', () => {
           },
         },
         openai: {
-          reasoningEffort: 'low',
+          reasoningEffort: "low",
         },
         xai: {
-          reasoningEffort: 'low',
+          reasoningEffort: "low",
         },
       });
     });
 
-    it('should return correct options with model', () => {
-      const result = getReasoningProviderOptions('low', 'some-model');
+    it("should return correct options with model", () => {
+      const result = getReasoningProviderOptions("low", "some-model");
       expect(result).toEqual({
         anthropic: {
           thinking: {
-            type: 'enabled',
+            type: "enabled",
             budgetTokens: 1024,
           },
         },
@@ -115,58 +115,58 @@ describe('getReasoningProviderOptions', () => {
           },
         },
         openai: {
-          reasoningEffort: 'low',
+          reasoningEffort: "low",
         },
         xai: {
-          reasoningEffort: 'low',
+          reasoningEffort: "low",
         },
       });
     });
   });
 
   describe('when reasoningEffort is "high"', () => {
-    it('should return correct options without model', () => {
-      const result = getReasoningProviderOptions('high');
+    it("should return correct options without model", () => {
+      const result = getReasoningProviderOptions("high");
       expect(result).toEqual({
         anthropic: {
           thinking: {
-            type: 'enabled',
-            budgetTokens: 16384,
+            type: "enabled",
+            budgetTokens: 16_384,
           },
         },
         google: {
           thinkingConfig: {
-            thinkingBudget: 16384,
+            thinkingBudget: 16_384,
           },
         },
         openai: {
-          reasoningEffort: 'high',
+          reasoningEffort: "high",
         },
         xai: {
-          reasoningEffort: 'high',
+          reasoningEffort: "high",
         },
       });
     });
 
-    it('should return correct options with model', () => {
-      const result = getReasoningProviderOptions('high', 'another-model');
+    it("should return correct options with model", () => {
+      const result = getReasoningProviderOptions("high", "another-model");
       expect(result).toEqual({
         anthropic: {
           thinking: {
-            type: 'enabled',
-            budgetTokens: 16384,
+            type: "enabled",
+            budgetTokens: 16_384,
           },
         },
         google: {
           thinkingConfig: {
-            thinkingBudget: 16384,
+            thinkingBudget: 16_384,
           },
         },
         openai: {
-          reasoningEffort: 'high',
+          reasoningEffort: "high",
         },
         xai: {
-          reasoningEffort: 'high',
+          reasoningEffort: "high",
         },
       });
     });

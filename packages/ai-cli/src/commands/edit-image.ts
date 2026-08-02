@@ -1,72 +1,72 @@
-import { generateText } from 'ai';
-import { google } from '@ai-sdk/google';
+import { google } from "@ai-sdk/google";
 import {
-  getVariadicArgs,
   getOpt,
+  getVariadicArgs,
   type HandlerArgs,
-  type OptionsInput,
-  type Option,
-  parseFileOptions,
   injectFileOptionsForCommander,
-  promptMissingOptions,
-  stripOptionFieldsForCommander,
   logger,
-  runWithHeartbeat,
   normalizeAbsolutePath,
-} from '@felixarntz/cli-utils';
-import { readImageFile, writeImageFile } from '../util/images';
-import { base64ToBuffer, uint8ArrayToBuffer } from '../util/binary';
-import { logTokenUsage, logCost } from '../util/ai-usage';
+  type Option,
+  type OptionsInput,
+  parseFileOptions,
+  promptMissingOptions,
+  runWithHeartbeat,
+  stripOptionFieldsForCommander,
+} from "@felixarntz/cli-utils";
+import { generateText } from "ai";
+import { logCost, logTokenUsage } from "../util/ai-usage";
+import { base64ToBuffer, uint8ArrayToBuffer } from "../util/binary";
+import { readImageFile, writeImageFile } from "../util/images";
 
-export const name = 'edit-image';
+export const name = "edit-image";
 export const description =
-  'Sends an input image with a prompt to generate a new image.';
+  "Sends an input image with a prompt to generate a new image.";
 
 const actualOptions: Option[] = [
   {
-    argname: 'input',
-    description: 'Input image file to edit',
+    argname: "input",
+    description: "Input image file to edit",
     positional: true,
     required: true,
     variadic: true,
     parse: (value: string) => normalizeAbsolutePath(value),
   },
   {
-    argname: '-p, --prompt <prompt>',
-    description: 'Prompt to send to the model',
+    argname: "-p, --prompt <prompt>",
+    description: "Prompt to send to the model",
     required: true,
   },
   {
-    argname: '-m, --model <model>',
-    description: 'Model to use',
+    argname: "-m, --model <model>",
+    description: "Model to use",
     choices: [
-      'google/gemini-3-pro-image-preview',
-      'google/gemini-2.5-flash-image',
+      "google/gemini-3-pro-image-preview",
+      "google/gemini-2.5-flash-image",
     ],
     required: true,
   },
   {
-    argname: '-o, --output <output>',
-    description: 'Output filename prefix',
-    defaults: 'output',
+    argname: "-o, --output <output>",
+    description: "Output filename prefix",
+    defaults: "output",
   },
 ];
 
 export const options = injectFileOptionsForCommander(actualOptions, [
-  'prompt',
+  "prompt",
 ]).map((option) => stripOptionFieldsForCommander(option));
 
-type CommandConfig = {
-  prompt: string;
+interface CommandConfig {
   model: string;
   output: string;
-};
+  prompt: string;
+}
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
   const config: CommandConfig = {
-    prompt: String(opt['prompt']),
-    model: String(opt['model']),
-    output: String(opt['output'] ?? 'output'),
+    prompt: String(opt["prompt"]),
+    model: String(opt["model"]),
+    output: String(opt["output"] ?? "output"),
   };
   return config;
 };
@@ -80,40 +80,44 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   } = parseOptions(
     await promptMissingOptions(
       actualOptions,
-      await parseFileOptions(getOpt(handlerArgs), ['prompt']),
-    ),
+      await parseFileOptions(getOpt(handlerArgs), ["prompt"])
+    )
   );
 
-  const imageContents = [];
+  const imageContents: Array<{
+    type: "image";
+    image: Buffer<ArrayBufferLike>;
+    mediaType: string;
+  }> = [];
   for (const inputImagePath of inputImagePaths) {
     const inputImage = await readImageFile(inputImagePath);
     imageContents.push({
-      type: 'image' as const,
+      type: "image" as const,
       image: inputImage.buffer,
       mediaType: inputImage.mime,
     });
   }
 
   logger.info(
-    `Prompting model ${model} to edit the ${imageContents.length > 1 ? 'images' : 'image'}...`,
+    `Prompting model ${model} to edit the ${imageContents.length > 1 ? "images" : "image"}...`
   );
 
   const providerMap = { google };
-  const [providerName, modelName] = model.split('/', 2);
+  const [providerName, modelName] = model.split("/", 2);
   if (!(providerName in providerMap)) {
     throw new Error(
       `Unsupported provider "${providerName}". Supported providers are: ${Object.keys(
-        providerMap,
-      ).join(', ')}`,
+        providerMap
+      ).join(", ")}`
     );
   }
 
   const prompt = [
     {
-      role: 'user' as const,
+      role: "user" as const,
       content: [
         {
-          type: 'text' as const,
+          type: "text" as const,
           text: textPrompt,
         },
         ...imageContents,
@@ -128,15 +132,15 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
       prompt,
     });
     let images = contentResult.files.filter((file) =>
-      file.mediaType.startsWith('image/'),
+      file.mediaType.startsWith("image/")
     );
 
     // If no image was generated, try again with an explicit system prompt.
     if (images.length === 0) {
       logger.debug(
-        'No image was generated; retrying with explicit system prompt...',
+        "No image was generated; retrying with explicit system prompt..."
       );
-      const system = `You are Nano Banana. You MUST generate a new image based on the input ${imageContents.length > 1 ? 'images' : 'image'} and user prompt.`;
+      const system = `You are Nano Banana. You MUST generate a new image based on the input ${imageContents.length > 1 ? "images" : "image"} and user prompt.`;
 
       const contentResult = await generateText({
         model: providerMap[providerName as keyof typeof providerMap](modelName),
@@ -144,27 +148,27 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
         system,
       });
       images = contentResult.files.filter((file) =>
-        file.mediaType.startsWith('image/'),
+        file.mediaType.startsWith("image/")
       );
     }
 
     return [contentResult, images];
-  }, 'Still editing...');
+  }, "Still editing...");
 
   if (images.length === 0) {
-    throw new Error('No image was generated');
+    throw new Error("No image was generated");
   }
 
   let outputFileBase = output;
   if (images.length > 1) {
     logger.info(`Saving ${images.length} generated images...`);
-    if (!outputFileBase.includes('%%number%%')) {
-      outputFileBase += '-%%number%%';
+    if (!outputFileBase.includes("%%number%%")) {
+      outputFileBase += "-%%number%%";
     }
   } else {
-    logger.info('Saving generated image...');
-    if (outputFileBase.includes('-%%number%%')) {
-      outputFileBase = outputFileBase.replace('-%%number%%', '');
+    logger.info("Saving generated image...");
+    if (outputFileBase.includes("-%%number%%")) {
+      outputFileBase = outputFileBase.replace("-%%number%%", "");
     }
   }
   for (const [index, image] of images.entries()) {
@@ -174,7 +178,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     } else if (image.uint8Array) {
       buffer = uint8ArrayToBuffer(image.uint8Array);
     } else {
-      throw new Error('No image data provided');
+      throw new Error("No image data provided");
     }
 
     const filePath = await writeImageFile({

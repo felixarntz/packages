@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { parseHtmlLinks } from './parse-html-links';
+import { describe, expect, it } from "vitest";
+import { parseHtmlLinks } from "./parse-html-links";
 
 const EXAMPLE_HTML = `
 <ul class="wp-block-social-links is-content-justification-left is-layout-flex wp-container-core-social-links-is-layout-fc4fd283 wp-block-social-links-is-layout-flex" id="felixarntz-social"><li class="wp-social-link wp-social-link-x  wp-block-social-link"><a href="https://x.com/felixarntz" class="wp-block-social-link-anchor"><span class="wp-block-social-link-label screen-reader-text">X</span></a></li>
@@ -15,81 +15,81 @@ const EXAMPLE_HTML = `
 <li class="wp-social-link wp-social-link-wordpress  wp-block-social-link"><a href="https://profiles.wordpress.org/flixos90/" class="wp-block-social-link-anchor"><span class="wp-block-social-link-label screen-reader-text">WordPress</span></a></li></ul>
 `;
 
-describe('parseHtmlLinks', () => {
-  it('extracts links from example HTML', () => {
-    const result = parseHtmlLinks(EXAMPLE_HTML, 'felixarntz-social');
-    const lines = result.split('\n');
+describe("parseHtmlLinks", () => {
+  it("extracts links from example HTML", () => {
+    const result = parseHtmlLinks(EXAMPLE_HTML, "felixarntz-social");
+    const lines = result.split("\n");
 
     expect(lines).toHaveLength(6);
-    expect(lines[0]).toBe('- X: https://x.com/felixarntz');
+    expect(lines[0]).toBe("- X: https://x.com/felixarntz");
     expect(lines[1]).toBe(
-      '- Bluesky: https://bsky.app/profile/felixarntz.bsky.social',
+      "- Bluesky: https://bsky.app/profile/felixarntz.bsky.social"
     );
-    expect(lines[2]).toBe('- GitHub: https://github.com/felixarntz');
-    expect(lines[3]).toBe('- LinkedIn: https://www.linkedin.com/in/felixarntz');
-    expect(lines[4]).toBe('- YouTube: https://www.youtube.com/@flixos90');
+    expect(lines[2]).toBe("- GitHub: https://github.com/felixarntz");
+    expect(lines[3]).toBe("- LinkedIn: https://www.linkedin.com/in/felixarntz");
+    expect(lines[4]).toBe("- YouTube: https://www.youtube.com/@flixos90");
     expect(lines[5]).toBe(
-      '- WordPress: https://profiles.wordpress.org/flixos90/',
+      "- WordPress: https://profiles.wordpress.org/flixos90/"
     );
   });
 
-  it('returns empty string if ID not found', () => {
-    const result = parseHtmlLinks(EXAMPLE_HTML, 'missing');
-    expect(result).toBe('');
+  it("returns empty string if ID not found", () => {
+    const result = parseHtmlLinks(EXAMPLE_HTML, "missing");
+    expect(result).toBe("");
   });
 
-  it('returns empty string if no links found', () => {
+  it("returns empty string if no links found", () => {
     const html = '<div id="test">No links here</div>';
-    const result = parseHtmlLinks(html, 'test');
-    expect(result).toBe('');
+    const result = parseHtmlLinks(html, "test");
+    expect(result).toBe("");
   });
 
-  it('handles attributes in different order', () => {
+  it("handles attributes in different order", () => {
     const html =
       '<div id="test"><a class="btn" href="https://example.com" target="_blank">Link</a></div>';
-    const result = parseHtmlLinks(html, 'test');
-    expect(result).toBe('- Link: https://example.com');
+    const result = parseHtmlLinks(html, "test");
+    expect(result).toBe("- Link: https://example.com");
   });
 
-  it('handles single quotes in href', () => {
+  it("handles single quotes in href", () => {
     const html = "<div id='test'><a href='https://example.com'>Link</a></div>";
-    const result = parseHtmlLinks(html, 'test');
-    expect(result).toBe('- Link: https://example.com');
+    const result = parseHtmlLinks(html, "test");
+    expect(result).toBe("- Link: https://example.com");
   });
 
-  it('skips non-http links', () => {
+  it("skips non-http links", () => {
     const html = `
 		<div id="test">
 			<a href="ftp://example.com">FTP</a>
 			<a href="mailto:test@example.com">Mail</a>
 			<a href="javascript:void(0)">JS</a>
 		</div>`;
-    const result = parseHtmlLinks(html, 'test');
-    expect(result).toBe('');
+    const result = parseHtmlLinks(html, "test");
+    expect(result).toBe("");
   });
 
-  it('uses img alt text if link text is empty', () => {
+  it("uses img alt text if link text is empty", () => {
     const html =
       '<div id="test"><a href="https://example.com"><img src="image.png" alt="Image Link" /></a></div>';
-    const result = parseHtmlLinks(html, 'test');
-    expect(result).toBe('- Image Link: https://example.com');
+    const result = parseHtmlLinks(html, "test");
+    expect(result).toBe("- Image Link: https://example.com");
   });
 
-  it('prefers text content over img alt text', () => {
+  it("prefers text content over img alt text", () => {
     const html =
       '<div id="test"><a href="https://example.com"><img src="image.png" alt="Image Link" />Text Link</a></div>';
-    const result = parseHtmlLinks(html, 'test');
-    expect(result).toBe('- Text Link: https://example.com');
+    const result = parseHtmlLinks(html, "test");
+    expect(result).toBe("- Text Link: https://example.com");
   });
 
-  it('sanitizes HTML entities in img alt text', () => {
+  it("sanitizes HTML entities in img alt text", () => {
     const html =
       '<div id="test"><a href="https://example.com"><img src="image.png" alt="Image&nbsp;Link" /></a></div>';
-    const result = parseHtmlLinks(html, 'test');
-    expect(result).toBe('- Image Link: https://example.com');
+    const result = parseHtmlLinks(html, "test");
+    expect(result).toBe("- Image Link: https://example.com");
   });
 
-  it('deduplicates links and prefers text label over alt text', () => {
+  it("deduplicates links and prefers text label over alt text", () => {
     const html = `
       <div id="test">
         <a href="https://example.com"><img src="img.png" alt="Alt Label" /></a>
@@ -98,11 +98,11 @@ describe('parseHtmlLinks', () => {
         <a href="https://example.com">Another Text Label</a>
       </div>
     `;
-    const result = parseHtmlLinks(html, 'test');
-    const lines = result.split('\n');
+    const result = parseHtmlLinks(html, "test");
+    const lines = result.split("\n");
 
     expect(lines).toHaveLength(2);
-    expect(lines[0]).toBe('- Text Label: https://example.com');
-    expect(lines[1]).toBe('- Other: https://other.com');
+    expect(lines[0]).toBe("- Text Label: https://example.com");
+    expect(lines[1]).toBe("- Other: https://other.com");
   });
 });

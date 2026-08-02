@@ -1,54 +1,54 @@
-import sharp from 'sharp';
 import {
   getArgs,
   getOpt,
   type HandlerArgs,
-  type OptionsInput,
-  type Option,
-  promptMissingOptions,
-  stripOptionFieldsForCommander,
   logger,
   normalizeAbsolutePath,
-} from '@felixarntz/cli-utils';
-import { readImageFile, writeImageFile } from '../util/images';
+  type Option,
+  type OptionsInput,
+  promptMissingOptions,
+  stripOptionFieldsForCommander,
+} from "@felixarntz/cli-utils";
+import sharp from "sharp";
+import { readImageFile, writeImageFile } from "../util/images";
 
-export const name = 'optimize-image';
-export const description = 'Optimizes an image for web delivery.';
+export const name = "optimize-image";
+export const description = "Optimizes an image for web delivery.";
 
 const actualOptions: Option[] = [
   {
-    argname: 'input',
-    description: 'Input image file to optimize',
+    argname: "input",
+    description: "Input image file to optimize",
     positional: true,
     required: true,
     parse: (value: string) => normalizeAbsolutePath(value),
   },
   {
-    argname: '-f, --format <format>',
-    description: 'Output format',
+    argname: "-f, --format <format>",
+    description: "Output format",
     required: false,
-    defaults: 'jpeg',
-    choices: ['jpeg', 'webp', 'avif', 'png'],
+    defaults: "jpeg",
+    choices: ["jpeg", "webp", "avif", "png"],
   },
   {
-    argname: '-o, --output <output>',
-    description: 'Output filename prefix, to place the output file elsewhere',
+    argname: "-o, --output <output>",
+    description: "Output filename prefix, to place the output file elsewhere",
   },
 ];
 
 export const options = actualOptions.map((option) =>
-  stripOptionFieldsForCommander(option),
+  stripOptionFieldsForCommander(option)
 );
 
-type CommandConfig = {
-  format: 'jpeg' | 'webp' | 'avif' | 'png';
+interface CommandConfig {
+  format: "jpeg" | "webp" | "avif" | "png";
   output?: string;
-};
+}
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
   const config: CommandConfig = {
-    format: (opt['format'] as 'jpeg' | 'webp' | 'avif' | 'png') ?? 'jpeg',
-    output: opt['output'] ? String(opt['output']) : undefined,
+    format: (opt["format"] as "jpeg" | "webp" | "avif" | "png") ?? "jpeg",
+    output: opt["output"] ? String(opt["output"]) : undefined,
   };
   return config;
 };
@@ -56,7 +56,7 @@ const parseOptions = (opt: OptionsInput): CommandConfig => {
 export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   const [inputImagePath] = getArgs(handlerArgs);
   const { format, output } = parseOptions(
-    await promptMissingOptions(actualOptions, getOpt(handlerArgs)),
+    await promptMissingOptions(actualOptions, getOpt(handlerArgs))
   );
 
   const inputImage = await readImageFile(inputImagePath);
@@ -69,35 +69,37 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   let mime: string;
 
   switch (format) {
-    case 'jpeg':
+    case "jpeg":
       sharpInstance = sharpInstance.jpeg({ quality: 80, progressive: true });
-      ext = 'jpg';
-      mime = 'image/jpeg';
+      ext = "jpg";
+      mime = "image/jpeg";
       break;
-    case 'png':
+    case "png":
       sharpInstance = sharpInstance.png({ compressionLevel: 6 });
-      ext = 'png';
-      mime = 'image/png';
+      ext = "png";
+      mime = "image/png";
       break;
-    case 'webp':
+    case "webp":
       sharpInstance = sharpInstance.webp({ quality: 80 });
-      ext = 'webp';
-      mime = 'image/webp';
+      ext = "webp";
+      mime = "image/webp";
       break;
-    case 'avif':
+    case "avif":
       sharpInstance = sharpInstance.avif({ quality: 50 });
-      ext = 'avif';
-      mime = 'image/avif';
+      ext = "avif";
+      mime = "image/avif";
       break;
+    default:
+      throw new Error(`Unsupported format: ${format}`);
   }
 
   const optimizedBuffer = await sharpInstance.toBuffer();
 
   let fileBase = output;
   if (!fileBase) {
-    const inputPathParts = inputImagePath.split('.');
+    const inputPathParts = inputImagePath.split(".");
     inputPathParts.pop();
-    fileBase = `${inputPathParts.join('.')}-optimized`;
+    fileBase = `${inputPathParts.join(".")}-optimized`;
   }
   const filePath = await writeImageFile({
     fileBase,

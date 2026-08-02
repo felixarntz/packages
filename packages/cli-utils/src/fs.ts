@@ -1,5 +1,5 @@
-import fs from 'node:fs/promises';
-import path from 'node:path';
+import fs from "node:fs/promises";
+import path from "node:path";
 
 /**
  * Checks if a file exists.
@@ -11,7 +11,7 @@ export async function fileExists(filePath: string): Promise<boolean> {
   try {
     const stats = await fs.stat(filePath);
     return stats.isFile();
-  } catch (_) {
+  } catch {
     return false;
   }
 }
@@ -26,7 +26,7 @@ export async function directoryExists(dirPath: string): Promise<boolean> {
   try {
     const stats = await fs.stat(dirPath);
     return stats.isDirectory();
-  } catch (_) {
+  } catch {
     return false;
   }
 }
@@ -40,12 +40,12 @@ export async function directoryExists(dirPath: string): Promise<boolean> {
  */
 export async function readTextFile(
   filePath: string,
-  encoding: BufferEncoding = 'utf-8',
+  encoding: BufferEncoding = "utf-8"
 ): Promise<string> {
   try {
     return await fs.readFile(filePath, { encoding });
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
       throw new Error(`File not found: ${filePath}`);
     }
 
@@ -66,9 +66,9 @@ export async function readTextFile(
 export async function writeTextFile(
   filePath: string,
   content: string,
-  encoding: BufferEncoding = 'utf-8',
-  createDir: boolean = true,
-  overwrite: boolean = true,
+  encoding: BufferEncoding = "utf-8",
+  createDir = true,
+  overwrite = true
 ): Promise<void> {
   // Ensure directory exists if createDir is true.
   if (createDir) {
@@ -87,7 +87,7 @@ export async function writeTextFile(
   try {
     // Write the file.
     await fs.writeFile(filePath, content, { encoding });
-  } catch (_) {
+  } catch {
     throw new Error(`Failed to write file: ${filePath}`);
   }
 }
@@ -102,7 +102,7 @@ export async function readBinaryFile(filePath: string): Promise<Buffer> {
   try {
     return await fs.readFile(filePath);
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
       throw new Error(`File not found: ${filePath}`);
     }
 
@@ -122,8 +122,8 @@ export async function readBinaryFile(filePath: string): Promise<Buffer> {
 export async function writeBinaryFile(
   filePath: string,
   content: Buffer,
-  createDir: boolean = true,
-  overwrite: boolean = true,
+  createDir = true,
+  overwrite = true
 ): Promise<void> {
   // Ensure directory exists if createDir is true.
   if (createDir) {
@@ -142,7 +142,7 @@ export async function writeBinaryFile(
   try {
     // Write the file.
     await fs.writeFile(filePath, content);
-  } catch (_) {
+  } catch {
     throw new Error(`Failed to write file: ${filePath}`);
   }
 }
@@ -158,7 +158,7 @@ async function ensureDirectory(dirPath: string): Promise<void> {
     if (!(await directoryExists(dirPath))) {
       await fs.mkdir(dirPath, { recursive: true });
     }
-  } catch (_) {
+  } catch {
     throw new Error(`Failed to create directory: ${dirPath}`);
   }
 }

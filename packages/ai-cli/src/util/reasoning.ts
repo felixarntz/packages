@@ -1,4 +1,4 @@
-import type { SharedV2ProviderOptions } from '@ai-sdk/provider';
+import type { SharedV2ProviderOptions } from "@ai-sdk/provider";
 
 /**
  * Generates provider-specific options for reasoning based on the specified effort level and optional model.
@@ -11,38 +11,38 @@ import type { SharedV2ProviderOptions } from '@ai-sdk/provider';
  * @returns An object containing provider-specific options conforming to SharedV2ProviderOptions.
  */
 export function getReasoningProviderOptions(
-  reasoningEffort: 'minimal' | 'low' | 'high',
-  model?: string,
+  reasoningEffort: "minimal" | "low" | "high",
+  model?: string
 ): SharedV2ProviderOptions {
-  if (reasoningEffort === 'minimal') {
+  if (reasoningEffort === "minimal") {
     return {
       anthropic: {
         thinking: {
-          type: 'disabled',
+          type: "disabled",
           budgetTokens: 0,
         },
       },
       google: {
         thinkingConfig: {
           // Can't disable thinking for Gemini 2.5 Pro.
-          thinkingBudget: model === 'google/gemini-2.5-pro' ? 128 : 0,
+          thinkingBudget: model === "google/gemini-2.5-pro" ? 128 : 0,
         },
       },
       openai: {
-        reasoningEffort: 'minimal',
+        reasoningEffort: "minimal",
       },
       xai: {
-        reasoningEffort: 'low',
+        reasoningEffort: "low",
       },
     };
   }
 
-  const budget = reasoningEffort === 'low' ? 1024 : 16384;
+  const budget = reasoningEffort === "low" ? 1024 : 16_384;
 
   return {
     anthropic: {
       thinking: {
-        type: 'enabled',
+        type: "enabled",
         budgetTokens: budget,
       },
     },
