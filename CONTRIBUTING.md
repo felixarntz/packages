@@ -2,71 +2,38 @@
 
 Thank you for your interest in contributing to my NPM packages! I welcome bug reports, enhancement and feature suggestions, and code contributions.
 
-## Reporting Bugs
+## Reporting bugs
 
 If you find a bug, please [open a bug report issue](https://github.com/felixarntz/packages/issues/new?template=1-bug.yml), and complete and submit the form.
 
-## Suggesting Enhancements
+## Suggesting enhancements
 
 If you have a suggestion for improving an existing feature, please [open an enhancement request issue](https://github.com/felixarntz/packages/issues/new?template=2-enhancement.yml), and complete and submit the form.
 
-## Suggesting Features
+## Suggesting features
 
 Do you have an idea for an entirely new feature that might fit into the scope of my NPM packages? Feature suggestions are welcome!
 
 If your idea is mostly related to an existing feature, consider suggesting an enhancement instead (see above). But if your idea is something entirely new, please go ahead and [open a feature request issue](https://github.com/felixarntz/packages/issues/new?template=3-feature.yml), and complete and submit the form.
 
-## Code Contributions
+## Getting started with code contributions
 
 ### Prerequisites
 
 - **Node.js**: Version 22.12.0 or higher
 - **pnpm**: Package manager (install with `npm install -g pnpm`)
-- **Git**: For version control
+- **git**: For version control
 
-### Getting Started
+### Setting up the development environment
 
-1. Fork the repository on GitHub
-2. Clone your fork locally:
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/packages.git
-   cd packages
-   ```
-3. Install dependencies:
-   ```bash
-   pnpm install
-   ```
-4. Build the project:
-   ```bash
-   pnpm build
-   ```
-5. Verify everything works:
-   ```bash
-   pnpm test
-   ```
+```bash
+pnpm install
+pnpm build
+```
 
-### Making Changes
+### Useful commands
 
-1. Create a new branch:
-   ```bash
-   git checkout -b feature/your-change-name
-   ```
-2. Make your changes
-3. Write or update tests for your changes
-4. Ensure everything passes:
-   ```bash
-   pnpm test
-   pnpm check
-   pnpm typecheck
-   ```
-5. Commit with a clear message and push to your fork
-6. Open a pull request
-
-### Helpful Scripts
-
-- `pnpm build` - Build all packages
-- `pnpm test` - Run all tests
-- `pnpm typecheck` - Run TypeScript type checking
+See [./AGENTS.md](./AGENTS.md#workflow-commands).
 
 ### Pull Request Guidelines
 
