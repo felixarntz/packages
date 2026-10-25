@@ -39,7 +39,7 @@
     "dotenv": "catalog:",
     "file-type": "^21.3.0",
     "sharp": "^0.35.5",
-    "zod": "^4.3.6"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "tsup": "catalog:",
