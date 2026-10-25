@@ -12,7 +12,7 @@ import {
   runWithHeartbeat,
   stripOptionFieldsForCommander,
 } from "@felixarntz/cli-utils";
-import { generateText } from "ai";
+import { generateImage } from "ai";
 import { logCost, logTokenUsage } from "../util/ai-usage";
 import { base64ToBuffer, uint8ArrayToBuffer } from "../util/binary";
 import { readImageFile, writeImageFile } from "../util/images";
@@ -101,45 +101,20 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     `Prompting model ${model} to edit the ${imageContents.length > 1 ? "images" : "image"}...`
   );
 
-  const prompt = [
-    {
-      role: "user" as const,
-      content: [
-        {
-          type: "text" as const,
-          text: textPrompt,
-        },
-        ...imageContents,
-      ],
-    },
-  ];
+  const prompt = {
+    text: textPrompt,
+    images: imageContents.map((imageContent) => imageContent.image),
+  };
 
   // Stream text result, and log "heartbeat" messages every 5 seconds.
   const [result, images] = await runWithHeartbeat(async () => {
-    const contentResult = await generateText({
+    const contentResult = await generateImage({
       model,
       prompt,
     });
-    let images = contentResult.files.filter((file) =>
+    const images = contentResult.images.filter((file) =>
       file.mediaType.startsWith("image/")
     );
-
-    // If no image was generated, try again with an explicit system prompt.
-    if (images.length === 0) {
-      logger.debug(
-        "No image was generated; retrying with explicit system prompt..."
-      );
-      const system = `You are Nano Banana. You MUST generate a new image based on the input ${imageContents.length > 1 ? "images" : "image"} and user prompt.`;
-
-      const contentResult = await generateText({
-        model,
-        prompt,
-        system,
-      });
-      images = contentResult.files.filter((file) =>
-        file.mediaType.startsWith("image/")
-      );
-    }
 
     return [contentResult, images];
   }, "Still editing...");
@@ -180,6 +155,6 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     logger.info(`Saved image to ${filePath}`);
   }
 
-  logTokenUsage(result.totalUsage);
+  logTokenUsage(result.usage);
   logCost(result.providerMetadata);
 };

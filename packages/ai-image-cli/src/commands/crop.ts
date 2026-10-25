@@ -15,7 +15,6 @@ import sharp from "sharp";
 import { z } from "zod";
 import { logCost, logTokenUsage } from "../util/ai-usage";
 import { readImageFile, writeImageFile } from "../util/images";
-import { getReasoningProviderOptions } from "../util/reasoning";
 
 export const name = "crop";
 export const description = "Crops an input image to a given aspect ratio.";
@@ -169,7 +168,7 @@ Return only the pixel offset value.`;
         output: Output.object({ schema }),
         system,
         prompt,
-        providerOptions: getReasoningProviderOptions("low", model),
+        reasoning: "low",
       }),
     "Still analyzing image..."
   );
