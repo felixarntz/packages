@@ -17,7 +17,7 @@ import { logCost, logTokenUsage } from "../util/ai-usage";
 import { readImageFile, writeImageFile } from "../util/images";
 import { getReasoningProviderOptions } from "../util/reasoning";
 
-export const name = "crop-image";
+export const name = "crop";
 export const description = "Crops an input image to a given aspect ratio.";
 
 const actualOptions: Option[] = [

@@ -12,7 +12,7 @@ import {
 import sharp from "sharp";
 import { readImageFile, writeImageFile } from "../util/images";
 
-export const name = "optimize-image";
+export const name = "optimize";
 export const description = "Optimizes an image for web delivery.";
 
 const actualOptions: Option[] = [

@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/ai-cli.ts"],
+  entry: ["src/ai-image-cli.ts"],
   format: ["cjs", "esm"],
   dts: {
     compilerOptions: {

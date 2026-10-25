@@ -1,4 +1,3 @@
-import { google } from "@ai-sdk/google";
 import {
   getOpt,
   getVariadicArgs,
@@ -18,7 +17,7 @@ import { logCost, logTokenUsage } from "../util/ai-usage";
 import { base64ToBuffer, uint8ArrayToBuffer } from "../util/binary";
 import { readImageFile, writeImageFile } from "../util/images";
 
-export const name = "edit-image";
+export const name = "edit";
 export const description =
   "Sends an input image with a prompt to generate a new image.";
 
@@ -102,16 +101,6 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     `Prompting model ${model} to edit the ${imageContents.length > 1 ? "images" : "image"}...`
   );
 
-  const providerMap = { google };
-  const [providerName, modelName] = model.split("/", 2);
-  if (!(providerName in providerMap)) {
-    throw new Error(
-      `Unsupported provider "${providerName}". Supported providers are: ${Object.keys(
-        providerMap
-      ).join(", ")}`
-    );
-  }
-
   const prompt = [
     {
       role: "user" as const,
@@ -128,7 +117,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   // Stream text result, and log "heartbeat" messages every 5 seconds.
   const [result, images] = await runWithHeartbeat(async () => {
     const contentResult = await generateText({
-      model: providerMap[providerName as keyof typeof providerMap](modelName),
+      model,
       prompt,
     });
     let images = contentResult.files.filter((file) =>
@@ -143,7 +132,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
       const system = `You are Nano Banana. You MUST generate a new image based on the input ${imageContents.length > 1 ? "images" : "image"} and user prompt.`;
 
       const contentResult = await generateText({
-        model: providerMap[providerName as keyof typeof providerMap](modelName),
+        model,
         prompt,
         system,
       });
