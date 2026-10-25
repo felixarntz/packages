@@ -30,7 +30,7 @@
     "vitest": "catalog:"
   },
   "scripts": {
-    "ai": "DEBUG=true node ./packages/ai-cli/dist/ai-cli.js",
+    "ai-image": "DEBUG=true node ./packages/ai-image-cli/dist/ai-image-cli.js",
     "felixarntz": "DEBUG=true node ./packages/felixarntz/dist/index.js",
     "wp-plugins": "DEBUG=true node ./packages/wp-plugins-cli/dist/wp-plugins-cli.js",
     "build": "pnpm --recursive build",

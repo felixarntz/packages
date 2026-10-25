@@ -1,11 +1,14 @@
 import type {
   ImageModelV2ProviderMetadata,
   ImageModelV3ProviderMetadata,
+  ImageModelV4ProviderMetadata,
   JSONValue,
   LanguageModelV2Usage,
   LanguageModelV3Usage,
+  LanguageModelV4Usage,
   SharedV2ProviderMetadata,
   SharedV3ProviderMetadata,
+  SharedV4ProviderMetadata,
 } from "@ai-sdk/provider";
 import { logger } from "@felixarntz/cli-utils";
 import type { LanguageModelUsage } from "ai";
@@ -16,7 +19,11 @@ import type { LanguageModelUsage } from "ai";
  * @param tokenUsage - The token usage object containing input, output, reasoning (optional), and total token counts.
  */
 export function logTokenUsage(
-  tokenUsage: LanguageModelUsage | LanguageModelV2Usage | LanguageModelV3Usage
+  tokenUsage:
+    | LanguageModelUsage
+    | LanguageModelV2Usage
+    | LanguageModelV3Usage
+    | LanguageModelV4Usage
 ): void {
   let inputTokens: number | undefined;
   let outputTokens: number | undefined;
@@ -79,6 +86,8 @@ export function logCost(
     | ImageModelV2ProviderMetadata
     | SharedV3ProviderMetadata
     | ImageModelV3ProviderMetadata
+    | SharedV4ProviderMetadata
+    | ImageModelV4ProviderMetadata
     | undefined
 ): void {
   if (typeof providerMetadata?.["gateway"] !== "object") {
