@@ -12,7 +12,7 @@ import {
   runWithHeartbeat,
   stripOptionFieldsForCommander,
 } from "@felixarntz/cli-utils";
-import { generateImage } from "ai";
+import { type FilePart, generateText } from "ai";
 import { logCost, logTokenUsage } from "../util/ai-usage";
 import { base64ToBuffer, uint8ArrayToBuffer } from "../util/binary";
 import { readImageFile, writeImageFile } from "../util/images";
@@ -39,10 +39,10 @@ const actualOptions: Option[] = [
     argname: "-m, --model <model>",
     description: "Model to use",
     choices: [
+      // Due to the use of multimodal output models in this command, only Google models are supported.
       "google/gemini-3.1-flash-image",
       "google/gemini-2.5-flash-image",
       "google/gemini-nano-banana-2.1",
-      "openai/gpt-image-2",
     ],
     required: true,
   },
@@ -85,16 +85,12 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     )
   );
 
-  const imageContents: Array<{
-    type: "image";
-    image: Buffer<ArrayBufferLike>;
-    mediaType: string;
-  }> = [];
+  const imageContents: FilePart[] = [];
   for (const inputImagePath of inputImagePaths) {
     const inputImage = await readImageFile(inputImagePath);
     imageContents.push({
-      type: "image" as const,
-      image: inputImage.buffer,
+      type: "file" as const,
+      data: { type: "data" as const, data: inputImage.buffer },
       mediaType: inputImage.mime,
     });
   }
@@ -103,18 +99,31 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     `Prompting model ${model} to edit the ${imageContents.length > 1 ? "images" : "image"}...`
   );
 
-  const prompt = {
-    text: textPrompt,
-    images: imageContents.map((imageContent) => imageContent.image),
-  };
+  const prompt = [
+    {
+      role: "user" as const,
+      content: [
+        {
+          type: "text" as const,
+          text: textPrompt,
+        },
+        ...imageContents,
+      ],
+    },
+  ];
 
   // Stream text result, and log "heartbeat" messages every 5 seconds.
   const [result, images] = await runWithHeartbeat(async () => {
-    const contentResult = await generateImage({
+    const contentResult = await generateText({
       model,
       prompt,
+      providerOptions: {
+        google: {
+          responseModalities: ["IMAGE"],
+        },
+      },
     });
-    const images = contentResult.images.filter((file) =>
+    const images = contentResult.files.filter((file) =>
       file.mediaType.startsWith("image/")
     );
 
