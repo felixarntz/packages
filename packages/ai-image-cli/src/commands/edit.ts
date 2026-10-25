@@ -39,8 +39,10 @@ const actualOptions: Option[] = [
     argname: "-m, --model <model>",
     description: "Model to use",
     choices: [
-      "google/gemini-3-pro-image-preview",
+      "google/gemini-3.1-flash-image",
       "google/gemini-2.5-flash-image",
+      "google/gemini-nano-banana-2.1",
+      "openai/gpt-image-2",
     ],
     required: true,
   },
