@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "engines": {
-    "node": ">=22.12.0"
+    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
   },
   "homepage": "https://github.com/felixarntz/packages#readme",
   "repository": {
@@ -25,7 +25,6 @@
     "husky": "^9.1.7",
     "mock-fs": "^5.5.0",
     "syncpack": "^15.2.0",
-    "tsup": "catalog:",
     "turbo": "catalog:",
     "ultracite": "7.7.0",
     "vitest": "catalog:"

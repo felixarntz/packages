@@ -4,14 +4,13 @@
   "description": "Utility functions for TypeScript CLI tools, using Commander and Inquirer",
   "license": "MIT",
   "type": "module",
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist/**/*"
   ],
   "engines": {
-    "node": ">=22.12.0"
+    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
   },
   "homepage": "https://github.com/felixarntz/packages/blob/main/packages/cli-utils/README.md",
   "repository": {
@@ -32,12 +31,12 @@
   "devDependencies": {
     "@commander-js/extra-typings": "catalog:",
     "commander": "catalog:",
-    "tsup": "catalog:",
+    "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "vitest run",
     "test:ci": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
