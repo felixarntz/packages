@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.15",
+    "@changesets/cli": "^2.31.0",
     "@types/node": "^24.10.9",
     "@vitest/coverage-v8": "catalog:",
     "glob": "^10.5.0",
@@ -41,6 +42,9 @@
     "check": "ultracite check",
     "fix": "ultracite fix",
     "doctor": "ultracite doctor",
+    "changeset": "changeset",
+    "ci:version": "changeset version && pnpm install --no-frozen-lockfile",
+    "ci:release": "turbo build --filter='./packages/*' && changeset publish",
     "prepare": "husky"
   },
   "packageManager": "pnpm@11.28.0"
