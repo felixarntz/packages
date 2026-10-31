@@ -11,6 +11,7 @@ node_modules
 .DS_Store
 Thumbs.db
 
-# Test report files
+# Dev tooling
 junit.xml
 packages/*/coverage/
+packages/*/.turbo/
