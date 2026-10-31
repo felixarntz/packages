@@ -1,20 +1,18 @@
 {
   "name": "@felixarntz/wp-plugins-cli",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "CLI with various tools for WordPress plugin maintenance",
   "license": "MIT",
   "type": "module",
   "bin": {
     "wp-plugins": "dist/wp-plugins-cli.js"
   },
-  "main": "dist/wp-plugins-cli.cjs",
-  "module": "dist/wp-plugins-cli.js",
-  "types": "dist/wp-plugins-cli.d.ts",
+  "main": "dist/wp-plugins-cli.js",
   "files": [
     "dist/**/*"
   ],
   "engines": {
-    "node": ">=22.12.0"
+    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
   },
   "homepage": "https://github.com/felixarntz/packages/blob/main/packages/wp-plugins-cli/README.md",
   "repository": {
@@ -35,17 +33,18 @@
     "simple-git": "^4.0.1"
   },
   "devDependencies": {
-    "tsup": "catalog:",
+    "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "vitest run",
     "test:ci": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   }
 }

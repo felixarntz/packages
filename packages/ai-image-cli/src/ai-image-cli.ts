@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { program } from "@commander-js/extra-typings";
 import { withErrorHandling, withOptions } from "@felixarntz/cli-utils";
 import dotenv from "dotenv";

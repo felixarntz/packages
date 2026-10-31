@@ -1,20 +1,18 @@
 {
   "name": "felixarntz",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Meet me in my personal CLI",
   "license": "MIT",
   "type": "module",
   "bin": {
     "felixarntz": "dist/index.js"
   },
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
   "files": [
     "dist/**/*"
   ],
   "engines": {
-    "node": ">=22.12.0"
+    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
   },
   "homepage": "https://github.com/felixarntz/packages/blob/main/packages/felixarntz/README.md",
   "repository": {
@@ -26,17 +24,18 @@
     "url": "https://github.com/felixarntz/packages/issues"
   },
   "devDependencies": {
-    "tsup": "catalog:",
+    "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "vitest run",
     "test:ci": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   }
 }

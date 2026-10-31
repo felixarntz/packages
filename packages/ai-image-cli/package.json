@@ -7,14 +7,12 @@
   "bin": {
     "ai-image": "dist/ai-image-cli.js"
   },
-  "main": "dist/ai-image-cli.cjs",
-  "module": "dist/ai-image-cli.js",
-  "types": "dist/ai-image-cli.d.ts",
+  "main": "dist/ai-image-cli.js",
   "files": [
     "dist/**/*"
   ],
   "engines": {
-    "node": ">=22.12.0"
+    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
   },
   "homepage": "https://github.com/felixarntz/packages/blob/main/packages/ai-image-cli/README.md",
   "repository": {
@@ -38,17 +36,18 @@
     "zod": "^4.6.6"
   },
   "devDependencies": {
-    "tsup": "catalog:",
+    "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "vitest run",
     "test:ci": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   }
 }
