@@ -1,5 +1,9 @@
 # @felixarntz/ai-cli
 
+> _This package is **deprecated** and no longer maintained.
+>
+> Use `@felixarntz/ai-image-cli` instead.
+
 CLI with various AI-driven personal tools.
 
 It uses the [AI SDK](https://www.npmjs.com/package/ai) under the hood, except for a few Google model exclusive features, for which it uses the [Google Gen AI SDK](https://www.npmjs.com/package/@google/genai).
