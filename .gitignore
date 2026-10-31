@@ -13,5 +13,5 @@ Thumbs.db
 
 # Dev tooling
 junit.xml
+.turbo/
 packages/*/coverage/
-packages/*/.turbo/
