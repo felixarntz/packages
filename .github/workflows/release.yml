@@ -1,0 +1,95 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.changeset/**'
+      - '.github/workflows/release.yml'
+  workflow_dispatch:
+    inputs:
+      snapshot:
+        description: 'Publish a snapshot release instead of a normal release'
+        type: boolean
+        default: false
+
+concurrency:
+  group: 'release'
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+      pull-requests: write
+      issues: write
+    if: github.repository_owner == 'felixarntz'
+    steps:
+      - name: Configure Git
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Checkout Repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Normal release path
+      - name: Create Release Pull Request or Publish to npm
+        if: inputs.snapshot != true
+        id: changesets
+        uses: changesets/action@63a615b9cd06ba9a3e6d13796c7fbcb080a60a0b # v1
+        with:
+          version: pnpm ci:version
+          publish: pnpm ci:release
+          setupGitUser: false
+          # When using "github-api", all commits and tags are GPG-signed and attributed to the user or app who owns the GITHUB_TOKEN
+          commitMode: 'github-api'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Snapshot release path
+      - name: Add SHORT_SHA env property with commit short sha
+        if: inputs.snapshot == true
+        run: echo "SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-8)" >> $GITHUB_ENV
+
+      - name: Delete pre.json if it exists
+        if: inputs.snapshot == true
+        run: rm -f .changeset/pre.json
+
+      - name: Version Packages (snapshot)
+        if: inputs.snapshot == true
+        run: pnpm changeset version --snapshot ${SHORT_SHA}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build
+        if: inputs.snapshot == true
+        run: pnpm build
+
+      - name: Publish Snapshot Release
+        if: inputs.snapshot == true
+        run: pnpm changeset publish --no-git-tag --tag snapshot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
