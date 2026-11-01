@@ -3,9 +3,7 @@ packages:
 
 allowBuilds:
   esbuild: true
-  protobufjs: false
   sharp: true
-  unrs-resolver: true
 
 catalog:
   '@commander-js/extra-typings': ^15.0.0
