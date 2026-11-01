@@ -11,7 +11,11 @@ import {
 } from "@felixarntz/cli-utils";
 import { GoogleGenAI } from "@google/genai";
 import { base64ToBuffer, bufferToBase64 } from "../util/binary";
-import { readImageFile, writeImageFile } from "../util/images";
+import {
+  ensureCorrectOrientation,
+  readImageFile,
+  writeImageFile,
+} from "../util/images";
 
 export const name = "upscale";
 export const description = "Upscales an input image.";
@@ -71,7 +75,9 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     );
   }
 
-  const inputImage = await readImageFile(inputImagePath);
+  const inputImage = await ensureCorrectOrientation(
+    await readImageFile(inputImagePath)
+  );
 
   logger.info(`Upscaling image using model ${model}...`);
 

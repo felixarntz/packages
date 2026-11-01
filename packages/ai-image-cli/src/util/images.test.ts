@@ -6,9 +6,16 @@ import {
   readBinaryFile,
   writeBinaryFile,
 } from "@felixarntz/cli-utils";
+import sharpLib from "sharp";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { readImageFile, writeImageFile } from "./images";
+import {
+  ensureCorrectOrientation,
+  type ImageData,
+  readImageFile,
+  sharp,
+  writeImageFile,
+} from "./images";
 
 vi.mock("@felixarntz/cli-utils", async () => {
   const actual = await vi.importActual<typeof import("@felixarntz/cli-utils")>(
@@ -143,5 +150,154 @@ describe("writeImageFile", () => {
     expect(logger.debug).toHaveBeenCalledWith(
       "Unable to detect file type from buffer; defaulting to png extension"
     );
+  });
+});
+
+const paintRaw = (opts: { width: number; height: number }): Buffer => {
+  const { width, height } = opts;
+  const raw = Buffer.alloc(width * height * 3);
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const offset = (y * width + x) * 3;
+      raw[offset] = y;
+      raw[offset + 1] = x;
+      raw[offset + 2] = 7;
+    }
+  }
+  return raw;
+};
+
+const rotate180 = (opts: {
+  raw: Buffer;
+  width: number;
+  height: number;
+}): Buffer => {
+  const { raw, width, height } = opts;
+  const rotated = Buffer.alloc(raw.length);
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const src = (y * width + x) * 3;
+      const dst = ((height - 1 - y) * width + (width - 1 - x)) * 3;
+      raw.copy(rotated, dst, src, src + 3);
+    }
+  }
+  return rotated;
+};
+
+const pngWithOrientation = (opts: {
+  width: number;
+  height: number;
+  orientation?: number;
+}): Promise<Buffer> => {
+  const { width, height, orientation } = opts;
+  let pipeline = sharpLib(paintRaw({ width, height }), {
+    raw: { width, height, channels: 3 },
+  }).png();
+  if (orientation !== undefined) {
+    pipeline = pipeline.withMetadata({ orientation });
+  }
+  return pipeline.toBuffer();
+};
+
+const imageFromBuffer = (buffer: Buffer): ImageData => ({
+  buffer,
+  ext: "png",
+  mime: "image/png",
+});
+
+describe("ensureCorrectOrientation", () => {
+  it("returns an upright image unchanged", async () => {
+    const image = imageFromBuffer(
+      await pngWithOrientation({ width: 4, height: 2 })
+    );
+
+    await expect(ensureCorrectOrientation(image)).resolves.toBe(image);
+  });
+
+  it("turns a 180 degree photo upright and keeps its type", async () => {
+    const width = 4;
+    const height = 2;
+    const buffer = await pngWithOrientation({ width, height, orientation: 3 });
+    const image = imageFromBuffer(buffer);
+
+    const result = await ensureCorrectOrientation(image);
+    const stored = await sharpLib(buffer).raw().toBuffer();
+    const oriented = await sharpLib(result.buffer).raw().toBuffer();
+    const metadata = await sharpLib(result.buffer).metadata();
+
+    expect(result).not.toBe(image);
+    expect(result.ext).toBe("png");
+    expect(result.mime).toBe("image/png");
+    expect(metadata.orientation).toBeUndefined();
+    expect(metadata.width).toBe(width);
+    expect(metadata.height).toBe(height);
+    expect(oriented.equals(rotate180({ raw: stored, width, height }))).toBe(
+      true
+    );
+  });
+
+  it("swaps dimensions when the photo was stored on its side", async () => {
+    const image = imageFromBuffer(
+      await pngWithOrientation({ width: 4, height: 2, orientation: 6 })
+    );
+
+    const result = await ensureCorrectOrientation(image);
+    const metadata = await sharpLib(result.buffer).metadata();
+
+    expect(metadata.width).toBe(2);
+    expect(metadata.height).toBe(4);
+    expect(metadata.orientation).toBeUndefined();
+  });
+
+  it("keeps a JPEG as a JPEG", async () => {
+    const raw = paintRaw({ width: 4, height: 2 });
+    const buffer = await sharpLib(raw, {
+      raw: { width: 4, height: 2, channels: 3 },
+    })
+      .jpeg()
+      .withMetadata({ orientation: 3 })
+      .toBuffer();
+    const image: ImageData = {
+      buffer,
+      ext: "jpg",
+      mime: "image/jpeg",
+    };
+
+    const result = await ensureCorrectOrientation(image);
+    const metadata = await sharpLib(result.buffer).metadata();
+
+    expect(result.ext).toBe("jpg");
+    expect(result.mime).toBe("image/jpeg");
+    expect(metadata.format).toBe("jpeg");
+    expect(metadata.orientation).toBeUndefined();
+    expect(metadata.width).toBe(4);
+    expect(metadata.height).toBe(2);
+  });
+});
+
+describe("sharp", () => {
+  it("leaves pixels unchanged when no orientation tag is present", async () => {
+    const buffer = await pngWithOrientation({ width: 4, height: 2 });
+    const stored = await sharpLib(buffer).raw().toBuffer();
+    const oriented = await sharp(buffer).raw().toBuffer();
+
+    expect(oriented.equals(stored)).toBe(true);
+  });
+
+  it("rotates stored pixels 180 degrees before a crop", async () => {
+    const width = 4;
+    const height = 2;
+    const buffer = await pngWithOrientation({ width, height, orientation: 3 });
+    const stored = await sharpLib(buffer).raw().toBuffer();
+    const oriented = await sharp(buffer).raw().toBuffer();
+    const extracted = await sharp(buffer)
+      .extract({ left: 0, top: 0, width, height })
+      .raw()
+      .toBuffer();
+
+    expect(oriented.equals(rotate180({ raw: stored, width, height }))).toBe(
+      true
+    );
+    expect(extracted.equals(oriented)).toBe(true);
   });
 });

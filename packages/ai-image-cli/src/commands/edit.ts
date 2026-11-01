@@ -15,7 +15,11 @@ import {
 import { type FilePart, generateText } from "ai";
 import { logCost, logTokenUsage } from "../util/ai-usage";
 import { base64ToBuffer, uint8ArrayToBuffer } from "../util/binary";
-import { readImageFile, writeImageFile } from "../util/images";
+import {
+  ensureCorrectOrientation,
+  readImageFile,
+  writeImageFile,
+} from "../util/images";
 
 export const name = "edit";
 export const description =
@@ -87,7 +91,9 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
 
   const imageContents: FilePart[] = [];
   for (const inputImagePath of inputImagePaths) {
-    const inputImage = await readImageFile(inputImagePath);
+    const inputImage = await ensureCorrectOrientation(
+      await readImageFile(inputImagePath)
+    );
     imageContents.push({
       type: "file" as const,
       data: { type: "data" as const, data: inputImage.buffer },

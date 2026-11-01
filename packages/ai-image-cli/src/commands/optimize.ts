@@ -9,8 +9,7 @@ import {
   promptMissingOptions,
   stripOptionFieldsForCommander,
 } from "@felixarntz/cli-utils";
-import sharp from "sharp";
-import { readImageFile, writeImageFile } from "../util/images";
+import { readImageFile, sharp, writeImageFile } from "../util/images";
 
 export const name = "optimize";
 export const description = "Optimizes an image for web delivery.";
@@ -63,7 +62,6 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
 
   logger.info(`Optimizing image to ${format} format...`);
 
-  // Create sharp instance and apply optimization based on format
   let sharpInstance = sharp(inputImage.buffer);
   let ext: string;
   let mime: string;
