@@ -2,7 +2,13 @@
 
 CLI with various tools for WordPress plugin maintenance.
 
-## Available commands
+## Setup
+
+```bash
+npm i -g @felixarntz/wp-plugins-cli
+```
+
+## Usage
 
 ### `bump-tested-wp`
 

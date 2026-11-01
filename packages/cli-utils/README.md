@@ -2,6 +2,12 @@
 
 Utility functions for TypeScript CLI tools, using Commander and Inquirer.
 
+## Setup
+
+```bash
+npm i @felixarntz/cli-utils
+```
+
 ## Features
 
 - **Commander helpers:** Utilities to simplify working with [Commander](https://www.npmjs.com/package/commander), such as extracting arguments and options from action handlers.
