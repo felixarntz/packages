@@ -1,6 +1,6 @@
 {
   "name": "@felixarntz/ai-image-cli",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "CLI for editing, cropping, optimizing, and upscaling images using AI.",
   "license": "MIT",
   "type": "module",
