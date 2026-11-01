@@ -30,7 +30,7 @@
     "ai": "^7.0.153",
     "commander": "catalog:",
     "dotenv": "catalog:",
-    "file-type": "^21.3.0",
+    "file-type": "^21.3.2",
     "sharp": "^0.35.5",
     "zod": "^4.6.6"
   },
