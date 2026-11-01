@@ -2,6 +2,8 @@
 
 Meet me in my personal CLI - a digital business card that displays my bio and relevant links.
 
+## Usage
+
 ```bash
 npx felixarntz
 ```
