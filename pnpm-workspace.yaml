@@ -18,3 +18,7 @@ catalog:
   vitest: ^5.0.0
 
 minimumReleaseAge: 2880 # 2 days
+
+minimumReleaseAgeExclude:
+  - '@ai-sdk/*'
+  - ai

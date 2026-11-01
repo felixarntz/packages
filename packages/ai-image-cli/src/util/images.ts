@@ -5,6 +5,7 @@ import {
   writeBinaryFile,
 } from "@felixarntz/cli-utils";
 import { fileTypeFromBuffer } from "file-type";
+import sharpLib from "sharp";
 
 export interface ImageData {
   buffer: Buffer<ArrayBufferLike>;
@@ -18,6 +19,54 @@ interface ImageOutputData {
   fileBase: string;
   index?: number;
   mime?: string;
+}
+
+/**
+ * Opens an image buffer and applies its EXIF orientation.
+ *
+ * The sharp library leaves stored pixels untouched and drops the orientation
+ * tag when writing a new file. Viewers apply that tag, so a photo stored
+ * upside down would otherwise be written upside down.
+ */
+export function sharp(
+  buffer: Buffer<ArrayBufferLike>
+): ReturnType<typeof sharpLib> {
+  return sharpLib(buffer).rotate();
+}
+
+/**
+ * Returns the image with pixels matching how a viewer displays it.
+ *
+ * An upright photo is returned unchanged. A photo that needs rotating is
+ * rewritten at maximum quality, because a later save compresses it again.
+ */
+export async function ensureCorrectOrientation(
+  image: ImageData
+): Promise<ImageData> {
+  const metadata = await sharpLib(image.buffer).metadata();
+  if (metadata.orientation === undefined || metadata.orientation === 1) {
+    return image;
+  }
+
+  let pipeline = sharp(image.buffer);
+  switch (metadata.format) {
+    case "jpeg":
+      pipeline = pipeline.jpeg({ quality: 100, chromaSubsampling: "4:4:4" });
+      break;
+    case "webp":
+      pipeline = pipeline.webp({ lossless: true });
+      break;
+    case "heif":
+      pipeline = pipeline.heif({ lossless: true });
+      break;
+    default:
+      break;
+  }
+
+  return {
+    ...image,
+    buffer: await pipeline.toBuffer(),
+  };
 }
 
 /**

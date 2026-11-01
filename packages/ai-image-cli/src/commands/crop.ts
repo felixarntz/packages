@@ -10,14 +10,17 @@ import {
   runWithHeartbeat,
   stripOptionFieldsForCommander,
 } from "@felixarntz/cli-utils";
-import { generateText, Output } from "ai";
-import sharp from "sharp";
+import { generateText, type ModelMessage, Output } from "ai";
 import { z } from "zod";
 import { logCost, logTokenUsage } from "../util/ai-usage";
-import { readImageFile, writeImageFile } from "../util/images";
-import { getReasoningProviderOptions } from "../util/reasoning";
+import {
+  ensureCorrectOrientation,
+  readImageFile,
+  sharp,
+  writeImageFile,
+} from "../util/images";
 
-export const name = "crop-image";
+export const name = "crop";
 export const description = "Crops an input image to a given aspect ratio.";
 
 const actualOptions: Option[] = [
@@ -37,14 +40,9 @@ const actualOptions: Option[] = [
     argname: "-m, --model <model>",
     description: "Model to use for determining optimal crop position",
     choices: [
-      "google/gemini-3-pro-preview",
-      "google/gemini-3-flash-preview",
-      "google/gemini-2.5-pro",
-      "google/gemini-2.5-flash",
-      "google/gemini-2.5-flash-lite",
-      "openai/gpt-5",
-      "openai/gpt-5-mini",
-      "openai/gpt-5-nano",
+      "openai/gpt-6-luna-fast",
+      "google/gemini-3.8-flash",
+      "google/gemini-3.5-flash-lite",
     ],
     required: true,
   },
@@ -95,9 +93,9 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     throw new Error("Aspect ratio values must be positive integers");
   }
 
-  const inputImage = await readImageFile(inputImagePath);
-
-  // Get image metadata
+  const inputImage = await ensureCorrectOrientation(
+    await readImageFile(inputImagePath)
+  );
   const metadata = await sharp(inputImage.buffer).metadata();
   const originalWidth = metadata.width ?? 0;
   const originalHeight = metadata.height ?? 0;
@@ -145,7 +143,7 @@ If the primary is subject is almost impossible to keep fully visible due to the 
 The image is ${originalWidth}x${originalHeight} and we're cropping to aspect ratio ${targetWidth}:${targetHeight}.
 Return only the pixel offset value.`;
 
-  const prompt = [
+  const prompt: ModelMessage[] = [
     {
       role: "user" as const,
       content: [
@@ -154,8 +152,8 @@ Return only the pixel offset value.`;
           text: cropPrompt,
         },
         {
-          type: "image" as const,
-          image: inputImage.buffer,
+          type: "file" as const,
+          data: { type: "data" as const, data: inputImage.buffer },
           mediaType: inputImage.mime,
         },
       ],
@@ -169,7 +167,7 @@ Return only the pixel offset value.`;
         output: Output.object({ schema }),
         system,
         prompt,
-        providerOptions: getReasoningProviderOptions("low", model),
+        reasoning: "low",
       }),
     "Still analyzing image..."
   );
@@ -184,7 +182,6 @@ Return only the pixel offset value.`;
     `Cropping image from ${originalWidth}x${originalHeight} to ${cropWidth}x${cropHeight} with ${cropDirection === "horizontal" ? "left" : "top"} offset ${cropDirection === "horizontal" ? left : top}...`
   );
 
-  // Crop the image.
   const croppedBuffer = await sharp(inputImage.buffer)
     .extract({ left, top, width: cropWidth, height: cropHeight })
     .toBuffer();
