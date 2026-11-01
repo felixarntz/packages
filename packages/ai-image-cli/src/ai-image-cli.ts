@@ -33,22 +33,18 @@ function initialize() {
   dotenv.config();
 
   withOptions(program.command(editName), editOptions)
-    .alias("imageedit")
     .description(editDescription)
     .action(withErrorHandling(editHandler));
 
   withOptions(program.command(cropName), cropOptions)
-    .alias("imagecrop")
     .description(cropDescription)
     .action(withErrorHandling(cropHandler));
 
   withOptions(program.command(optimizeName), optimizeOptions)
-    .alias("imageopt")
     .description(optimizeDescription)
     .action(withErrorHandling(optimizeHandler));
 
   withOptions(program.command(upscaleName), upscaleOptions)
-    .alias("imageupscale")
     .description(upscaleDescription)
     .action(withErrorHandling(upscaleHandler));
 }
