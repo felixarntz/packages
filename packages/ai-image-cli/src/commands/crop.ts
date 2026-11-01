@@ -15,9 +15,8 @@ import sharp from "sharp";
 import { z } from "zod";
 import { logCost, logTokenUsage } from "../util/ai-usage";
 import { readImageFile, writeImageFile } from "../util/images";
-import { getReasoningProviderOptions } from "../util/reasoning";
 
-export const name = "crop-image";
+export const name = "crop";
 export const description = "Crops an input image to a given aspect ratio.";
 
 const actualOptions: Option[] = [
@@ -37,14 +36,9 @@ const actualOptions: Option[] = [
     argname: "-m, --model <model>",
     description: "Model to use for determining optimal crop position",
     choices: [
-      "google/gemini-3-pro-preview",
-      "google/gemini-3-flash-preview",
-      "google/gemini-2.5-pro",
-      "google/gemini-2.5-flash",
-      "google/gemini-2.5-flash-lite",
-      "openai/gpt-5",
-      "openai/gpt-5-mini",
-      "openai/gpt-5-nano",
+      "openai/gpt-6-luna-fast",
+      "google/gemini-3.8-flash",
+      "google/gemini-3.5-flash-lite",
     ],
     required: true,
   },
@@ -169,7 +163,7 @@ Return only the pixel offset value.`;
         output: Output.object({ schema }),
         system,
         prompt,
-        providerOptions: getReasoningProviderOptions("low", model),
+        reasoning: "low",
       }),
     "Still analyzing image..."
   );

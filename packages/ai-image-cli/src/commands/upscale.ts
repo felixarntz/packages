@@ -13,7 +13,7 @@ import { GoogleGenAI } from "@google/genai";
 import { base64ToBuffer, bufferToBase64 } from "../util/binary";
 import { readImageFile, writeImageFile } from "../util/images";
 
-export const name = "upscale-image";
+export const name = "upscale";
 export const description = "Upscales an input image.";
 
 const actualOptions: Option[] = [

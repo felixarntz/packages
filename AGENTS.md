@@ -18,9 +18,9 @@ To run any of these commands for a specific package, use `pnpm --filter <package
 
 ## Using the CLIs
 
-The `@felixarntz/ai-cli` and `@felixarntz/wp-plugins-cli` packages provide CLI tools to run. You can execute the locally built binaries for end-to-end verification of changes:
+The `@felixarntz/ai-image-cli` and `@felixarntz/wp-plugins-cli` packages provide CLI tools to run. You can execute the locally built binaries for end-to-end verification of changes:
 
-- `pnpm ai` - Invokes the built AI CLI
+- `pnpm ai` - Invokes the built AI Image CLI
 - `pnpm wp-plugins` - Invokes the built WP Plugins CLI
 
 **Important:** If you change the TypeScript source but don't run rebuild the package, your changes won't be reflected when running the respective CLI.
