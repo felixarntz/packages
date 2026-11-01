@@ -73,10 +73,10 @@ export const promptMissingOptions = async (
     if (!inquireBooleanFlags && isBooleanFlag(option.argname)) {
       continue;
     }
-    const argname = parseFlagName(option.argname);
-    completeOptionsInput[argname] = await promptMissingOption(
+    const flagName = camelCaseFlagName(parseFlagName(option.argname));
+    completeOptionsInput[flagName] = await promptMissingOption(
       option,
-      optionsInput[camelCaseFlagName(argname)]
+      optionsInput[flagName]
     );
   }
 
