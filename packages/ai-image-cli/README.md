@@ -4,14 +4,22 @@ CLI for editing, cropping, optimizing, and upscaling images using AI.
 
 It uses the [AI SDK](https://www.npmjs.com/package/ai) under the hood, except for a few Google model exclusive features, for which it uses the [Google Gen AI SDK](https://www.npmjs.com/package/@google/genai).
 
-## Available commands
+## Setup
+
+```bash
+npm i -g @felixarntz/ai-image-cli
+```
+
+Set the `AI_GATEWAY_API_KEY` environment variable with your [Vercel AI Gateway](https://vercel.com/ai-gateway) API key.
+
+## Usage
 
 ### `crop`
 
 Crops an input image to a given aspect ratio.
 
 ```bash
-ai-image crop input.jpg -a 16:9 -m google/gemini-3-flash-preview
+ai-image crop input.jpg -a 16:9 -m openai/gpt-6-luna-fast
 ```
 
 ### `edit`
@@ -19,7 +27,7 @@ ai-image crop input.jpg -a 16:9 -m google/gemini-3-flash-preview
 Sends an input image with a prompt to generate a new image.
 
 ```bash
-ai-image edit input.jpg -p "Make it look like a painting" -m google/gemini-3-pro-image-preview
+ai-image edit input.jpg -p "Make it look like a painting" -m google/gemini-3.1-flash-image
 ```
 
 ### `optimize`
