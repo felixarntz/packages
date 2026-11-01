@@ -7,13 +7,16 @@ import {
   type Option,
   type OptionsInput,
   promptMissingOptions,
+  runWithHeartbeat,
   stripOptionFieldsForCommander,
 } from "@felixarntz/cli-utils";
-import { GoogleGenAI } from "@google/genai";
-import { base64ToBuffer, bufferToBase64 } from "../util/binary";
+import { generateText, type ModelMessage } from "ai";
+import { logCost, logTokenUsage } from "../util/ai-usage";
+import { base64ToBuffer, uint8ArrayToBuffer } from "../util/binary";
 import {
   ensureCorrectOrientation,
   readImageFile,
+  sharp,
   writeImageFile,
 } from "../util/images";
 
@@ -29,14 +32,18 @@ const actualOptions: Option[] = [
     parse: (value: string) => normalizeAbsolutePath(value),
   },
   {
+    argname: "-s, --size <size>",
+    description: "Size to upscale to",
+    choices: ["2K", "4K"],
+    required: true,
+  },
+  {
     argname: "-m, --model <model>",
     description: "Model to use for upscaling",
     choices: [
-      "google/imagen-4.0-generate-001",
-      "google/imagen-4.0-ultra-generate-001",
-      "google/imagen-4.0-fast-generate-001",
-      "google/imagen-3.0-generate-002",
-      "google/imagen-3.0-fast-generate-001",
+      // Due to the use of multimodal output models in this command, only Google models are supported.
+      "google/gemini-nano-banana-2.1",
+      "google/gemini-3.1-flash-image",
     ],
     required: true,
   },
@@ -53,60 +60,87 @@ export const options = actualOptions.map((option) =>
 interface CommandConfig {
   model: string;
   output?: string;
+  size: "2K" | "4K";
 }
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
   const config: CommandConfig = {
     model: String(opt["model"]),
     output: opt["output"] ? String(opt["output"]) : undefined,
+    size: opt["size"] === "4K" ? "4K" : "2K",
   };
   return config;
 };
 
 export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   const [inputImagePath] = getArgs(handlerArgs);
-  const { model, output } = parseOptions(
+  const { model, output, size } = parseOptions(
     await promptMissingOptions(actualOptions, getOpt(handlerArgs))
   );
-
-  if (!model.startsWith("google/")) {
-    throw new Error(
-      'Upscaling is only supported for Google models. The model must start with "google/".'
-    );
-  }
 
   const inputImage = await ensureCorrectOrientation(
     await readImageFile(inputImagePath)
   );
+  const metadata = await sharp(inputImage.buffer).metadata();
+  const width = metadata.width ?? 0;
+  const height = metadata.height ?? 0;
+  if (width === 0 || height === 0) {
+    throw new Error("Unable to determine image dimensions");
+  }
+  const maxDimension = size === "4K" ? 4096 : 2048;
+  if (width > maxDimension || height > maxDimension) {
+    throw new Error(
+      `Image is ${width}x${height}, so upscaling to ${size} would be pointless`
+    );
+  }
 
   logger.info(`Upscaling image using model ${model}...`);
 
-  const client = new GoogleGenAI({
-    vertexai: true,
-  });
-
-  const [, modelName] = model.split("/", 2);
-
-  const response = await client.models.upscaleImage({
-    model: modelName,
-    image: {
-      imageBytes: bufferToBase64(inputImage.buffer),
+  const prompt: ModelMessage[] = [
+    {
+      role: "user" as const,
+      content: [
+        {
+          type: "text" as const,
+          text: `Upscale the image to ${size}. You MUST NOT modify the contents of the image at all. I am only providing it for it to be upscaled.`,
+        },
+        {
+          type: "file" as const,
+          data: { type: "data" as const, data: inputImage.buffer },
+          mediaType: inputImage.mime,
+        },
+      ],
     },
-    upscaleFactor: "x2",
-    config: {
-      enhanceInputImage: true,
-      includeRaiReason: true,
-    },
-  });
+  ];
 
-  if (!response.generatedImages || response.generatedImages.length === 0) {
-    throw new Error("No upscaled image was generated.");
+  // Stream text result, and log "heartbeat" messages every 5 seconds.
+  const [result, images] = await runWithHeartbeat(async () => {
+    const contentResult = await generateText({
+      model,
+      prompt,
+      providerOptions: {
+        google: {
+          responseModalities: ["IMAGE"],
+          imageConfig: {
+            imageSize: size,
+          },
+        },
+      },
+    });
+    const images = contentResult.files.filter((file) =>
+      file.mediaType.startsWith("image/")
+    );
+
+    return [contentResult, images];
+  }, "Still editing...");
+
+  if (images.length === 0) {
+    throw new Error("No upscaled image found");
   }
 
-  const upscaledImageBase64 = response.generatedImages[0].image?.imageBytes;
-  if (!upscaledImageBase64) {
-    throw new Error("Upscaled image data is missing.");
-  }
+  const [image] = images;
+
+  logger.info("Saving upscaled image...");
 
   let fileBase = output;
   if (!fileBase) {
@@ -114,12 +148,24 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     inputPathParts.pop();
     fileBase = `${inputPathParts.join(".")}-upscaled`;
   }
+
+  let buffer: Buffer<ArrayBufferLike>;
+  if (image.base64) {
+    buffer = base64ToBuffer(image.base64);
+  } else if (image.uint8Array) {
+    buffer = uint8ArrayToBuffer(image.uint8Array);
+  } else {
+    throw new Error("No image data provided");
+  }
+
   const filePath = await writeImageFile({
     fileBase,
-    buffer: base64ToBuffer(upscaledImageBase64),
-    ext: inputImage.ext,
-    mime: inputImage.mime,
+    buffer,
+    mime: image.mediaType,
   });
 
-  logger.info(`Upscaled image saved to ${filePath}`);
+  logger.info(`Saved image to ${filePath}`);
+
+  logTokenUsage(result.usage);
+  logCost(result.providerMetadata);
 };

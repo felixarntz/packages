@@ -27,7 +27,6 @@
     "@ai-sdk/provider": "^4.0.34",
     "@commander-js/extra-typings": "catalog:",
     "@felixarntz/cli-utils": "workspace:^",
-    "@google/genai": "^2.31.0",
     "ai": "^7.0.153",
     "commander": "catalog:",
     "dotenv": "catalog:",

@@ -1,8 +1,6 @@
 # @felixarntz/ai-image-cli
 
-CLI for editing, cropping, optimizing, and upscaling images using AI.
-
-It uses the [AI SDK](https://www.npmjs.com/package/ai) under the hood, except for a few Google model exclusive features, for which it uses the [Google Gen AI SDK](https://www.npmjs.com/package/@google/genai).
+CLI for editing, cropping, optimizing, and upscaling images using the [AI SDK](https://www.npmjs.com/package/ai).
 
 ## Setup
 
@@ -16,7 +14,7 @@ Set the `AI_GATEWAY_API_KEY` environment variable with your [Vercel AI Gateway](
 
 ### `crop`
 
-Crops an input image to a given aspect ratio.
+Crops an input image to a given aspect ratio. The image is cropped natively, with AI used purely to identify the ideal crop points.
 
 ```bash
 ai-image crop input.jpg -a 16:9 -m openai/gpt-6-luna-fast
@@ -43,5 +41,5 @@ ai-image optimize input.png -f webp
 Upscales an input image.
 
 ```bash
-ai-image upscale input.jpg -m google/imagen-4.0-generate-001
+ai-image upscale input.jpg -s 4K -m google/gemini-nano-banana-2.1
 ```
