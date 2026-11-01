@@ -12,7 +12,7 @@ import {
   runWithHeartbeat,
   stripOptionFieldsForCommander,
 } from "@felixarntz/cli-utils";
-import { type FilePart, generateText } from "ai";
+import { type FilePart, generateText, type ModelMessage } from "ai";
 import { logCost, logTokenUsage } from "../util/ai-usage";
 import { base64ToBuffer, uint8ArrayToBuffer } from "../util/binary";
 import {
@@ -105,7 +105,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     `Prompting model ${model} to edit the ${imageContents.length > 1 ? "images" : "image"}...`
   );
 
-  const prompt = [
+  const prompt: ModelMessage[] = [
     {
       role: "user" as const,
       content: [

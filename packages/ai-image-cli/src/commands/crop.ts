@@ -10,7 +10,7 @@ import {
   runWithHeartbeat,
   stripOptionFieldsForCommander,
 } from "@felixarntz/cli-utils";
-import { generateText, Output } from "ai";
+import { generateText, type ModelMessage, Output } from "ai";
 import { z } from "zod";
 import { logCost, logTokenUsage } from "../util/ai-usage";
 import {
@@ -143,7 +143,7 @@ If the primary is subject is almost impossible to keep fully visible due to the 
 The image is ${originalWidth}x${originalHeight} and we're cropping to aspect ratio ${targetWidth}:${targetHeight}.
 Return only the pixel offset value.`;
 
-  const prompt = [
+  const prompt: ModelMessage[] = [
     {
       role: "user" as const,
       content: [
@@ -152,8 +152,8 @@ Return only the pixel offset value.`;
           text: cropPrompt,
         },
         {
-          type: "image" as const,
-          image: inputImage.buffer,
+          type: "file" as const,
+          data: { type: "data" as const, data: inputImage.buffer },
           mediaType: inputImage.mime,
         },
       ],
