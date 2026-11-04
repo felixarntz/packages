@@ -1,6 +1,6 @@
 {
   "name": "@felixarntz/cli-utils",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Utility functions for TypeScript CLI tools, using Commander and Inquirer",
   "homepage": "https://github.com/felixarntz/packages/blob/main/packages/cli-utils/README.md",
   "bugs": {

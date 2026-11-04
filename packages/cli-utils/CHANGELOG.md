@@ -1,5 +1,15 @@
 # @felixarntz/cli-utils
 
+## 0.3.0
+
+### Minor Changes
+
+- 4778644: feat(cli-utils): refactor API function signatures to use named arguments for better DX (breaking change)
+
+### Patch Changes
+
+- be582f5: chore(cli-utils): address coding best practices violations including some minor performance bottlenecks
+
 ## 0.2.1
 
 ### Patch Changes
