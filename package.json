@@ -34,6 +34,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.6.4",
     "@changesets/cli": "^2.31.0",
+    "@felixarntz/biome": "^0.3.1",
     "@types/node": "^24.10.9",
     "@vitest/coverage-v8": "catalog:",
     "husky": "^9.1.7",
