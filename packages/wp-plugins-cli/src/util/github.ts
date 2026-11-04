@@ -60,16 +60,17 @@ export async function detectGithubRepository(
 /**
  * Generator function to paginate through tags in a GitHub repository.
  *
- * @param octokit - The Octokit instance.
- * @param repository - The GitHub repository details.
- * @param perPage - Number of items per page.
+ * @param opts.octokit - The Octokit instance.
+ * @param opts.repository - The GitHub repository details.
+ * @param opts.perPage - Number of items per page.
  * @returns An async generator yielding pages of tags.
  */
-export async function* getPaginatedTags(
-  octokit: Octokit,
-  repository: GithubRepository,
-  perPage = 100
-) {
+export async function* getPaginatedTags(opts: {
+  octokit: Octokit;
+  perPage?: number;
+  repository: GithubRepository;
+}) {
+  const { octokit, perPage = 100, repository } = opts;
   const requestArgs = {
     ...repository,
     per_page: perPage,
@@ -95,18 +96,19 @@ export async function* getPaginatedTags(
 /**
  * Generator function to paginate through commits in a GitHub repository.
  *
- * @param octokit - The Octokit instance.
- * @param repository - The GitHub repository details.
- * @param constraints - Constraints for filtering commits.
- * @param perPage - Number of items per page.
+ * @param opts.octokit - The Octokit instance.
+ * @param opts.repository - The GitHub repository details.
+ * @param opts.constraints - Constraints for filtering commits.
+ * @param opts.perPage - Number of items per page.
  * @returns An async generator yielding pages of commits.
  */
-export async function* getPaginatedCommits(
-  octokit: Octokit,
-  repository: GithubRepository,
-  constraints: CommitConstraints,
-  perPage = 100
-) {
+export async function* getPaginatedCommits(opts: {
+  constraints: CommitConstraints;
+  octokit: Octokit;
+  perPage?: number;
+  repository: GithubRepository;
+}) {
+  const { constraints, octokit, perPage = 100, repository } = opts;
   const requestArgs = {
     ...repository,
     ...constraints,
@@ -133,18 +135,19 @@ export async function* getPaginatedCommits(
 /**
  * Generator function to paginate through pull requests in a GitHub repository.
  *
- * @param octokit - The Octokit instance.
- * @param repository - The GitHub repository details.
- * @param constraints - Constraints for filtering pull requests.
- * @param perPage - Number of items per page.
+ * @param opts.octokit - The Octokit instance.
+ * @param opts.repository - The GitHub repository details.
+ * @param opts.constraints - Constraints for filtering pull requests.
+ * @param opts.perPage - Number of items per page.
  * @returns An async generator yielding pages of pull requests.
  */
-export async function* getPaginatedPullRequests(
-  octokit: Octokit,
-  repository: GithubRepository,
-  constraints: PullRequestConstraints,
-  perPage = 100
-) {
+export async function* getPaginatedPullRequests(opts: {
+  constraints: PullRequestConstraints;
+  octokit: Octokit;
+  perPage?: number;
+  repository: GithubRepository;
+}) {
+  const { constraints, octokit, perPage = 100, repository } = opts;
   const requestArgs = {
     ...repository,
     ...constraints,
@@ -171,18 +174,19 @@ export async function* getPaginatedPullRequests(
 /**
  * Generator function to paginate through commits of a specific pull request in a GitHub repository.
  *
- * @param octokit - The Octokit instance.
- * @param repository - The GitHub repository details.
- * @param pullRequestNumber - The pull request number.
- * @param perPage - Number of items per page.
+ * @param opts.octokit - The Octokit instance.
+ * @param opts.repository - The GitHub repository details.
+ * @param opts.pullRequestNumber - The pull request number.
+ * @param opts.perPage - Number of items per page.
  * @returns An async generator yielding pages of pull request commits.
  */
-export async function* getPaginatedPullRequestCommits(
-  octokit: Octokit,
-  repository: GithubRepository,
-  pullRequestNumber: number,
-  perPage = 100
-) {
+export async function* getPaginatedPullRequestCommits(opts: {
+  octokit: Octokit;
+  perPage?: number;
+  pullRequestNumber: number;
+  repository: GithubRepository;
+}) {
+  const { octokit, perPage = 100, pullRequestNumber, repository } = opts;
   const requestArgs = {
     ...repository,
     per_page: perPage,

@@ -1,11 +1,12 @@
 /**
  * Extracts the content of the node with the given ID from an HTML string.
  *
- * @param html - The HTML string to parse.
- * @param id   - The ID of the element to extract.
+ * @param opts.html - The HTML string to parse.
+ * @param opts.id - The ID of the element to extract.
  * @returns The extracted text content.
  */
-export function parseHtml(html: string, id: string): string {
+export function parseHtml(opts: { html: string; id: string }): string {
+  const { html, id } = opts;
   const idRegex = new RegExp(
     `<(?<tag>[a-zA-Z0-9]+)\\s+[^>]*id\\s*=\\s*["']${id}["'][^>]*>`,
     "iu"

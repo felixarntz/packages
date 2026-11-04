@@ -103,11 +103,11 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     auth: token,
   });
 
-  const commitConstraints = await getCommitConstraints(
-    octokit,
+  const commitConstraints = await getCommitConstraints({
     githubRepository,
-    tag
-  );
+    octokit,
+    tag,
+  });
 
   if (commitConstraints.sha && commitConstraints.since) {
     logger.info(
@@ -123,11 +123,11 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   const commits = await runWithHeartbeat(
     async () => {
       const allCommits: Commit[] = [];
-      const commitsGenerator = getPaginatedCommits(
+      const commitsGenerator = getPaginatedCommits({
+        constraints: commitConstraints,
         octokit,
-        githubRepository,
-        commitConstraints
-      );
+        repository: githubRepository,
+      });
       for await (const someCommits of commitsGenerator) {
         allCommits.push(...someCommits);
       }
@@ -137,20 +137,19 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     5000
   );
 
-  const commitEntries = await getCommitEntries(
-    octokit,
+  const commitEntries = getCommitEntries({
+    commits,
     githubRepository,
-    commits
-  );
+  });
 
   logger.info("Amending commit entries with relevant pull requests...");
   const commitPrEntries = await runWithHeartbeat(
     async () =>
-      await amendCommitEntriesWithPullRequests(
-        octokit,
+      await amendCommitEntriesWithPullRequests({
+        commitEntries,
         githubRepository,
-        commitEntries
-      ),
+        octokit,
+      }),
     "Still looking for pull requests...",
     5000
   );
@@ -160,14 +159,21 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   logger.info("Amending commit entries with relevant issues...");
   const commitPrIssueEntries = await runWithHeartbeat(
     async () =>
-      await amendEntriesWithIssues(octokit, githubRepository, cleanEntries),
+      await amendEntriesWithIssues({
+        entries: cleanEntries,
+        githubRepository,
+        octokit,
+      }),
     "Still looking for issues...",
     5000
   );
 
   logger.info("Generating changelog...");
   const changelogEntries = determineEntryTypes(commitPrIssueEntries);
-  const changelog = getMarkdownChangelog(githubRepository, changelogEntries);
+  const changelog = getMarkdownChangelog({
+    changelogEntries,
+    githubRepository,
+  });
   output(changelog);
 };
 
@@ -235,13 +241,17 @@ const add1SecondToISOString = (isoString: string) => {
   return `${new Date(date.valueOf() + 1000).toISOString().slice(0, -5)}Z`;
 };
 
-const findTagConstraints = async (
-  octokit: Octokit,
-  githubRepository: GithubRepository,
-  tag: string,
-  constraints: CommitConstraints
-): Promise<void> => {
-  const tagsGenerator = getPaginatedTags(octokit, githubRepository);
+const findTagConstraints = async (opts: {
+  constraints: CommitConstraints;
+  githubRepository: GithubRepository;
+  octokit: Octokit;
+  tag: string;
+}): Promise<void> => {
+  const { constraints, githubRepository, octokit, tag } = opts;
+  const tagsGenerator = getPaginatedTags({
+    octokit,
+    repository: githubRepository,
+  });
   for await (const tags of tagsGenerator) {
     for (const t of tags) {
       if (t.name === tag) {
@@ -271,11 +281,12 @@ const findTagConstraints = async (
   }
 };
 
-const getCommitConstraints = async (
-  octokit: Octokit,
-  githubRepository: GithubRepository,
-  tag: string | undefined
-) => {
+const getCommitConstraints = async (opts: {
+  githubRepository: GithubRepository;
+  octokit: Octokit;
+  tag: string | undefined;
+}) => {
+  const { githubRepository, octokit, tag } = opts;
   const constraints: CommitConstraints = {};
 
   if (!tag) {
@@ -297,15 +308,15 @@ const getCommitConstraints = async (
   }
 
   logger.debug(`Using given release tag ${tag}`);
-  await findTagConstraints(octokit, githubRepository, tag, constraints);
+  await findTagConstraints({ constraints, githubRepository, octokit, tag });
   return constraints;
 };
 
-const getCommitEntries = (
-  _octokit: Octokit,
-  githubRepository: GithubRepository,
-  commits: Commit[]
-) => {
+const getCommitEntries = (opts: {
+  commits: Commit[];
+  githubRepository: GithubRepository;
+}) => {
+  const { commits, githubRepository } = opts;
   const entries: ChangelogEntry[] = [];
 
   const { owner } = githubRepository;
@@ -343,12 +354,13 @@ const getCommitEntries = (
   return entries;
 };
 
-const amendEntryWithIssue = async (
-  octokit: Octokit,
-  githubRepository: GithubRepository,
-  entry: ChangelogEntry,
-  issueNumber: number
-) => {
+const amendEntryWithIssue = async (opts: {
+  entry: ChangelogEntry;
+  githubRepository: GithubRepository;
+  issueNumber: number;
+  octokit: Octokit;
+}) => {
+  const { entry, githubRepository, issueNumber, octokit } = opts;
   const issue = await octokit.issues.get({
     ...githubRepository,
     issue_number: issueNumber,
@@ -393,18 +405,25 @@ const amendEntryWithIssue = async (
   return amendedEntry;
 };
 
-const removePrCommitsFromEntries = async (
-  octokit: Octokit,
-  githubRepository: GithubRepository,
-  prNumber: number,
-  commitShaLookup: IndexLookup,
-  entriesWithPrs: Array<ChangelogEntry | null>
-): Promise<void> => {
-  const prCommitsGenerator = getPaginatedPullRequestCommits(
-    octokit,
+const removePrCommitsFromEntries = async (opts: {
+  commitShaLookup: IndexLookup;
+  entriesWithPrs: Array<ChangelogEntry | null>;
+  githubRepository: GithubRepository;
+  octokit: Octokit;
+  prNumber: number;
+}): Promise<void> => {
+  const {
+    commitShaLookup,
+    entriesWithPrs,
     githubRepository,
-    prNumber
-  );
+    octokit,
+    prNumber,
+  } = opts;
+  const prCommitsGenerator = getPaginatedPullRequestCommits({
+    octokit,
+    pullRequestNumber: prNumber,
+    repository: githubRepository,
+  });
   for await (const prCommits of prCommitsGenerator) {
     for (const prCommit of prCommits) {
       const prCommitIndex = commitShaLookup[prCommit.sha];
@@ -415,13 +434,15 @@ const removePrCommitsFromEntries = async (
   }
 };
 
-const applyPullRequestToEntries = async (
-  octokit: Octokit,
-  githubRepository: GithubRepository,
-  pr: PullRequest,
-  commitShaLookup: IndexLookup,
-  entriesWithPrs: Array<ChangelogEntry | null>
-): Promise<void> => {
+const applyPullRequestToEntries = async (opts: {
+  commitShaLookup: IndexLookup;
+  entriesWithPrs: Array<ChangelogEntry | null>;
+  githubRepository: GithubRepository;
+  octokit: Octokit;
+  pr: PullRequest;
+}): Promise<void> => {
+  const { commitShaLookup, entriesWithPrs, githubRepository, octokit, pr } =
+    opts;
   if (!(pr.merged_at && pr.merge_commit_sha)) {
     return;
   }
@@ -458,28 +479,29 @@ const applyPullRequestToEntries = async (
   const matches = pr.body?.match(FIX_ISSUE_REGEX);
   if (matches?.groups?.["issue"]) {
     const issueNumber = Number.parseInt(matches.groups["issue"], 10);
-    entriesWithPrs[commitIndex] = await amendEntryWithIssue(
-      octokit,
+    entriesWithPrs[commitIndex] = await amendEntryWithIssue({
+      entry: entriesWithPrs[commitIndex],
       githubRepository,
-      entriesWithPrs[commitIndex],
-      issueNumber
-    );
+      issueNumber,
+      octokit,
+    });
   }
 
-  await removePrCommitsFromEntries(
-    octokit,
-    githubRepository,
-    pr.number,
+  await removePrCommitsFromEntries({
     commitShaLookup,
-    entriesWithPrs
-  );
+    entriesWithPrs,
+    githubRepository,
+    octokit,
+    prNumber: pr.number,
+  });
 };
 
-const amendCommitEntriesWithPullRequests = async (
-  octokit: Octokit,
-  githubRepository: GithubRepository,
-  commitEntries: ChangelogEntry[]
-) => {
+const amendCommitEntriesWithPullRequests = async (opts: {
+  commitEntries: ChangelogEntry[];
+  githubRepository: GithubRepository;
+  octokit: Octokit;
+}) => {
+  const { commitEntries, githubRepository, octokit } = opts;
   const commitShaLookup: IndexLookup = commitEntries.reduce(
     (lookup: IndexLookup, entry, index) => {
       if (entry.references[0].type !== "commit") {
@@ -489,25 +511,29 @@ const amendCommitEntriesWithPullRequests = async (
       lookup[entry.references[0].id] = index;
       return lookup;
     },
-    {}
+    Object.create(null)
   );
 
   const entriesWithPrs: Array<ChangelogEntry | null> = [...commitEntries];
 
-  const prsGenerator = getPaginatedPullRequests(octokit, githubRepository, {
-    base: "main",
-    state: "closed",
+  const prsGenerator = getPaginatedPullRequests({
+    constraints: {
+      base: "main",
+      state: "closed",
+    },
+    octokit,
+    repository: githubRepository,
   });
   for await (const prs of prsGenerator) {
     for (const pr of prs) {
       // biome-ignore lint/performance/noAwaitInLoops: each pull request mutates the shared changelog entries
-      await applyPullRequestToEntries(
-        octokit,
-        githubRepository,
-        pr,
+      await applyPullRequestToEntries({
         commitShaLookup,
-        entriesWithPrs
-      );
+        entriesWithPrs,
+        githubRepository,
+        octokit,
+        pr,
+      });
     }
 
     // TODO: Stop the generator only if the last PR is older than the oldest commit.
@@ -520,39 +546,41 @@ const amendCommitEntriesWithPullRequests = async (
   return amendedEntries;
 };
 
-const amendEntriesWithIssues = async (
-  octokit: Octokit,
-  githubRepository: GithubRepository,
-  entries: ChangelogEntry[]
-) =>
-  await Promise.all(
+const amendEntriesWithIssues = async (opts: {
+  entries: ChangelogEntry[];
+  githubRepository: GithubRepository;
+  octokit: Octokit;
+}) => {
+  const { entries, githubRepository, octokit } = opts;
+  return await Promise.all(
     entries.map(async (entry) => {
       const matches = entry.summary.match(ISSUE_WITH_PARENS_REGEX);
       if (matches?.groups?.["issue"]) {
         const issueNumber = Number.parseInt(matches.groups["issue"], 10);
-        return await amendEntryWithIssue(
-          octokit,
-          githubRepository,
-          {
+        return await amendEntryWithIssue({
+          entry: {
             ...entry,
             summary: entry.summary.replace(matches[0], ""),
           },
-          issueNumber
-        );
+          githubRepository,
+          issueNumber,
+          octokit,
+        });
       }
       const matches2 = entry.summary.match(ISSUE_REGEX);
       if (matches2?.groups?.["issue"]) {
         const issueNumber = Number.parseInt(matches2.groups["issue"], 10);
-        return await amendEntryWithIssue(
-          octokit,
-          githubRepository,
+        return await amendEntryWithIssue({
           entry,
-          issueNumber
-        );
+          githubRepository,
+          issueNumber,
+          octokit,
+        });
       }
       return entry;
     })
   );
+};
 
 const stripEntriesToSkip = (entries: ChangelogEntry[]) =>
   entries.filter((entry) => {
@@ -594,10 +622,11 @@ const determineEntryTypes = (entries: ChangelogEntry[]) =>
     };
   });
 
-const getMarkdownChangelog = (
-  githubRepository: GithubRepository,
-  changelogEntries: ChangelogEntry[]
-) => {
+const getMarkdownChangelog = (opts: {
+  changelogEntries: ChangelogEntry[];
+  githubRepository: GithubRepository;
+}) => {
+  const { changelogEntries, githubRepository } = opts;
   const groupedEntries = changelogEntries.reduce<
     Record<string, ChangelogEntry[]>
   >((grouped, entry) => {

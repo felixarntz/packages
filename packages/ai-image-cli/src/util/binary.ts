@@ -51,15 +51,16 @@ export function bufferToUint8Array(buffer: Buffer): Uint8Array {
 /**
  * Converts a base64-encoded string to a data URI.
  *
- * @param base64Data - The base64-encoded binary data.
- * @param mime - Optional. The MIME type to use. If not provided, it will be detected automatically.
+ * @param opts.base64Data - The base64-encoded binary data.
+ * @param opts.mime - Optional. The MIME type to use. If not provided, it will be detected automatically.
  * @returns A promise that resolves to the data URI string.
  * @throws Error if the file type cannot be detected when not provided.
  */
-export async function base64ToDataUri(
-  base64Data: string,
-  mime?: string
-): Promise<string> {
+export async function base64ToDataUri(opts: {
+  base64Data: string;
+  mime?: string;
+}): Promise<string> {
+  const { base64Data, mime } = opts;
   if (mime) {
     return `data:${mime};base64,${base64Data}`;
   }

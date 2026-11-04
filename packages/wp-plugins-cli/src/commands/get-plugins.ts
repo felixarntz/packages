@@ -49,10 +49,11 @@ const parseOptions = (opt: OptionsInput): CommandConfig => {
   return config;
 };
 
-const isPluginFromVendor = async (
-  entry: string,
-  vendor: string
-): Promise<boolean> => {
+const isPluginFromVendor = async (opts: {
+  entry: string;
+  vendor: string;
+}): Promise<boolean> => {
+  const { entry, vendor } = opts;
   try {
     const gitInstance = git(entry);
     const remotes = await gitInstance.getRemotes(true);
@@ -88,7 +89,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
         if (!(await isWordPressPlugin(entry))) {
           return null;
         }
-        if (!vendor || (await isPluginFromVendor(entry, vendor))) {
+        if (!vendor || (await isPluginFromVendor({ entry, vendor }))) {
           return entry;
         }
         return null;

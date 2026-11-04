@@ -10,11 +10,12 @@ interface LinkEntry {
   label: string;
 }
 
-function findClosingTagIndex(
-  html: string,
-  tagName: string,
-  startIndex: number
-): number {
+function findClosingTagIndex(opts: {
+  html: string;
+  startIndex: number;
+  tagName: string;
+}): number {
+  const { html, startIndex, tagName } = opts;
   const tagRegex = new RegExp(`</?${tagName}\\b[^>]*>`, "giu");
   tagRegex.lastIndex = startIndex;
   let depth = 1;
@@ -48,10 +49,11 @@ function decodeEntities(text: string): string {
     .replace(/&#039;/gu, "'");
 }
 
-function extractLinkEntry(
-  attributes: string,
-  innerContent: string
-): (LinkEntry & { href: string }) | null {
+function extractLinkEntry(opts: {
+  attributes: string;
+  innerContent: string;
+}): (LinkEntry & { href: string }) | null {
+  const { attributes, innerContent } = opts;
   const hrefMatch = attributes.match(HREF_ATTR_REGEX);
   if (!hrefMatch) {
     return null;
@@ -82,11 +84,12 @@ function extractLinkEntry(
 /**
  * Extracts links from the node with the given ID in an HTML string.
  *
- * @param html - The HTML string to parse.
- * @param id   - The ID of the element to extract links from.
+ * @param opts.html - The HTML string to parse.
+ * @param opts.id - The ID of the element to extract links from.
  * @returns A markdown list of links.
  */
-export function parseHtmlLinks(html: string, id: string): string {
+export function parseHtmlLinks(opts: { html: string; id: string }): string {
+  const { html, id } = opts;
   const idRegex = new RegExp(
     `<(?<tag>[a-zA-Z0-9]+)\\s+[^>]*id\\s*=\\s*["']${id}["'][^>]*>`,
     "iu"
@@ -102,7 +105,7 @@ export function parseHtmlLinks(html: string, id: string): string {
     return "";
   }
   const startIndex = (match.index ?? 0) + match[0].length;
-  const endIndex = findClosingTagIndex(html, tagName, startIndex);
+  const endIndex = findClosingTagIndex({ html, startIndex, tagName });
 
   if (endIndex === -1) {
     return "";
@@ -118,7 +121,10 @@ export function parseHtmlLinks(html: string, id: string): string {
       break;
     }
 
-    const entry = extractLinkEntry(linkMatch[1], linkMatch[2]);
+    const entry = extractLinkEntry({
+      attributes: linkMatch[1] ?? "",
+      innerContent: linkMatch[2] ?? "",
+    });
     if (!entry) {
       continue;
     }

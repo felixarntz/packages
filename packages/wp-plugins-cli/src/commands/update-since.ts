@@ -62,7 +62,10 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     logger.debug(`Using detected version ${pluginVersion}`);
   }
 
-  const replacementCount = await replaceSince(pluginPath, pluginVersion);
+  const replacementCount = await replaceSince({
+    pluginPath,
+    version: pluginVersion,
+  });
 
   if (replacementCount > 0) {
     logger.success(
@@ -86,7 +89,8 @@ const detectVersion = async (pluginPath: string) => {
   return stableTagVersionMatches[1];
 };
 
-const replaceSince = async (pluginPath: string, version: string) => {
+const replaceSince = async (opts: { pluginPath: string; version: string }) => {
+  const { pluginPath, version } = opts;
   const patterns = [
     path.join(pluginPath, "**/*.php"),
     path.join(pluginPath, "**/*.js"),

@@ -35,7 +35,7 @@ const BUILD_SOFTWARE_REGEX = /^I build software/u;
 
 describe("parseHtml", () => {
   it("extracts content from example HTML", () => {
-    const result = parseHtml(EXAMPLE_HTML, "felixarntz-intro");
+    const result = parseHtml({ html: EXAMPLE_HTML, id: "felixarntz-intro" });
     expect(result).toContain("Hi I'm Felix!");
     expect(result).toContain(
       "I build software and developer tools on the web."
@@ -51,49 +51,49 @@ describe("parseHtml", () => {
 
   it("handles BR tags", () => {
     const html = '<div id="test">Line 1<br>Line 2<br />Line 3</div>';
-    const result = parseHtml(html, "test");
+    const result = parseHtml({ html, id: "test" });
     expect(result).toBe("Line 1\nLine 2\nLine 3");
   });
 
   it("handles paragraphs", () => {
     const html = '<div id="test"><p>Para 1</p><p>Para 2</p></div>';
-    const result = parseHtml(html, "test");
+    const result = parseHtml({ html, id: "test" });
     expect(result).toBe("Para 1\n\nPara 2");
   });
 
   it("handles nested tags", () => {
     const html = '<div id="test"><div><p>Nested</p></div></div>';
-    const result = parseHtml(html, "test");
+    const result = parseHtml({ html, id: "test" });
     expect(result).toBe("Nested");
   });
 
   it("handles entities", () => {
     const html = '<div id="test">Me &amp; You</div>';
-    const result = parseHtml(html, "test");
+    const result = parseHtml({ html, id: "test" });
     expect(result).toBe("Me & You");
   });
 
   it("returns empty string if ID not found", () => {
     const html = "<div></div>";
-    const result = parseHtml(html, "missing");
+    const result = parseHtml({ html, id: "missing" });
     expect(result).toBe("");
   });
 
   it("handles ID with single quotes", () => {
     const html = "<div id='test'>Content</div>";
-    const result = parseHtml(html, "test");
+    const result = parseHtml({ html, id: "test" });
     expect(result).toBe("Content");
   });
 
   it("handles ID with other attributes", () => {
     const html = '<div role="aside" id="test" class="demo-class">Content</div>';
-    const result = parseHtml(html, "test");
+    const result = parseHtml({ html, id: "test" });
     expect(result).toBe("Content");
   });
 
   it("handles superfluous whitespace", () => {
     const html = '<div id="test">  Content   with   spaces  </div>';
-    const result = parseHtml(html, "test");
+    const result = parseHtml({ html, id: "test" });
     expect(result).toBe("Content with spaces");
   });
 });

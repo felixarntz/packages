@@ -27,11 +27,11 @@ const fetchAndParseContent = async (): Promise<string> => {
   const response = await fetch(HTML_URL);
   const html = await response.text();
 
-  const introText = parseHtml(html, "felixarntz-intro");
-  const socialLinksText = parseHtmlLinks(html, "felixarntz-social");
-  const projectsText = parseHtmlLinks(html, "felixarntz-projects");
+  const introText = parseHtml({ html, id: "felixarntz-intro" });
+  const socialLinksText = parseHtmlLinks({ html, id: "felixarntz-social" });
+  const projectsText = parseHtmlLinks({ html, id: "felixarntz-projects" });
   const latestPostsText = removeCategoryLinks(
-    parseHtmlLinks(html, "felixarntz-latest-posts")
+    parseHtmlLinks({ html, id: "felixarntz-latest-posts" })
   );
 
   const parts: string[] = [introText];

@@ -58,13 +58,13 @@ describe("bufferToUint8Array", () => {
 
 describe("base64ToDataUri", () => {
   it("uses the provided MIME type", async () => {
-    await expect(base64ToDataUri("abc", "image/png")).resolves.toBe(
-      "data:image/png;base64,abc"
-    );
+    await expect(
+      base64ToDataUri({ base64Data: "abc", mime: "image/png" })
+    ).resolves.toBe("data:image/png;base64,abc");
   });
 
   it("detects the MIME type from the payload", async () => {
-    await expect(base64ToDataUri(PNG_BASE64)).resolves.toBe(
+    await expect(base64ToDataUri({ base64Data: PNG_BASE64 })).resolves.toBe(
       `data:image/png;base64,${PNG_BASE64}`
     );
   });
@@ -72,7 +72,7 @@ describe("base64ToDataUri", () => {
   it("rejects a payload whose type cannot be detected", async () => {
     const base64Data = Buffer.from("not an image").toString("base64");
 
-    await expect(base64ToDataUri(base64Data)).rejects.toThrow(
+    await expect(base64ToDataUri({ base64Data })).rejects.toThrow(
       "Unable to detect file type from base64 data"
     );
   });
