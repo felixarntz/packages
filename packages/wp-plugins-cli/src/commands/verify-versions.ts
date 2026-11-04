@@ -24,7 +24,7 @@ export const options: Option[] = [
   {
     argname: "path",
     description: "Path to the WordPress plugin folder",
-    parse: (value: string) => normalizeAbsolutePath(value),
+    parse: (value: string) => normalizeAbsolutePath({ filePath: value }),
     positional: true,
   },
 ];
@@ -58,7 +58,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
 
 const getReadmeVersions = async (pluginPath: string) => {
   const readmeFilePath = await getReadmeFilePath(pluginPath);
-  const readmeFileContents = await readTextFile(readmeFilePath);
+  const readmeFileContents = await readTextFile({ filePath: readmeFilePath });
 
   const stableTagVersionMatches = readmeFileContents.match(STABLE_TAG_REGEX);
   if (!stableTagVersionMatches) {
@@ -90,7 +90,7 @@ const getPhpFileVersions = async (pluginPath: string) => {
     throw new Error(`Main plugin file not found at ${mainFilePath}`);
   }
 
-  const mainFileContents = await readTextFile(mainFilePath);
+  const mainFileContents = await readTextFile({ filePath: mainFilePath });
 
   const headerVersionMatches = mainFileContents.match(HEADER_VERSION_REGEX);
   if (!headerVersionMatches) {
@@ -110,7 +110,7 @@ const getPhpFileVersions = async (pluginPath: string) => {
   const constantVersionMatches = (
     await Promise.all(
       phpFiles.map(async (phpFile) => {
-        const phpFileContents = await readTextFile(phpFile);
+        const phpFileContents = await readTextFile({ filePath: phpFile });
         return phpFileContents.match(constantRegexp);
       })
     )

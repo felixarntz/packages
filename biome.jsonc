@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": ["ultracite/biome/core", "ultracite/biome/vitest"],
+  "plugins": ["./node_modules/@felixarntz/biome/rules/all.grit"],
   "overrides": [
     {
       "includes": ["packages/*/src/**/*.ts"],

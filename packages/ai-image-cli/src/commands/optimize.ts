@@ -18,7 +18,7 @@ const actualOptions: Option[] = [
   {
     argname: "input",
     description: "Input image file to optimize",
-    parse: (value: string) => normalizeAbsolutePath(value),
+    parse: (value: string) => normalizeAbsolutePath({ filePath: value }),
     positional: true,
     required: true,
   },
@@ -36,7 +36,7 @@ const actualOptions: Option[] = [
 ];
 
 export const options = actualOptions.map((option) =>
-  stripOptionFieldsForCommander(option)
+  stripOptionFieldsForCommander({ option })
 );
 
 interface CommandConfig {
@@ -56,7 +56,10 @@ const parseOptions = (opt: OptionsInput): CommandConfig => {
 export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   const [inputImagePath] = getArgs(handlerArgs);
   const { format, output } = parseOptions(
-    await promptMissingOptions(actualOptions, getOpt(handlerArgs))
+    await promptMissingOptions({
+      options: actualOptions,
+      optionsInput: getOpt(handlerArgs),
+    })
   );
 
   const inputImage = await readImageFile(inputImagePath);

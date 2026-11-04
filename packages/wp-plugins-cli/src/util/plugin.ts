@@ -26,7 +26,7 @@ export async function isWordPressPlugin(
   });
 
   const contents = await Promise.all(
-    phpFiles.map((file) => readTextFile(file))
+    phpFiles.map((file) => readTextFile({ filePath: file }))
   );
   return contents.some((content) => content.match(PLUGIN_NAME_REGEX));
 }

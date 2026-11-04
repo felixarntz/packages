@@ -29,7 +29,7 @@ const actualOptions: Option[] = [
   {
     argname: "input",
     description: "Input image file to edit",
-    parse: (value: string) => normalizeAbsolutePath(value),
+    parse: (value: string) => normalizeAbsolutePath({ filePath: value }),
     positional: true,
     required: true,
     variadic: true,
@@ -57,9 +57,10 @@ const actualOptions: Option[] = [
   },
 ];
 
-export const options = injectFileOptionsForCommander(actualOptions, [
-  "prompt",
-]).map((option) => stripOptionFieldsForCommander(option));
+export const options = injectFileOptionsForCommander({
+  fileOptionNames: ["prompt"],
+  options: actualOptions,
+}).map((option) => stripOptionFieldsForCommander({ option }));
 
 interface CommandConfig {
   model: string;
@@ -78,16 +79,19 @@ const parseOptions = (opt: OptionsInput): CommandConfig => {
 };
 
 export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
-  const inputImagePaths = getVariadicArgs(handlerArgs, 0);
+  const inputImagePaths = getVariadicArgs({ handlerArgs, index: 0 });
   const {
     prompt: textPrompt,
     model,
     output,
   } = parseOptions(
-    await promptMissingOptions(
-      actualOptions,
-      await parseFileOptions(getOpt(handlerArgs), ["prompt"])
-    )
+    await promptMissingOptions({
+      options: actualOptions,
+      optionsInput: await parseFileOptions({
+        fileOptionNames: ["prompt"],
+        optionsInput: getOpt(handlerArgs),
+      }),
+    })
   );
 
   const imageContents: FilePart[] = await Promise.all(
@@ -121,22 +125,25 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   ];
 
   // Stream text result, and log "heartbeat" messages every 5 seconds.
-  const [result, images] = await runWithHeartbeat(async () => {
-    const contentResult = await generateText({
-      model,
-      prompt,
-      providerOptions: {
-        google: {
-          responseModalities: ["IMAGE"],
+  const [result, images] = await runWithHeartbeat({
+    action: async () => {
+      const contentResult = await generateText({
+        model,
+        prompt,
+        providerOptions: {
+          google: {
+            responseModalities: ["IMAGE"],
+          },
         },
-      },
-    });
-    const generatedImages = contentResult.files.filter((file) =>
-      file.mediaType.startsWith("image/")
-    );
+      });
+      const generatedImages = contentResult.files.filter((file) =>
+        file.mediaType.startsWith("image/")
+      );
 
-    return [contentResult, generatedImages];
-  }, "Still editing...");
+      return [contentResult, generatedImages];
+    },
+    heartbeatMessage: "Still editing...",
+  });
 
   if (images.length === 0) {
     throw new Error("No image was generated");

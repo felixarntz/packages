@@ -19,10 +19,11 @@ export const getArgs = (handlerArgs: HandlerArgs): string[] => {
   return handlerArgs.slice(0, -2).map(String);
 };
 
-export const getVariadicArgs = (
-  handlerArgs: HandlerArgs,
-  index: number
-): string[] => {
+export const getVariadicArgs = (opts: {
+  handlerArgs: HandlerArgs;
+  index: number;
+}): string[] => {
+  const { handlerArgs, index } = opts;
   if (handlerArgs.length <= index) {
     return [];
   }
@@ -47,10 +48,22 @@ export interface Option {
   variadic?: boolean; // For now, only supported for positional arguments.
 }
 
-const addPositionalArgument = (
-  command: CommandUnknownOpts,
-  { argname, required, defaults, parse, variadic, choices, description }: Option
-): void => {
+const addPositionalArgument = (opts: {
+  command: CommandUnknownOpts;
+  option: Option;
+}): void => {
+  const {
+    command,
+    option: {
+      argname,
+      required,
+      defaults,
+      parse,
+      variadic,
+      choices,
+      description,
+    },
+  } = opts;
   const variadicSuffix = variadic ? "..." : "";
   const argument = command.createArgument(
     required
@@ -79,13 +92,14 @@ const addPositionalArgument = (
   command.addArgument(argument);
 };
 
-export const withOptions = (
-  command: CommandUnknownOpts,
-  options: Option[]
-): CommandUnknownOpts => {
+export const withOptions = (opts: {
+  command: CommandUnknownOpts;
+  options: Option[];
+}): CommandUnknownOpts => {
+  const { command, options } = opts;
   for (const opt of options) {
     if (opt.positional) {
-      addPositionalArgument(command, opt);
+      addPositionalArgument({ command, option: opt });
       continue;
     }
     const option = command.createOption(opt.argname, opt.description);

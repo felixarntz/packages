@@ -27,7 +27,7 @@ const actualOptions: Option[] = [
   {
     argname: "input",
     description: "Input image file to crop",
-    parse: (value: string) => normalizeAbsolutePath(value),
+    parse: (value: string) => normalizeAbsolutePath({ filePath: value }),
     positional: true,
     required: true,
   },
@@ -53,7 +53,7 @@ const actualOptions: Option[] = [
 ];
 
 export const options = actualOptions.map((option) =>
-  stripOptionFieldsForCommander(option)
+  stripOptionFieldsForCommander({ option })
 );
 
 interface CommandConfig {
@@ -74,7 +74,10 @@ const parseOptions = (opt: OptionsInput): CommandConfig => {
 export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   const [inputImagePath] = getArgs(handlerArgs);
   const { aspectRatio, model, output } = parseOptions(
-    await promptMissingOptions(actualOptions, getOpt(handlerArgs))
+    await promptMissingOptions({
+      options: actualOptions,
+      optionsInput: getOpt(handlerArgs),
+    })
   );
 
   // Parse aspect ratio
@@ -160,8 +163,8 @@ Return only the pixel offset value.`;
     },
   ];
 
-  const result = await runWithHeartbeat(
-    async () =>
+  const result = await runWithHeartbeat({
+    action: async () =>
       await generateText({
         model,
         output: Output.object({ schema }),
@@ -169,8 +172,8 @@ Return only the pixel offset value.`;
         reasoning: "low",
         system,
       }),
-    "Still analyzing image..."
-  );
+    heartbeatMessage: "Still analyzing image...",
+  });
 
   if (cropDirection === "horizontal") {
     left = result.output["left"];

@@ -3,7 +3,6 @@
   "compilerOptions": {
     "outDir": "dist",
     "lib": ["esnext"],
-    "types": ["node", "vitest/globals"],
     "strictNullChecks": true
   },
   "include": ["src/**/*.ts"],

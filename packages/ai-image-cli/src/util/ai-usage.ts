@@ -13,6 +13,17 @@ import type {
 import { logger } from "@felixarntz/cli-utils";
 import type { LanguageModelUsage } from "ai";
 
+const readOwnNumber = (opts: {
+  key: string;
+  value: object;
+}): number | undefined => {
+  if (!Object.hasOwn(opts.value, opts.key)) {
+    return undefined;
+  }
+  const property = (opts.value as Record<string, unknown>)[opts.key];
+  return typeof property === "number" ? property : undefined;
+};
+
 /**
  * Logs the token usage details from a language model response.
  *
@@ -43,24 +54,21 @@ export function logTokenUsage(
     }
   } else {
     ({ outputTokens } = tokenUsage);
-
-    if (
-      "reasoningTokens" in tokenUsage &&
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
-      tokenUsage.reasoningTokens !== undefined
-    ) {
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
-      ({ reasoningTokens } = tokenUsage);
-    }
+    reasoningTokens = readOwnNumber({
+      key: "reasoningTokens",
+      value: tokenUsage,
+    });
   }
-  if (!("totalTokens" in tokenUsage) || tokenUsage.totalTokens === undefined) {
+  totalTokens = readOwnNumber({
+    key: "totalTokens",
+    value: tokenUsage,
+  });
+  if (totalTokens === undefined) {
     // V3 Usage.
     totalTokens =
       inputTokens !== undefined && outputTokens !== undefined
         ? inputTokens + outputTokens
         : undefined;
-  } else {
-    ({ totalTokens } = tokenUsage);
   }
 
   const tokenUsageLogLines = [

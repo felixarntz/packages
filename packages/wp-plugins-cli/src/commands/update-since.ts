@@ -25,7 +25,7 @@ export const options: Option[] = [
   {
     argname: "path",
     description: "Path to the WordPress plugin folder",
-    parse: (value: string) => normalizeAbsolutePath(value),
+    parse: (value: string) => normalizeAbsolutePath({ filePath: value }),
     positional: true,
   },
   {
@@ -62,7 +62,10 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     logger.debug(`Using detected version ${pluginVersion}`);
   }
 
-  const replacementCount = await replaceSince(pluginPath, pluginVersion);
+  const replacementCount = await replaceSince({
+    pluginPath,
+    version: pluginVersion,
+  });
 
   if (replacementCount > 0) {
     logger.success(
@@ -77,7 +80,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
 
 const detectVersion = async (pluginPath: string) => {
   const readmeFilePath = await getReadmeFilePath(pluginPath);
-  const readmeFileContents = await readTextFile(readmeFilePath);
+  const readmeFileContents = await readTextFile({ filePath: readmeFilePath });
 
   const stableTagVersionMatches = readmeFileContents.match(STABLE_TAG_REGEX);
   if (!stableTagVersionMatches) {
@@ -86,7 +89,8 @@ const detectVersion = async (pluginPath: string) => {
   return stableTagVersionMatches[1];
 };
 
-const replaceSince = async (pluginPath: string, version: string) => {
+const replaceSince = async (opts: { pluginPath: string; version: string }) => {
+  const { pluginPath, version } = opts;
   const patterns = [
     path.join(pluginPath, "**/*.php"),
     path.join(pluginPath, "**/*.js"),
@@ -112,7 +116,7 @@ const replaceSince = async (pluginPath: string, version: string) => {
   let replacementCount = 0;
   await Promise.all(
     files.map(async (file) => {
-      let content = await readTextFile(file);
+      let content = await readTextFile({ filePath: file });
       let fileReplacementCount = 0;
       for (const regexp of regexps) {
         const matches = content.match(regexp);
@@ -126,7 +130,7 @@ const replaceSince = async (pluginPath: string, version: string) => {
         }
       }
       if (fileReplacementCount > 0) {
-        await writeTextFile(file, content);
+        await writeTextFile({ content, filePath: file });
       }
     })
   );

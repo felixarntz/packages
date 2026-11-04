@@ -24,7 +24,7 @@
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "bundler",
-    "types": ["node", "vitest/globals"]
+    "types": ["node", "vitest/globals", "@felixarntz/biome/object-hasown"]
   },
   "exclude": ["node_modules"]
 }

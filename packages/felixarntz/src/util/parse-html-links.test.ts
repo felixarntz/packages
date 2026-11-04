@@ -17,7 +17,10 @@ const EXAMPLE_HTML = `
 
 describe("parseHtmlLinks", () => {
   it("extracts links from example HTML", () => {
-    const result = parseHtmlLinks(EXAMPLE_HTML, "felixarntz-social");
+    const result = parseHtmlLinks({
+      html: EXAMPLE_HTML,
+      id: "felixarntz-social",
+    });
     const lines = result.split("\n");
 
     expect(lines).toHaveLength(6);
@@ -34,26 +37,26 @@ describe("parseHtmlLinks", () => {
   });
 
   it("returns empty string if ID not found", () => {
-    const result = parseHtmlLinks(EXAMPLE_HTML, "missing");
+    const result = parseHtmlLinks({ html: EXAMPLE_HTML, id: "missing" });
     expect(result).toBe("");
   });
 
   it("returns empty string if no links found", () => {
     const html = '<div id="test">No links here</div>';
-    const result = parseHtmlLinks(html, "test");
+    const result = parseHtmlLinks({ html, id: "test" });
     expect(result).toBe("");
   });
 
   it("handles attributes in different order", () => {
     const html =
       '<div id="test"><a class="btn" href="https://example.com" target="_blank">Link</a></div>';
-    const result = parseHtmlLinks(html, "test");
+    const result = parseHtmlLinks({ html, id: "test" });
     expect(result).toBe("- Link: https://example.com");
   });
 
   it("handles single quotes in href", () => {
     const html = "<div id='test'><a href='https://example.com'>Link</a></div>";
-    const result = parseHtmlLinks(html, "test");
+    const result = parseHtmlLinks({ html, id: "test" });
     expect(result).toBe("- Link: https://example.com");
   });
 
@@ -64,28 +67,28 @@ describe("parseHtmlLinks", () => {
 			<a href="mailto:test@example.com">Mail</a>
 			<a href="javascript:void(0)">JS</a>
 		</div>`;
-    const result = parseHtmlLinks(html, "test");
+    const result = parseHtmlLinks({ html, id: "test" });
     expect(result).toBe("");
   });
 
   it("uses img alt text if link text is empty", () => {
     const html =
       '<div id="test"><a href="https://example.com"><img src="image.png" alt="Image Link" /></a></div>';
-    const result = parseHtmlLinks(html, "test");
+    const result = parseHtmlLinks({ html, id: "test" });
     expect(result).toBe("- Image Link: https://example.com");
   });
 
   it("prefers text content over img alt text", () => {
     const html =
       '<div id="test"><a href="https://example.com"><img src="image.png" alt="Image Link" />Text Link</a></div>';
-    const result = parseHtmlLinks(html, "test");
+    const result = parseHtmlLinks({ html, id: "test" });
     expect(result).toBe("- Text Link: https://example.com");
   });
 
   it("sanitizes HTML entities in img alt text", () => {
     const html =
       '<div id="test"><a href="https://example.com"><img src="image.png" alt="Image&nbsp;Link" /></a></div>';
-    const result = parseHtmlLinks(html, "test");
+    const result = parseHtmlLinks({ html, id: "test" });
     expect(result).toBe("- Image Link: https://example.com");
   });
 
@@ -98,7 +101,7 @@ describe("parseHtmlLinks", () => {
         <a href="https://example.com">Another Text Label</a>
       </div>
     `;
-    const result = parseHtmlLinks(html, "test");
+    const result = parseHtmlLinks({ html, id: "test" });
     const lines = result.split("\n");
 
     expect(lines).toHaveLength(2);

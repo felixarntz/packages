@@ -7,10 +7,11 @@ import {
 import { readTextFile } from "./fs";
 import { normalizeAbsolutePath } from "./paths";
 
-export const parseFileOptions = async (
-  optionsInput: OptionsInput,
-  fileOptionNames: string[]
-): Promise<OptionsInput> => {
+export const parseFileOptions = async (opts: {
+  fileOptionNames: string[];
+  optionsInput: OptionsInput;
+}): Promise<OptionsInput> => {
+  const { fileOptionNames, optionsInput } = opts;
   const completeOptionsInput: OptionsInput = { ...optionsInput };
 
   await Promise.all(
@@ -23,7 +24,9 @@ export const parseFileOptions = async (
       }
 
       const absolutePath = optionsInput[fileKey] as string;
-      completeOptionsInput[valueKey] = await readTextFile(absolutePath);
+      completeOptionsInput[valueKey] = await readTextFile({
+        filePath: absolutePath,
+      });
       delete optionsInput[fileKey];
     })
   );
@@ -31,15 +34,16 @@ export const parseFileOptions = async (
   return completeOptionsInput;
 };
 
-export const parseAndValidateFileOptions = async (
-  options: Option[],
-  optionsInput: OptionsInput,
-  fileOptionNames: string[]
-): Promise<OptionsInput> => {
-  const completeOptionsInput = await parseFileOptions(
+export const parseAndValidateFileOptions = async (opts: {
+  fileOptionNames: string[];
+  options: Option[];
+  optionsInput: OptionsInput;
+}): Promise<OptionsInput> => {
+  const { fileOptionNames, options, optionsInput } = opts;
+  const completeOptionsInput = await parseFileOptions({
+    fileOptionNames,
     optionsInput,
-    fileOptionNames
-  );
+  });
 
   for (const option of options) {
     if (option.positional) {
@@ -63,10 +67,11 @@ export const parseAndValidateFileOptions = async (
   return completeOptionsInput;
 };
 
-export const injectFileOptionsForCommander = (
-  options: Option[],
-  fileOptionNames: string[]
-): Option[] => {
+export const injectFileOptionsForCommander = (opts: {
+  fileOptionNames: string[];
+  options: Option[];
+}): Option[] => {
+  const { fileOptionNames, options } = opts;
   const fileOptionNamesMap = new Set(fileOptionNames);
 
   const newOptions: Option[] = [];
@@ -98,7 +103,7 @@ export const injectFileOptionsForCommander = (
     newOptions.push({
       argname: `--${argname}-file <path>`,
       description: newDescription,
-      parse: (value: string) => normalizeAbsolutePath(value),
+      parse: (value: string) => normalizeAbsolutePath({ filePath: value }),
     });
   }
 
