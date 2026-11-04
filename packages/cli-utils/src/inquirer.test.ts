@@ -23,15 +23,21 @@ describe("promptMissingOptions", () => {
   it("stores a prompted hyphenated flag under its camelCase name", async () => {
     vi.mocked(input).mockResolvedValue("1:1");
 
-    const result = await promptMissingOptions([aspectRatioOption], {});
+    const result = await promptMissingOptions({
+      options: [aspectRatioOption],
+      optionsInput: {},
+    });
 
     expect(result["aspectRatio"]).toBe("1:1");
     expect(result["aspect-ratio"]).toBeUndefined();
   });
 
   it("keeps a camelCase value already provided by the CLI", async () => {
-    const result = await promptMissingOptions([aspectRatioOption], {
-      aspectRatio: "16:9",
+    const result = await promptMissingOptions({
+      options: [aspectRatioOption],
+      optionsInput: {
+        aspectRatio: "16:9",
+      },
     });
 
     expect(input).not.toHaveBeenCalled();

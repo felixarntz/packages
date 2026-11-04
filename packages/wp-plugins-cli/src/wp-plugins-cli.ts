@@ -38,27 +38,42 @@ import {
 function initialize() {
   dotenv.config();
 
-  withOptions(program.command(bumpTestedWpName), bumpTestedWpOptions)
+  withOptions({
+    command: program.command(bumpTestedWpName),
+    options: bumpTestedWpOptions,
+  })
     .alias("tested")
     .description(bumpTestedWpDescription)
     .action(withErrorHandling(bumpTestedWpHandler));
 
-  withOptions(program.command(generateChangelogName), generateChangelogOptions)
+  withOptions({
+    command: program.command(generateChangelogName),
+    options: generateChangelogOptions,
+  })
     .alias("changelog")
     .description(generateChangelogDescription)
     .action(withErrorHandling(generateChangelogHandler));
 
-  withOptions(program.command(getPluginsName), getPluginsOptions)
+  withOptions({
+    command: program.command(getPluginsName),
+    options: getPluginsOptions,
+  })
     .alias("plugins")
     .description(getPluginsDescription)
     .action(withErrorHandling(getPluginsHandler));
 
-  withOptions(program.command(updateSinceName), updateSinceOptions)
+  withOptions({
+    command: program.command(updateSinceName),
+    options: updateSinceOptions,
+  })
     .alias("since")
     .description(updateSinceDescription)
     .action(withErrorHandling(updateSinceHandler));
 
-  withOptions(program.command(verifyVersionsName), verifyVersionsOptions)
+  withOptions({
+    command: program.command(verifyVersionsName),
+    options: verifyVersionsOptions,
+  })
     .alias("versions")
     .description(verifyVersionsDescription)
     .action(withErrorHandling(verifyVersionsHandler));

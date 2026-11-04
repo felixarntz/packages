@@ -19,7 +19,7 @@ export const options: Option[] = [
   {
     argname: "path",
     description: "Path in which to look for WordPress plugins",
-    parse: (value: string) => normalizeAbsolutePath(value),
+    parse: (value: string) => normalizeAbsolutePath({ filePath: value }),
     positional: true,
   },
   {

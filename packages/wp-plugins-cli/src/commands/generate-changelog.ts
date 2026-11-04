@@ -42,7 +42,7 @@ export const options: Option[] = [
   {
     argname: "path",
     description: "Path to the WordPress plugin folder",
-    parse: (value: string) => normalizeAbsolutePath(value),
+    parse: (value: string) => normalizeAbsolutePath({ filePath: value }),
     positional: true,
   },
   {
@@ -120,8 +120,8 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   } else {
     logger.info("Getting all commits...");
   }
-  const commits = await runWithHeartbeat(
-    async () => {
+  const commits = await runWithHeartbeat({
+    action: async () => {
       const allCommits: Commit[] = [];
       const commitsGenerator = getPaginatedCommits({
         constraints: commitConstraints,
@@ -133,9 +133,9 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
       }
       return allCommits;
     },
-    "Still getting commits...",
-    5000
-  );
+    heartbeatMessage: "Still getting commits...",
+    intervalMs: 5000,
+  });
 
   const commitEntries = getCommitEntries({
     commits,
@@ -143,30 +143,30 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   });
 
   logger.info("Amending commit entries with relevant pull requests...");
-  const commitPrEntries = await runWithHeartbeat(
-    async () =>
+  const commitPrEntries = await runWithHeartbeat({
+    action: async () =>
       await amendCommitEntriesWithPullRequests({
         commitEntries,
         githubRepository,
         octokit,
       }),
-    "Still looking for pull requests...",
-    5000
-  );
+    heartbeatMessage: "Still looking for pull requests...",
+    intervalMs: 5000,
+  });
 
   const cleanEntries = stripEntriesToSkip(commitPrEntries);
 
   logger.info("Amending commit entries with relevant issues...");
-  const commitPrIssueEntries = await runWithHeartbeat(
-    async () =>
+  const commitPrIssueEntries = await runWithHeartbeat({
+    action: async () =>
       await amendEntriesWithIssues({
         entries: cleanEntries,
         githubRepository,
         octokit,
       }),
-    "Still looking for issues...",
-    5000
-  );
+    heartbeatMessage: "Still looking for issues...",
+    intervalMs: 5000,
+  });
 
   logger.info("Generating changelog...");
   const changelogEntries = determineEntryTypes(commitPrIssueEntries);

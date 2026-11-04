@@ -24,8 +24,8 @@ vi.mock("@felixarntz/cli-utils", async () => {
 
   return {
     ...actual,
-    normalizeAbsolutePath: vi.fn((filename: string) =>
-      path.join("/out", filename)
+    normalizeAbsolutePath: vi.fn((opts: { filePath: string }) =>
+      path.join("/out", opts.filePath)
     ),
     readBinaryFile: vi.fn(),
     writeBinaryFile: vi.fn(),
@@ -88,11 +88,13 @@ describe("writeImageFile", () => {
       })
     ).resolves.toBe(path.join("/out", "edited.webp"));
 
-    expect(normalizeAbsolutePath).toHaveBeenCalledWith("edited.webp");
-    expect(writeBinaryFile).toHaveBeenCalledWith(
-      path.join("/out", "edited.webp"),
-      buffer
-    );
+    expect(normalizeAbsolutePath).toHaveBeenCalledWith({
+      filePath: "edited.webp",
+    });
+    expect(writeBinaryFile).toHaveBeenCalledWith({
+      content: buffer,
+      filePath: path.join("/out", "edited.webp"),
+    });
   });
 
   it("maps a JPEG MIME type to a jpg extension", async () => {

@@ -7,10 +7,11 @@ import {
   parseFlagName,
 } from "./commander";
 
-export const promptMissingOption = (
-  option: Option,
-  inputValue?: string | boolean
-): Promise<string | boolean> => {
+export const promptMissingOption = (opts: {
+  inputValue?: string | boolean;
+  option: Option;
+}): Promise<string | boolean> => {
+  const { inputValue, option } = opts;
   if (inputValue !== undefined) {
     return Promise.resolve(inputValue);
   }
@@ -59,11 +60,12 @@ export const promptMissingOption = (
   });
 };
 
-export const promptMissingOptions = async (
-  options: Option[],
-  optionsInput: OptionsInput,
-  inquireBooleanFlags?: boolean
-): Promise<OptionsInput> => {
+export const promptMissingOptions = async (opts: {
+  inquireBooleanFlags?: boolean;
+  options: Option[];
+  optionsInput: OptionsInput;
+}): Promise<OptionsInput> => {
+  const { inquireBooleanFlags, options, optionsInput } = opts;
   const completeOptionsInput: OptionsInput = { ...optionsInput };
 
   for (const option of options) {
@@ -75,19 +77,20 @@ export const promptMissingOptions = async (
     }
     const flagName = camelCaseFlagName(parseFlagName(option.argname));
     // biome-ignore lint/performance/noAwaitInLoops: prompts must be answered one at a time
-    completeOptionsInput[flagName] = await promptMissingOption(
+    completeOptionsInput[flagName] = await promptMissingOption({
+      inputValue: optionsInput[flagName],
       option,
-      optionsInput[flagName]
-    );
+    });
   }
 
   return completeOptionsInput;
 };
 
-export const stripOptionFieldsForCommander = (
-  option: Option,
-  inquireBooleanFlags?: boolean
-): Option => {
+export const stripOptionFieldsForCommander = (opts: {
+  inquireBooleanFlags?: boolean;
+  option: Option;
+}): Option => {
+  const { inquireBooleanFlags, option } = opts;
   if (option.positional) {
     return option;
   }

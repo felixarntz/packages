@@ -30,7 +30,8 @@ const colorSuccess = createStyledText("green");
 const colorInfo = createStyledText("magenta");
 const colorDebug = createStyledText("cyan");
 
-const formatLogMessage = (text: string, level: LogLevel): string => {
+const formatLogMessage = (opts: { level: LogLevel; text: string }): string => {
+  const { level, text } = opts;
   switch (level) {
     case LogLevel.DEBUG:
       return colorDebug(text);
@@ -52,7 +53,7 @@ const writeLog = (opts: { text: string; level?: LogLevel }): void => {
   if (level < CURRENT_LOG_LEVEL) {
     return;
   }
-  process.stderr.write(`${formatLogMessage(opts.text, level)}\n`);
+  process.stderr.write(`${formatLogMessage({ level, text: opts.text })}\n`);
 };
 
 const DEFAULT_LOG_LEVEL = LogLevel.INFO;

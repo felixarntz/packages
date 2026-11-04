@@ -134,7 +134,7 @@ export async function writeImageFile(
     filename = `${outputData.fileBase.replace("%%number%%", String(outputData.index + 1))}.${extension}`;
   }
 
-  const filePath = normalizeAbsolutePath(filename);
-  await writeBinaryFile(filePath, outputData.buffer);
+  const filePath = normalizeAbsolutePath({ filePath: filename });
+  await writeBinaryFile({ content: outputData.buffer, filePath });
   return filePath;
 }

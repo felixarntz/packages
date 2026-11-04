@@ -27,7 +27,7 @@ const actualOptions: Option[] = [
   {
     argname: "input",
     description: "Input image file to upscale",
-    parse: (value: string) => normalizeAbsolutePath(value),
+    parse: (value: string) => normalizeAbsolutePath({ filePath: value }),
     positional: true,
     required: true,
   },
@@ -54,7 +54,7 @@ const actualOptions: Option[] = [
 ];
 
 export const options = actualOptions.map((option) =>
-  stripOptionFieldsForCommander(option)
+  stripOptionFieldsForCommander({ option })
 );
 
 interface CommandConfig {
@@ -75,7 +75,10 @@ const parseOptions = (opt: OptionsInput): CommandConfig => {
 export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   const [inputImagePath] = getArgs(handlerArgs);
   const { model, output, size } = parseOptions(
-    await promptMissingOptions(actualOptions, getOpt(handlerArgs))
+    await promptMissingOptions({
+      options: actualOptions,
+      optionsInput: getOpt(handlerArgs),
+    })
   );
 
   const inputImage = await ensureCorrectOrientation(
@@ -114,25 +117,28 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   ];
 
   // Stream text result, and log "heartbeat" messages every 5 seconds.
-  const [result, images] = await runWithHeartbeat(async () => {
-    const contentResult = await generateText({
-      model,
-      prompt,
-      providerOptions: {
-        google: {
-          imageConfig: {
-            imageSize: size,
+  const [result, images] = await runWithHeartbeat({
+    action: async () => {
+      const contentResult = await generateText({
+        model,
+        prompt,
+        providerOptions: {
+          google: {
+            imageConfig: {
+              imageSize: size,
+            },
+            responseModalities: ["IMAGE"],
           },
-          responseModalities: ["IMAGE"],
         },
-      },
-    });
-    const generatedImages = contentResult.files.filter((file) =>
-      file.mediaType.startsWith("image/")
-    );
+      });
+      const generatedImages = contentResult.files.filter((file) =>
+        file.mediaType.startsWith("image/")
+      );
 
-    return [contentResult, generatedImages];
-  }, "Still editing...");
+      return [contentResult, generatedImages];
+    },
+    heartbeatMessage: "Still editing...",
+  });
 
   if (images.length === 0) {
     throw new Error("No upscaled image found");

@@ -34,14 +34,15 @@ export async function directoryExists(dirPath: string): Promise<boolean> {
 /**
  * Reads a file as text.
  *
- * @param filePath - The path to the file.
- * @param encoding - Optional. The encoding to use when reading the file. Default "utf-8".
+ * @param opts.filePath - The path to the file.
+ * @param opts.encoding - Optional. The encoding to use when reading the file. Default "utf-8".
  * @returns A promise that resolves to the file content as a string.
  */
-export async function readTextFile(
-  filePath: string,
-  encoding: BufferEncoding = "utf-8"
-): Promise<string> {
+export async function readTextFile(opts: {
+  encoding?: BufferEncoding;
+  filePath: string;
+}): Promise<string> {
+  const { encoding = "utf-8", filePath } = opts;
   try {
     return await fs.readFile(filePath, { encoding });
   } catch (error) {
@@ -56,20 +57,27 @@ export async function readTextFile(
 /**
  * Writes text to a file.
  *
- * @param filePath - The path to the file.
- * @param content - The content to write to the file.
- * @param encoding - Optional. The encoding to use when writing the file. Default "utf-8".
- * @param createDir - Optional. Whether to create the directory if it doesn't exist. Default true.
- * @param overwrite - Optional. Whether to overwrite the file if it already exists. Default true.
+ * @param opts.filePath - The path to the file.
+ * @param opts.content - The content to write to the file.
+ * @param opts.encoding - Optional. The encoding to use when writing the file. Default "utf-8".
+ * @param opts.createDir - Optional. Whether to create the directory if it doesn't exist. Default true.
+ * @param opts.overwrite - Optional. Whether to overwrite the file if it already exists. Default true.
  * @returns A promise that resolves when the file is written.
  */
-export async function writeTextFile(
-  filePath: string,
-  content: string,
-  encoding: BufferEncoding = "utf-8",
-  createDir = true,
-  overwrite = true
-): Promise<void> {
+export async function writeTextFile(opts: {
+  content: string;
+  createDir?: boolean;
+  encoding?: BufferEncoding;
+  filePath: string;
+  overwrite?: boolean;
+}): Promise<void> {
+  const {
+    content,
+    createDir = true,
+    encoding = "utf-8",
+    filePath,
+    overwrite = true,
+  } = opts;
   // Ensure directory exists if createDir is true.
   if (createDir) {
     const dirPath = path.dirname(filePath);
@@ -113,18 +121,19 @@ export async function readBinaryFile(filePath: string): Promise<Buffer> {
 /**
  * Writes binary data to a file.
  *
- * @param filePath - The path to the file.
- * @param content - The content to write to the file as a Buffer.
- * @param createDir - Optional. Whether to create the directory if it doesn't exist. Default true.
- * @param overwrite - Optional. Whether to overwrite the file if it already exists. Default true.
+ * @param opts.filePath - The path to the file.
+ * @param opts.content - The content to write to the file as a Buffer.
+ * @param opts.createDir - Optional. Whether to create the directory if it doesn't exist. Default true.
+ * @param opts.overwrite - Optional. Whether to overwrite the file if it already exists. Default true.
  * @returns A promise that resolves when the file is written.
  */
-export async function writeBinaryFile(
-  filePath: string,
-  content: Buffer,
-  createDir = true,
-  overwrite = true
-): Promise<void> {
+export async function writeBinaryFile(opts: {
+  content: Buffer;
+  createDir?: boolean;
+  filePath: string;
+  overwrite?: boolean;
+}): Promise<void> {
+  const { content, createDir = true, filePath, overwrite = true } = opts;
   // Ensure directory exists if createDir is true.
   if (createDir) {
     const dirPath = path.dirname(filePath);

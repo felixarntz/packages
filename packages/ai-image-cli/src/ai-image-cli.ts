@@ -32,19 +32,25 @@ import {
 function initialize() {
   dotenv.config();
 
-  withOptions(program.command(editName), editOptions)
+  withOptions({ command: program.command(editName), options: editOptions })
     .description(editDescription)
     .action(withErrorHandling(editHandler));
 
-  withOptions(program.command(cropName), cropOptions)
+  withOptions({ command: program.command(cropName), options: cropOptions })
     .description(cropDescription)
     .action(withErrorHandling(cropHandler));
 
-  withOptions(program.command(optimizeName), optimizeOptions)
+  withOptions({
+    command: program.command(optimizeName),
+    options: optimizeOptions,
+  })
     .description(optimizeDescription)
     .action(withErrorHandling(optimizeHandler));
 
-  withOptions(program.command(upscaleName), upscaleOptions)
+  withOptions({
+    command: program.command(upscaleName),
+    options: upscaleOptions,
+  })
     .description(upscaleDescription)
     .action(withErrorHandling(upscaleHandler));
 }

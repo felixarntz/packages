@@ -22,7 +22,7 @@ export const options: Option[] = [
   {
     argname: "path",
     description: "Path to the WordPress plugin folder",
-    parse: (value: string) => normalizeAbsolutePath(value),
+    parse: (value: string) => normalizeAbsolutePath({ filePath: value }),
     positional: true,
   },
   {
@@ -50,7 +50,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   const pluginPath = path ? path : process.cwd();
 
   const readmeFilePath = await getReadmeFilePath(pluginPath);
-  const readmeFileContents = await readTextFile(readmeFilePath);
+  const readmeFileContents = await readTextFile({ filePath: readmeFilePath });
 
   const match = readmeFileContents.match(TESTED_UP_TO_REGEX);
 
@@ -86,7 +86,10 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     `Tested up to:${separator}${version}`
   );
 
-  await writeTextFile(readmeFilePath, newReadmeFileContents);
+  await writeTextFile({
+    content: newReadmeFileContents,
+    filePath: readmeFilePath,
+  });
 
   await gitInstance.add(readmeFilePath);
   await gitInstance.commit(`Bump tested WordPress version to ${version}.`);
