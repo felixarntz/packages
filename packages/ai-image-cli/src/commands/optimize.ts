@@ -18,16 +18,16 @@ const actualOptions: Option[] = [
   {
     argname: "input",
     description: "Input image file to optimize",
+    parse: (value: string) => normalizeAbsolutePath(value),
     positional: true,
     required: true,
-    parse: (value: string) => normalizeAbsolutePath(value),
   },
   {
     argname: "-f, --format <format>",
+    choices: ["jpeg", "webp", "avif", "png"],
+    defaults: "jpeg",
     description: "Output format",
     required: false,
-    defaults: "jpeg",
-    choices: ["jpeg", "webp", "avif", "png"],
   },
   {
     argname: "-o, --output <output>",
@@ -45,8 +45,9 @@ interface CommandConfig {
 }
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
+  const formatOption = opt["format"] as CommandConfig["format"] | undefined;
   const config: CommandConfig = {
-    format: (opt["format"] as "jpeg" | "webp" | "avif" | "png") ?? "jpeg",
+    format: formatOption ?? "jpeg",
     output: opt["output"] ? String(opt["output"]) : undefined,
   };
   return config;
@@ -68,7 +69,7 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
 
   switch (format) {
     case "jpeg":
-      sharpInstance = sharpInstance.jpeg({ quality: 80, progressive: true });
+      sharpInstance = sharpInstance.jpeg({ progressive: true, quality: 80 });
       ext = "jpg";
       mime = "image/jpeg";
       break;
@@ -100,9 +101,9 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     fileBase = `${inputPathParts.join(".")}-optimized`;
   }
   const filePath = await writeImageFile({
-    fileBase,
     buffer: optimizedBuffer,
     ext,
+    fileBase,
     mime,
   });
 

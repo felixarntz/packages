@@ -2,16 +2,10 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    reporters: ["default", "junit"],
-    silent: true,
-    outputFile: {
-      junit: "junit.xml",
-    },
     coverage: {
       enabled: true,
-      provider: "v8",
-      reportsDirectory: "./coverage",
       include: ["src/**/*"],
+      provider: "v8",
       reporter: [
         ["text", { file: "full-text-summary.txt" }],
         "html",
@@ -20,6 +14,12 @@ export default defineConfig({
         "cobertura",
         ["json-summary", { outputFile: "coverage-summary.json" }],
       ],
+      reportsDirectory: "./coverage",
     },
+    outputFile: {
+      junit: "junit.xml",
+    },
+    reporters: ["default", "junit"],
+    silent: true,
   },
 });

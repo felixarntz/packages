@@ -4,7 +4,7 @@ import type {
 } from "@commander-js/extra-typings";
 import { logger } from "./logger";
 
-const FLAG_NAME_REGEX = /--([a-zA-Z0-9-]+)/;
+const FLAG_NAME_REGEX = /--(?<flag>[a-zA-Z0-9-]+)/u;
 
 export type HandlerArgs = [...unknown[], OptionValues, CommandUnknownOpts];
 
@@ -63,8 +63,8 @@ const addPositionalArgument = (
   }
   if (typeof parse === "function") {
     if (variadic) {
-      argument.argParser((value: string, previous: string[]) => {
-        if (!(previous && Array.isArray(previous))) {
+      argument.argParser((value: string, previous?: string[]) => {
+        if (!Array.isArray(previous)) {
           return [parse(value)];
         }
         return [...previous, parse(value)];
@@ -134,4 +134,4 @@ export const isBooleanFlag = (argname: string): boolean =>
   argname.includes("--") && !argname.includes("<") && !argname.includes("[");
 
 export const camelCaseFlagName = (flagName: string): string =>
-  flagName.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+  flagName.replace(/-(?<letter>[a-z])/gu, (_, letter) => letter.toUpperCase());

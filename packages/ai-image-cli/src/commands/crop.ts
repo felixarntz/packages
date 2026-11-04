@@ -27,9 +27,9 @@ const actualOptions: Option[] = [
   {
     argname: "input",
     description: "Input image file to crop",
+    parse: (value: string) => normalizeAbsolutePath(value),
     positional: true,
     required: true,
-    parse: (value: string) => normalizeAbsolutePath(value),
   },
   {
     argname: "-a, --aspect-ratio <aspectRatio>",
@@ -38,12 +38,12 @@ const actualOptions: Option[] = [
   },
   {
     argname: "-m, --model <model>",
-    description: "Model to use for determining optimal crop position",
     choices: [
       "openai/gpt-6-luna-fast",
       "google/gemini-3.8-flash",
       "google/gemini-3.5-flash-lite",
     ],
+    description: "Model to use for determining optimal crop position",
     required: true,
   },
   {
@@ -145,18 +145,18 @@ Return only the pixel offset value.`;
 
   const prompt: ModelMessage[] = [
     {
-      role: "user" as const,
       content: [
         {
-          type: "text" as const,
           text: cropPrompt,
+          type: "text" as const,
         },
         {
-          type: "file" as const,
-          data: { type: "data" as const, data: inputImage.buffer },
+          data: { data: inputImage.buffer, type: "data" as const },
           mediaType: inputImage.mime,
+          type: "file" as const,
         },
       ],
+      role: "user" as const,
     },
   ];
 
@@ -165,9 +165,9 @@ Return only the pixel offset value.`;
       await generateText({
         model,
         output: Output.object({ schema }),
-        system,
         prompt,
         reasoning: "low",
+        system,
       }),
     "Still analyzing image..."
   );
@@ -183,7 +183,7 @@ Return only the pixel offset value.`;
   );
 
   const croppedBuffer = await sharp(inputImage.buffer)
-    .extract({ left, top, width: cropWidth, height: cropHeight })
+    .extract({ height: cropHeight, left, top, width: cropWidth })
     .toBuffer();
 
   let fileBase = output;
@@ -193,9 +193,9 @@ Return only the pixel offset value.`;
     fileBase = `${inputPathParts.join(".")}-cropped`;
   }
   const filePath = await writeImageFile({
-    fileBase,
     buffer: croppedBuffer,
     ext: inputImage.ext,
+    fileBase,
     mime: inputImage.mime,
   });
 

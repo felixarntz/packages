@@ -46,16 +46,16 @@ export const promptMissingOption = (
 
   if (option.choices) {
     return select({
-      message,
       choices: option.choices,
       default: option.defaults,
+      message,
     });
   }
 
   return input({
+    default: option.defaults,
     message,
     required: option.required ?? false,
-    default: option.defaults,
   });
 };
 
@@ -74,6 +74,7 @@ export const promptMissingOptions = async (
       continue;
     }
     const flagName = camelCaseFlagName(parseFlagName(option.argname));
+    // biome-ignore lint/performance/noAwaitInLoops: prompts must be answered one at a time
     completeOptionsInput[flagName] = await promptMissingOption(
       option,
       optionsInput[flagName]

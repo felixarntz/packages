@@ -14,30 +14,31 @@ import { getReadmeFilePath } from "../util/readme";
 export const name = "verify-versions";
 export const description = "Verifies consistency of versions in a plugin.";
 
-const STABLE_TAG_REGEX = /^Stable tag:\s*(\d+\.\d+\.\d+(?:-\w+)?)$/m;
+const STABLE_TAG_REGEX = /^Stable tag:\s*(?<version>\d+\.\d+\.\d+(?:-\w+)?)$/mu;
 const CHANGELOG_VERSION_REGEX =
-  /^== Changelog ==\n+= (\d+\.\d+\.\d+(?:-\w+)?) =$/m;
-const HEADER_VERSION_REGEX = /^ \* Version:\s+(\d+\.\d+\.\d+(?:-\w+)?)$/m;
+  /^== Changelog ==\n+= (?<version>\d+\.\d+\.\d+(?:-\w+)?) =$/mu;
+const HEADER_VERSION_REGEX =
+  /^ \* Version:\s+(?<version>\d+\.\d+\.\d+(?:-\w+)?)$/mu;
 
 export const options: Option[] = [
   {
     argname: "path",
     description: "Path to the WordPress plugin folder",
-    positional: true,
     parse: (value: string) => normalizeAbsolutePath(value),
+    positional: true,
   },
 ];
 
 export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
-  const [path] = getArgs(handlerArgs);
-  const pluginPath = path ? path : process.cwd();
+  const [pluginPathArg] = getArgs(handlerArgs);
+  const pluginPath = pluginPathArg ? pluginPathArg : process.cwd();
 
   const allVersions = {
     ...(await getReadmeVersions(pluginPath)),
     ...(await getPhpFileVersions(pluginPath)),
   };
 
-  const version = Object.values(allVersions)[0];
+  const [version] = Object.values(allVersions);
   if (
     !Object.values(allVersions).every(
       (anotherVersion) => anotherVersion === version
@@ -63,7 +64,7 @@ const getReadmeVersions = async (pluginPath: string) => {
   if (!stableTagVersionMatches) {
     throw new Error(`Unable to locate stable tag in ${readmeFilePath}`);
   }
-  const stableTagVersion = stableTagVersionMatches[1];
+  const [, stableTagVersion] = stableTagVersionMatches;
 
   const latestChangelogMatches = readmeFileContents.match(
     CHANGELOG_VERSION_REGEX
@@ -73,11 +74,11 @@ const getReadmeVersions = async (pluginPath: string) => {
       `Unable to locate latest version entry in changelog in ${readmeFilePath}.`
     );
   }
-  const latestChangelogVersion = latestChangelogMatches[1];
+  const [, latestChangelogVersion] = latestChangelogMatches;
 
   return {
-    stableTagVersion,
     latestChangelogVersion,
+    stableTagVersion,
   };
 };
 
@@ -97,27 +98,29 @@ const getPhpFileVersions = async (pluginPath: string) => {
       `Unable to locate version in PHP header in ${mainFilePath}.`
     );
   }
-  const headerVersion = headerVersionMatches[1];
+  const [, headerVersion] = headerVersionMatches;
 
   const constantName = `${hyphenCaseToConstantCase(pluginSlug)}_VERSION`;
   const constantRegexp = new RegExp(
-    `define\\(\\s*'${constantName}',\\s*'(.+?)'\\s*\\);`
+    `define\\(\\s*'${constantName}',\\s*'(?<version>.+?)'\\s*\\);`,
+    "u"
   );
 
-  let constantVersion: string | null = null;
-  for (const phpFile of await glob(path.join(pluginPath, "*.php"))) {
-    const phpFileContents = await readTextFile(phpFile);
-    const constantVersionMatches = phpFileContents.match(constantRegexp);
-    if (constantVersionMatches) {
-      constantVersion = constantVersionMatches[1];
-      break;
-    }
-  }
+  const phpFiles = await glob(path.join(pluginPath, "*.php"));
+  const constantVersionMatches = (
+    await Promise.all(
+      phpFiles.map(async (phpFile) => {
+        const phpFileContents = await readTextFile(phpFile);
+        return phpFileContents.match(constantRegexp);
+      })
+    )
+  ).find((match) => match !== null);
+  const constantVersion = constantVersionMatches?.[1];
 
   if (constantVersion) {
     return {
-      headerVersion,
       constantVersion,
+      headerVersion,
     };
   }
 

@@ -2,6 +2,15 @@
   "name": "@felixarntz/cli-utils",
   "version": "0.2.1",
   "description": "Utility functions for TypeScript CLI tools, using Commander and Inquirer",
+  "homepage": "https://github.com/felixarntz/packages/blob/main/packages/cli-utils/README.md",
+  "bugs": {
+    "url": "https://github.com/felixarntz/packages/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/felixarntz/packages.git",
+    "directory": "packages/cli-utils"
+  },
   "license": "MIT",
   "type": "module",
   "main": "dist/index.js",
@@ -9,24 +18,14 @@
   "files": [
     "dist/**/*"
   ],
-  "engines": {
-    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
-  },
-  "homepage": "https://github.com/felixarntz/packages/blob/main/packages/cli-utils/README.md",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/felixarntz/packages.git",
-    "directory": "packages/cli-utils"
-  },
-  "bugs": {
-    "url": "https://github.com/felixarntz/packages/issues"
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "test:ci": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@inquirer/prompts": "^7.10.1"
-  },
-  "peerDependencies": {
-    "@commander-js/extra-typings": "catalog:",
-    "commander": "catalog:"
   },
   "devDependencies": {
     "@commander-js/extra-typings": "catalog:",
@@ -35,11 +34,12 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "scripts": {
-    "build": "tsdown",
-    "test": "vitest run",
-    "test:ci": "vitest run --coverage",
-    "typecheck": "tsc --noEmit"
+  "peerDependencies": {
+    "@commander-js/extra-typings": "catalog:",
+    "commander": "catalog:"
+  },
+  "engines": {
+    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
   },
   "publishConfig": {
     "access": "public",

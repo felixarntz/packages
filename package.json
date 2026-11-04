@@ -1,24 +1,38 @@
 {
   "name": "@felixarntz/root",
   "private": true,
+  "homepage": "https://github.com/felixarntz/packages#readme",
+  "bugs": {
+    "url": "https://github.com/felixarntz/packages/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/felixarntz/packages.git"
+  },
   "license": "MIT",
   "type": "module",
   "workspaces": [
     "packages/*"
   ],
-  "engines": {
-    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
-  },
-  "homepage": "https://github.com/felixarntz/packages#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/felixarntz/packages.git"
-  },
-  "bugs": {
-    "url": "https://github.com/felixarntz/packages/issues"
+  "scripts": {
+    "ai-image": "DEBUG=true node ./packages/ai-image-cli/dist/ai-image-cli.js",
+    "build": "turbo run build",
+    "changeset": "changeset",
+    "check": "ultracite check",
+    "check:deps": "syncpack lint",
+    "ci:release": "turbo build --filter='./packages/*' && changeset publish",
+    "ci:version": "changeset version && pnpm install --no-frozen-lockfile",
+    "doctor": "ultracite doctor",
+    "felixarntz": "DEBUG=true node ./packages/felixarntz/dist/index.js",
+    "fix": "ultracite fix",
+    "prepare": "husky",
+    "test": "turbo run test",
+    "test:ci": "turbo run test:ci",
+    "typecheck": "turbo run typecheck",
+    "wp-plugins": "DEBUG=true node ./packages/wp-plugins-cli/dist/wp-plugins-cli.js"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.15",
+    "@biomejs/biome": "^2.6.4",
     "@changesets/cli": "^2.31.0",
     "@types/node": "^24.10.9",
     "@vitest/coverage-v8": "catalog:",
@@ -26,25 +40,11 @@
     "mock-fs": "^5.5.0",
     "syncpack": "^15.2.0",
     "turbo": "catalog:",
-    "ultracite": "7.7.0",
+    "ultracite": "^8.1.1",
     "vitest": "catalog:"
   },
-  "scripts": {
-    "ai-image": "DEBUG=true node ./packages/ai-image-cli/dist/ai-image-cli.js",
-    "felixarntz": "DEBUG=true node ./packages/felixarntz/dist/index.js",
-    "wp-plugins": "DEBUG=true node ./packages/wp-plugins-cli/dist/wp-plugins-cli.js",
-    "build": "turbo run build",
-    "test": "turbo run test",
-    "test:ci": "turbo run test:ci",
-    "typecheck": "turbo run typecheck",
-    "check:deps": "syncpack lint",
-    "check": "ultracite check",
-    "fix": "ultracite fix",
-    "doctor": "ultracite doctor",
-    "changeset": "changeset",
-    "ci:version": "changeset version && pnpm install --no-frozen-lockfile",
-    "ci:release": "turbo build --filter='./packages/*' && changeset publish",
-    "prepare": "husky"
-  },
-  "packageManager": "pnpm@11.28.0"
+  "packageManager": "pnpm@11.28.0",
+  "engines": {
+    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
+  }
 }

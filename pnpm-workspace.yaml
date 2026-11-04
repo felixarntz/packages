@@ -1,13 +1,13 @@
 packages:
-  - 'packages/*'
+  - "packages/*"
 
 allowBuilds:
   esbuild: true
   sharp: true
 
 catalog:
-  '@commander-js/extra-typings': ^15.0.0
-  '@vitest/coverage-v8': ^5.0.0
+  "@commander-js/extra-typings": ^15.0.0
+  "@vitest/coverage-v8": ^5.0.0
   commander: ^15.0.0
   dotenv: ^16.6.1
   tsdown: "^0.23.0"
@@ -18,5 +18,5 @@ catalog:
 minimumReleaseAge: 2880 # 2 days
 
 minimumReleaseAgeExclude:
-  - '@ai-sdk/*'
+  - "@ai-sdk/*"
   - ai

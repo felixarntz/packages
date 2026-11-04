@@ -1,9 +1,9 @@
 const baseConfig = {
+  clean: true,
+  fixedExtension: false,
   format: ["esm" as const],
   target: "es2022" as const,
   tsconfig: "tsconfig.build.json",
-  clean: true,
-  fixedExtension: false,
 };
 
 export const sdkBaseConfig = {
@@ -14,12 +14,12 @@ export const sdkBaseConfig = {
 
 export const cliBaseConfig = {
   ...baseConfig,
-  dts: false,
-  sourcemap: false,
-  outputOptions: {
-    codeSplitting: false,
-  },
   banner: {
     js: "#!/usr/bin/env node",
   },
+  dts: false,
+  outputOptions: {
+    codeSplitting: false,
+  },
+  sourcemap: false,
 };

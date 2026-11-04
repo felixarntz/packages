@@ -17,16 +17,16 @@ export const name = "update-since";
 export const description =
   'Updates "n.e.x.t" tags with the current release version.';
 
-const STABLE_TAG_REGEX = /^Stable tag:\s*(\d+\.\d+\.\d+(?:-\w+)?)$/m;
-const SINCE_TAG_REGEX = /(@since\s+)n\.e\.x\.t/g;
-const SINCE_STRING_REGEX = /('[^']*?)n\.e\.x\.t(?=')/g;
+const STABLE_TAG_REGEX = /^Stable tag:\s*(?<version>\d+\.\d+\.\d+(?:-\w+)?)$/mu;
+const SINCE_TAG_REGEX = /(?<since>@since\s+)n\.e\.x\.t/gu;
+const SINCE_STRING_REGEX = /(?<since>'[^']*?)n\.e\.x\.t(?=')/gu;
 
 export const options: Option[] = [
   {
     argname: "path",
     description: "Path to the WordPress plugin folder",
-    positional: true,
     parse: (value: string) => normalizeAbsolutePath(value),
+    positional: true,
   },
   {
     argname: "-v, --version <version>",
@@ -48,10 +48,10 @@ const parseOptions = (opt: OptionsInput): CommandConfig => {
 };
 
 export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
-  const [path] = getArgs(handlerArgs);
+  const [pluginPathArg] = getArgs(handlerArgs);
   const { version } = parseOptions(getOpt(handlerArgs));
 
-  const pluginPath = path ? path : process.cwd();
+  const pluginPath = pluginPathArg ? pluginPathArg : process.cwd();
 
   let pluginVersion: string;
   if (version) {
@@ -115,12 +115,14 @@ const replaceSince = async (pluginPath: string, version: string) => {
       let content = await readTextFile(file);
       let fileReplacementCount = 0;
       for (const regexp of regexps) {
-        if (regexp.test(content)) {
-          content = content.replace(regexp, (_matches, sinceTag: string) => {
-            replacementCount++;
-            fileReplacementCount++;
-            return sinceTag + version;
-          });
+        const matches = content.match(regexp);
+        if (matches) {
+          replacementCount += matches.length;
+          fileReplacementCount += matches.length;
+          content = content.replace(
+            regexp,
+            (_matches, sinceTag: string) => sinceTag + version
+          );
         }
       }
       if (fileReplacementCount > 0) {

@@ -26,24 +26,24 @@ export const name = "generate-changelog";
 export const description =
   "Generates a changelog based on the commit history since the last tag.";
 
-const ISSUE_WITH_PARENS_REGEX = /\s\((fix(es)?|see) #(\d+)\)/i;
-const ISSUE_REGEX = /(fix(es)?|see) #(\d+)/i;
+const ISSUE_WITH_PARENS_REGEX = /\s\((?:fix(?:es)?|see) #(?<issue>\d+)\)/iu;
+const ISSUE_REGEX = /(?:fix(?:es)?|see) #(?<issue>\d+)/iu;
 const FILE_ENTRY_REGEX =
-  /( .(dist|env|eslint|git|npm|nvm|prettier))|(config.js|.dist|.json|.xml|.yml)|(lint )|(readme)/i;
+  /(?: .(?:dist|env|eslint|git|npm|nvm|prettier))|(?:config.js|.dist|.json|.xml|.yml)|(?:lint )|(?:readme)/iu;
 const ACTIONS_ENTRY_REGEX =
-  /(GitHub)|(GitHub action)|(GH action)|(GitHub workflow)|(GH workflow)|(actions\/)|(Plugin Check)/i;
+  /(?:GitHub)|(?:GitHub action)|(?:GH action)|(?:GitHub workflow)|(?:GH workflow)|(?:actions\/)|(?:Plugin Check)/iu;
 const DEPENDENCY_ENTRY_REGEX =
-  /(dependency)|(dependencies)|(versions)|(test)|(tests)/i;
-const MERGE_ENTRY_REGEX = /^Merge( remote-tracking)? branch/i;
-const VERSION_ENTRY_REGEX = /(^Bump )|(since annotation)/i;
-const FIX_ISSUE_REGEX = /Fix(es)? #(\d+)/i;
+  /(?:dependency)|(?:dependencies)|(?:versions)|(?:test)|(?:tests)/iu;
+const MERGE_ENTRY_REGEX = /^Merge(?: remote-tracking)? branch/iu;
+const VERSION_ENTRY_REGEX = /(?:^Bump )|(?:since annotation)/iu;
+const FIX_ISSUE_REGEX = /Fix(?:es)? #(?<issue>\d+)/iu;
 
 export const options: Option[] = [
   {
     argname: "path",
     description: "Path to the WordPress plugin folder",
-    positional: true,
     parse: (value: string) => normalizeAbsolutePath(value),
+    positional: true,
   },
   {
     argname: "-r, --repository <repository>",
@@ -188,43 +188,43 @@ interface IndexLookup {
 }
 
 const TYPE_LABELS: Record<string, string> = {
-  feature: "feature",
-  enhancement: "enhancement",
   bug: "bug",
   documentation: "documentation",
+  enhancement: "enhancement",
+  feature: "feature",
 };
 
 const TYPE_REGEXPS = [
   {
+    regexp: /^(?:Fix|Resolve)\s/iu,
     type: "bug",
-    regexp: /^(?:Fix|Resolve)\s/i,
   },
   {
+    regexp: /(?:^Document\s)|(?:docs?)/iu,
     type: "documentation",
-    regexp: /(?:^Document\s)|(?:docs?)/i,
   },
   {
+    regexp: /^(?:Introduce|Add)\s/iu,
     type: "feature",
-    regexp: /^(?:Introduce|Add)\s/i,
   },
 ];
 
 const TYPE_HEADINGS = [
   {
-    type: "feature",
     heading: "Features",
+    type: "feature",
   },
   {
-    type: "enhancement",
     heading: "Enhancements",
+    type: "enhancement",
   },
   {
-    type: "bug",
     heading: "Bug Fixes",
+    type: "bug",
   },
   {
-    type: "documentation",
     heading: "Documentation",
+    type: "documentation",
   },
 ];
 
@@ -249,6 +249,7 @@ const findTagConstraints = async (
         continue;
       }
       if (constraints.sha) {
+        // biome-ignore lint/performance/noAwaitInLoops: the next tag's release date depends on finding the requested tag first
         const release = await octokit.repos.getReleaseByTag({
           ...githubRepository,
           tag: t.name,
@@ -311,8 +312,7 @@ const getCommitEntries = (
 
   for (const commit of commits) {
     // If the commit message has multiple lines, only use the first line.
-    const lines = commit.commit.message.split("\n");
-    const summary = lines[0];
+    const [summary] = commit.commit.message.split("\n");
 
     const props: string[] = [];
     if (commit.author?.login && commit.author.login !== owner) {
@@ -328,15 +328,15 @@ const getCommitEntries = (
     }
 
     entries.push({
-      summary,
-      type: "",
       props,
       references: [
         {
-          type: "commit",
           id: commit.sha,
+          type: "commit",
         },
       ],
+      summary,
+      type: "",
     });
   }
 
@@ -368,8 +368,8 @@ const amendEntryWithIssue = async (
     references: [
       ...entry.references,
       {
-        type: "issue" as ChangelogEntryReference["type"],
         id: `${issueNumber}`,
+        type: "issue" as ChangelogEntryReference["type"],
       },
     ],
   };
@@ -444,20 +444,20 @@ const applyPullRequestToEntries = async (
   }
 
   entriesWithPrs[commitIndex] = {
-    summary: pr.title,
-    type,
     props,
     references: [
       {
-        type: "pull" as ChangelogEntryReference["type"],
         id: `${pr.number}`,
+        type: "pull" as ChangelogEntryReference["type"],
       },
     ],
+    summary: pr.title,
+    type,
   };
 
   const matches = pr.body?.match(FIX_ISSUE_REGEX);
-  if (matches) {
-    const issueNumber = Number.parseInt(matches[2], 10);
+  if (matches?.groups?.["issue"]) {
+    const issueNumber = Number.parseInt(matches.groups["issue"], 10);
     entriesWithPrs[commitIndex] = await amendEntryWithIssue(
       octokit,
       githubRepository,
@@ -495,11 +495,12 @@ const amendCommitEntriesWithPullRequests = async (
   const entriesWithPrs: Array<ChangelogEntry | null> = [...commitEntries];
 
   const prsGenerator = getPaginatedPullRequests(octokit, githubRepository, {
-    state: "closed",
     base: "main",
+    state: "closed",
   });
   for await (const prs of prsGenerator) {
     for (const pr of prs) {
+      // biome-ignore lint/performance/noAwaitInLoops: each pull request mutates the shared changelog entries
       await applyPullRequestToEntries(
         octokit,
         githubRepository,
@@ -527,8 +528,8 @@ const amendEntriesWithIssues = async (
   await Promise.all(
     entries.map(async (entry) => {
       const matches = entry.summary.match(ISSUE_WITH_PARENS_REGEX);
-      if (matches) {
-        const issueNumber = Number.parseInt(matches[3], 10);
+      if (matches?.groups?.["issue"]) {
+        const issueNumber = Number.parseInt(matches.groups["issue"], 10);
         return await amendEntryWithIssue(
           octokit,
           githubRepository,
@@ -540,8 +541,8 @@ const amendEntriesWithIssues = async (
         );
       }
       const matches2 = entry.summary.match(ISSUE_REGEX);
-      if (matches2) {
-        const issueNumber = Number.parseInt(matches2[3], 10);
+      if (matches2?.groups?.["issue"]) {
+        const issueNumber = Number.parseInt(matches2.groups["issue"], 10);
         return await amendEntryWithIssue(
           octokit,
           githubRepository,
@@ -597,16 +598,15 @@ const getMarkdownChangelog = (
   githubRepository: GithubRepository,
   changelogEntries: ChangelogEntry[]
 ) => {
-  const groupedEntries = changelogEntries.reduce(
-    (grouped, entry) => {
-      if (!grouped[entry.type]) {
-        grouped[entry.type] = [];
-      }
-      grouped[entry.type].push(entry);
-      return grouped;
-    },
-    {} as Record<string, ChangelogEntry[]>
-  );
+  const groupedEntries = changelogEntries.reduce<
+    Record<string, ChangelogEntry[]>
+  >((grouped, entry) => {
+    if (!grouped[entry.type]) {
+      grouped[entry.type] = [];
+    }
+    grouped[entry.type].push(entry);
+    return grouped;
+  }, {});
 
   const { owner, repo } = githubRepository;
 

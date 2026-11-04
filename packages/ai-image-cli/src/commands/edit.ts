@@ -29,10 +29,10 @@ const actualOptions: Option[] = [
   {
     argname: "input",
     description: "Input image file to edit",
+    parse: (value: string) => normalizeAbsolutePath(value),
     positional: true,
     required: true,
     variadic: true,
-    parse: (value: string) => normalizeAbsolutePath(value),
   },
   {
     argname: "-p, --prompt <prompt>",
@@ -41,19 +41,19 @@ const actualOptions: Option[] = [
   },
   {
     argname: "-m, --model <model>",
-    description: "Model to use",
     choices: [
       // Due to the use of multimodal output models in this command, only Google models are supported.
       "google/gemini-3.1-flash-image",
       "google/gemini-2.5-flash-image",
       "google/gemini-nano-banana-2.1",
     ],
+    description: "Model to use",
     required: true,
   },
   {
     argname: "-o, --output <output>",
-    description: "Output filename prefix",
     defaults: "output",
+    description: "Output filename prefix",
   },
 ];
 
@@ -68,10 +68,11 @@ interface CommandConfig {
 }
 
 const parseOptions = (opt: OptionsInput): CommandConfig => {
+  const outputOption: string | boolean | undefined = opt["output"];
   const config: CommandConfig = {
-    prompt: String(opt["prompt"]),
     model: String(opt["model"]),
-    output: String(opt["output"] ?? "output"),
+    output: String(outputOption ?? "output"),
+    prompt: String(opt["prompt"]),
   };
   return config;
 };
@@ -89,17 +90,18 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
     )
   );
 
-  const imageContents: FilePart[] = [];
-  for (const inputImagePath of inputImagePaths) {
-    const inputImage = await ensureCorrectOrientation(
-      await readImageFile(inputImagePath)
-    );
-    imageContents.push({
-      type: "file" as const,
-      data: { type: "data" as const, data: inputImage.buffer },
-      mediaType: inputImage.mime,
-    });
-  }
+  const imageContents: FilePart[] = await Promise.all(
+    inputImagePaths.map(async (inputImagePath) => {
+      const inputImage = await ensureCorrectOrientation(
+        await readImageFile(inputImagePath)
+      );
+      return {
+        data: { data: inputImage.buffer, type: "data" as const },
+        mediaType: inputImage.mime,
+        type: "file" as const,
+      };
+    })
+  );
 
   logger.info(
     `Prompting model ${model} to edit the ${imageContents.length > 1 ? "images" : "image"}...`
@@ -107,14 +109,14 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
 
   const prompt: ModelMessage[] = [
     {
-      role: "user" as const,
       content: [
         {
-          type: "text" as const,
           text: textPrompt,
+          type: "text" as const,
         },
         ...imageContents,
       ],
+      role: "user" as const,
     },
   ];
 
@@ -129,11 +131,11 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
         },
       },
     });
-    const images = contentResult.files.filter((file) =>
+    const generatedImages = contentResult.files.filter((file) =>
       file.mediaType.startsWith("image/")
     );
 
-    return [contentResult, images];
+    return [contentResult, generatedImages];
   }, "Still editing...");
 
   if (images.length === 0) {
@@ -152,23 +154,27 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
       outputFileBase = outputFileBase.replace("-%%number%%", "");
     }
   }
-  for (const [index, image] of images.entries()) {
-    let buffer: Buffer<ArrayBufferLike>;
-    if (image.base64) {
-      buffer = base64ToBuffer(image.base64);
-    } else if (image.uint8Array) {
-      buffer = uint8ArrayToBuffer(image.uint8Array);
-    } else {
-      throw new Error("No image data provided");
-    }
+  const filePaths = await Promise.all(
+    images.map(async (image, index) => {
+      let buffer: Buffer<ArrayBufferLike>;
+      if (image.base64) {
+        buffer = base64ToBuffer(image.base64);
+      } else if (image.uint8Array) {
+        buffer = uint8ArrayToBuffer(image.uint8Array);
+      } else {
+        throw new Error("No image data provided");
+      }
 
-    const filePath = await writeImageFile({
-      fileBase: outputFileBase,
-      buffer,
-      mime: image.mediaType,
-      index: images.length > 1 ? index : undefined,
-    });
+      return await writeImageFile({
+        buffer,
+        fileBase: outputFileBase,
+        index: images.length > 1 ? index : undefined,
+        mime: image.mediaType,
+      });
+    })
+  );
 
+  for (const filePath of filePaths) {
     logger.info(`Saved image to ${filePath}`);
   }
 

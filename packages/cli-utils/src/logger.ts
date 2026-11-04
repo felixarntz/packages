@@ -2,11 +2,11 @@ import { styleText } from "node:util";
 
 export const LogLevel = {
   DEBUG: 0,
+  ERROR: 4,
   INFO: 1,
+  SILENT: 5,
   SUCCESS: 2,
   WARN: 3,
-  ERROR: 4,
-  SILENT: 5,
 } as const;
 export type LogLevel = (typeof LogLevel)[keyof typeof LogLevel];
 
@@ -47,6 +47,14 @@ const formatLogMessage = (text: string, level: LogLevel): string => {
   }
 };
 
+const writeLog = (opts: { text: string; level?: LogLevel }): void => {
+  const level = opts.level ?? LogLevel.INFO;
+  if (level < CURRENT_LOG_LEVEL) {
+    return;
+  }
+  process.stderr.write(`${formatLogMessage(opts.text, level)}\n`);
+};
+
 const DEFAULT_LOG_LEVEL = LogLevel.INFO;
 let CURRENT_LOG_LEVEL: LogLevel = DEFAULT_LOG_LEVEL;
 if (
@@ -59,44 +67,17 @@ if (
 }
 
 /**
- * Logger class for logging messages with different severity levels.
+ * Default logger instance.
  */
-class Logger {
+export const logger = {
   /**
    * Logs a debug message.
    *
    * @param text - The message to log.
    */
   debug(text: string): void {
-    this.log(text, LogLevel.DEBUG);
-  }
-
-  /**
-   * Logs an info message.
-   *
-   * @param text - The message to log.
-   */
-  info(text: string): void {
-    this.log(text, LogLevel.INFO);
-  }
-
-  /**
-   * Logs a success message.
-   *
-   * @param text - The message to log.
-   */
-  success(text: string): void {
-    this.log(text, LogLevel.SUCCESS);
-  }
-
-  /**
-   * Logs a warning message.
-   *
-   * @param text - The message to log.
-   */
-  warn(text: string): void {
-    this.log(text, LogLevel.WARN);
-  }
+    writeLog({ level: LogLevel.DEBUG, text });
+  },
 
   /**
    * Logs an error message.
@@ -104,24 +85,33 @@ class Logger {
    * @param text - The message to log.
    */
   error(text: string): void {
-    this.log(text, LogLevel.ERROR);
-  }
+    writeLog({ level: LogLevel.ERROR, text });
+  },
 
   /**
-   * Logs a message with a log level.
+   * Logs an info message.
    *
    * @param text - The message to log.
-   * @param level - The log level. Defaults to LogLevel.INFO.
    */
-  private log(text: string, level: LogLevel = LogLevel.INFO): void {
-    if (level < CURRENT_LOG_LEVEL) {
-      return;
-    }
-    process.stderr.write(`${formatLogMessage(text, level)}\n`);
-  }
-}
+  info(text: string): void {
+    writeLog({ level: LogLevel.INFO, text });
+  },
 
-/**
- * Default logger instance.
- */
-export const logger = new Logger();
+  /**
+   * Logs a success message.
+   *
+   * @param text - The message to log.
+   */
+  success(text: string): void {
+    writeLog({ level: LogLevel.SUCCESS, text });
+  },
+
+  /**
+   * Logs a warning message.
+   *
+   * @param text - The message to log.
+   */
+  warn(text: string): void {
+    writeLog({ level: LogLevel.WARN, text });
+  },
+};

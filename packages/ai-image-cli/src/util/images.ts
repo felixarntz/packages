@@ -51,7 +51,7 @@ export async function ensureCorrectOrientation(
   let pipeline = sharp(image.buffer);
   switch (metadata.format) {
     case "jpeg":
-      pipeline = pipeline.jpeg({ quality: 100, chromaSubsampling: "4:4:4" });
+      pipeline = pipeline.jpeg({ chromaSubsampling: "4:4:4", quality: 100 });
       break;
     case "webp":
       pipeline = pipeline.webp({ lossless: true });
@@ -90,8 +90,8 @@ export async function readImageFile(filePath: string): Promise<ImageData> {
 
   return {
     buffer,
-    mime: fileType.mime,
     ext: fileType.ext,
+    mime: fileType.mime,
   };
 }
 

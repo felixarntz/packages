@@ -27,24 +27,24 @@ const actualOptions: Option[] = [
   {
     argname: "input",
     description: "Input image file to upscale",
+    parse: (value: string) => normalizeAbsolutePath(value),
     positional: true,
     required: true,
-    parse: (value: string) => normalizeAbsolutePath(value),
   },
   {
     argname: "-s, --size <size>",
-    description: "Size to upscale to",
     choices: ["2K", "4K"],
+    description: "Size to upscale to",
     required: true,
   },
   {
     argname: "-m, --model <model>",
-    description: "Model to use for upscaling",
     choices: [
       // Due to the use of multimodal output models in this command, only Google models are supported.
       "google/gemini-nano-banana-2.1",
       "google/gemini-3.1-flash-image",
     ],
+    description: "Model to use for upscaling",
     required: true,
   },
   {
@@ -98,18 +98,18 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
 
   const prompt: ModelMessage[] = [
     {
-      role: "user" as const,
       content: [
         {
-          type: "text" as const,
           text: `Upscale the image to ${size}. You MUST NOT modify the contents of the image at all. I am only providing it for it to be upscaled.`,
+          type: "text" as const,
         },
         {
-          type: "file" as const,
-          data: { type: "data" as const, data: inputImage.buffer },
+          data: { data: inputImage.buffer, type: "data" as const },
           mediaType: inputImage.mime,
+          type: "file" as const,
         },
       ],
+      role: "user" as const,
     },
   ];
 
@@ -120,18 +120,18 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
       prompt,
       providerOptions: {
         google: {
-          responseModalities: ["IMAGE"],
           imageConfig: {
             imageSize: size,
           },
+          responseModalities: ["IMAGE"],
         },
       },
     });
-    const images = contentResult.files.filter((file) =>
+    const generatedImages = contentResult.files.filter((file) =>
       file.mediaType.startsWith("image/")
     );
 
-    return [contentResult, images];
+    return [contentResult, generatedImages];
   }, "Still editing...");
 
   if (images.length === 0) {
@@ -159,8 +159,8 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   }
 
   const filePath = await writeImageFile({
-    fileBase,
     buffer,
+    fileBase,
     mime: image.mediaType,
   });
 

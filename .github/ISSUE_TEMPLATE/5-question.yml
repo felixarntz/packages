@@ -1,6 +1,6 @@
 name: Question
 description: Ask a question about using my NPM packages.
-labels: ['question']
+labels: [ "question" ]
 body:
   - type: markdown
     attributes:

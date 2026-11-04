@@ -13,22 +13,20 @@ export const parseFileOptions = async (
 ): Promise<OptionsInput> => {
   const completeOptionsInput: OptionsInput = { ...optionsInput };
 
-  for (const fileOptionName of fileOptionNames) {
-    const fileOptionKey = `${fileOptionName}-file`;
-    if (
-      !optionsInput[camelCaseFlagName(fileOptionKey)] ||
-      optionsInput[camelCaseFlagName(fileOptionName)] !== undefined
-    ) {
-      continue;
-    }
+  await Promise.all(
+    fileOptionNames.map(async (fileOptionName) => {
+      const fileOptionKey = `${fileOptionName}-file`;
+      const fileKey = camelCaseFlagName(fileOptionKey);
+      const valueKey = camelCaseFlagName(fileOptionName);
+      if (!optionsInput[fileKey] || optionsInput[valueKey] !== undefined) {
+        return;
+      }
 
-    const absolutePath = optionsInput[
-      camelCaseFlagName(fileOptionKey)
-    ] as string;
-    completeOptionsInput[camelCaseFlagName(fileOptionName)] =
-      await readTextFile(absolutePath);
-    delete optionsInput[camelCaseFlagName(fileOptionKey)];
-  }
+      const absolutePath = optionsInput[fileKey] as string;
+      completeOptionsInput[valueKey] = await readTextFile(absolutePath);
+      delete optionsInput[fileKey];
+    })
+  );
 
   return completeOptionsInput;
 };

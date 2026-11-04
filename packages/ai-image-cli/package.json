@@ -2,26 +2,29 @@
   "name": "@felixarntz/ai-image-cli",
   "version": "0.1.0",
   "description": "CLI for editing, cropping, optimizing, and upscaling images using AI.",
-  "license": "MIT",
-  "type": "module",
-  "bin": {
-    "ai-image": "dist/ai-image-cli.js"
-  },
-  "main": "dist/ai-image-cli.js",
-  "files": [
-    "dist/**/*"
-  ],
-  "engines": {
-    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
-  },
   "homepage": "https://github.com/felixarntz/packages/blob/main/packages/ai-image-cli/README.md",
+  "bugs": {
+    "url": "https://github.com/felixarntz/packages/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/felixarntz/packages.git",
     "directory": "packages/ai-image-cli"
   },
-  "bugs": {
-    "url": "https://github.com/felixarntz/packages/issues"
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/ai-image-cli.js",
+  "bin": {
+    "ai-image": "dist/ai-image-cli.js"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "test:ci": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@ai-sdk/provider": "^4.0.34",
@@ -39,11 +42,8 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "scripts": {
-    "build": "tsdown",
-    "test": "vitest run",
-    "test:ci": "vitest run --coverage",
-    "typecheck": "tsc --noEmit"
+  "engines": {
+    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
   },
   "publishConfig": {
     "access": "public",

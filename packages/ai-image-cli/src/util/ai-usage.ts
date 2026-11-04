@@ -33,7 +33,7 @@ export function logTokenUsage(
     // V3 Usage.
     inputTokens = tokenUsage.inputTokens.total;
   } else {
-    inputTokens = tokenUsage.inputTokens;
+    ({ inputTokens } = tokenUsage);
   }
   if (typeof tokenUsage.outputTokens === "object") {
     // V3 Usage.
@@ -42,7 +42,7 @@ export function logTokenUsage(
       reasoningTokens = tokenUsage.outputTokens.reasoning;
     }
   } else {
-    outputTokens = tokenUsage.outputTokens;
+    ({ outputTokens } = tokenUsage);
 
     if (
       "reasoningTokens" in tokenUsage &&
@@ -50,7 +50,7 @@ export function logTokenUsage(
       tokenUsage.reasoningTokens !== undefined
     ) {
       // eslint-disable-next-line @typescript-eslint/no-deprecated
-      reasoningTokens = tokenUsage.reasoningTokens;
+      ({ reasoningTokens } = tokenUsage);
     }
   }
   if (!("totalTokens" in tokenUsage) || tokenUsage.totalTokens === undefined) {
@@ -60,7 +60,7 @@ export function logTokenUsage(
         ? inputTokens + outputTokens
         : undefined;
   } else {
-    totalTokens = tokenUsage.totalTokens;
+    ({ totalTokens } = tokenUsage);
   }
 
   const tokenUsageLogLines = [

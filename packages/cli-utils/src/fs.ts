@@ -46,10 +46,10 @@ export async function readTextFile(
     return await fs.readFile(filePath, { encoding });
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-      throw new Error(`File not found: ${filePath}`);
+      throw new Error(`File not found: ${filePath}`, { cause: error });
     }
 
-    throw new Error(`Failed to read file: ${filePath}`);
+    throw new Error(`Failed to read file: ${filePath}`, { cause: error });
   }
 }
 
@@ -87,8 +87,8 @@ export async function writeTextFile(
   try {
     // Write the file.
     await fs.writeFile(filePath, content, { encoding });
-  } catch {
-    throw new Error(`Failed to write file: ${filePath}`);
+  } catch (error) {
+    throw new Error(`Failed to write file: ${filePath}`, { cause: error });
   }
 }
 
@@ -103,10 +103,10 @@ export async function readBinaryFile(filePath: string): Promise<Buffer> {
     return await fs.readFile(filePath);
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-      throw new Error(`File not found: ${filePath}`);
+      throw new Error(`File not found: ${filePath}`, { cause: error });
     }
 
-    throw new Error(`Failed to read file: ${filePath}`);
+    throw new Error(`Failed to read file: ${filePath}`, { cause: error });
   }
 }
 
@@ -142,8 +142,8 @@ export async function writeBinaryFile(
   try {
     // Write the file.
     await fs.writeFile(filePath, content);
-  } catch {
-    throw new Error(`Failed to write file: ${filePath}`);
+  } catch (error) {
+    throw new Error(`Failed to write file: ${filePath}`, { cause: error });
   }
 }
 
@@ -158,7 +158,7 @@ async function ensureDirectory(dirPath: string): Promise<void> {
     if (!(await directoryExists(dirPath))) {
       await fs.mkdir(dirPath, { recursive: true });
     }
-  } catch {
-    throw new Error(`Failed to create directory: ${dirPath}`);
+  } catch (error) {
+    throw new Error(`Failed to create directory: ${dirPath}`, { cause: error });
   }
 }

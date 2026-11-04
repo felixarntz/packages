@@ -7,8 +7,8 @@
  */
 export function parseHtml(html: string, id: string): string {
   const idRegex = new RegExp(
-    `<([a-zA-Z0-9]+)\\s+[^>]*id\\s*=\\s*["']${id}["'][^>]*>`,
-    "i"
+    `<(?<tag>[a-zA-Z0-9]+)\\s+[^>]*id\\s*=\\s*["']${id}["'][^>]*>`,
+    "iu"
   );
   const match = html.match(idRegex);
 
@@ -16,13 +16,16 @@ export function parseHtml(html: string, id: string): string {
     return "";
   }
 
-  const tagName = match[1];
+  const [, tagName] = match;
+  if (!tagName) {
+    return "";
+  }
   const startIndex = (match.index ?? 0) + match[0].length;
   let depth = 1;
 
   // We need to find the closing tag matching this specific opening tag.
   // We scan forward from startIndex.
-  const tagRegex = new RegExp(`</?${tagName}\\b[^>]*>`, "gi");
+  const tagRegex = new RegExp(`</?${tagName}\\b[^>]*>`, "giu");
   tagRegex.lastIndex = startIndex;
 
   let endIndex = -1;
@@ -33,10 +36,10 @@ export function parseHtml(html: string, id: string): string {
       break;
     }
     if (tagMatch[0].startsWith("</")) {
-      depth--;
+      depth -= 1;
     } else if (!tagMatch[0].endsWith("/>")) {
       // Assume non-void if it's the same tag name as the container which has an ID (so likely a container)
-      depth++;
+      depth += 1;
     }
 
     if (depth === 0) {
@@ -56,29 +59,29 @@ export function parseHtml(html: string, id: string): string {
   const P_SEP_PLACEHOLDER = "___P_SEP___";
 
   // Replace <br> variants
-  content = content.replace(/<br\s*\/?>/gi, BR_PLACEHOLDER);
+  content = content.replace(/<br\s*\/?>/giu, BR_PLACEHOLDER);
 
   // Replace <p> and </p> with separator
-  content = content.replace(/<\/?p(\s+[^>]*)?>/gi, P_SEP_PLACEHOLDER);
+  content = content.replace(/<\/?p(?:\s+[^>]*)?>/giu, P_SEP_PLACEHOLDER);
 
   // Strip all other tags
-  content = content.replace(/<[^>]+>/g, "");
+  content = content.replace(/<[^>]+>/gu, "");
 
   // Decode entities
   content = content
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#8217;/g, "'")
-    .replace(/&#039;/g, "'");
+    .replace(/&nbsp;/gu, " ")
+    .replace(/&amp;/gu, "&")
+    .replace(/&lt;/gu, "<")
+    .replace(/&gt;/gu, ">")
+    .replace(/&quot;/gu, '"')
+    .replace(/&#8217;/gu, "'")
+    .replace(/&#039;/gu, "'");
 
   // Collapse whitespace
-  content = content.replace(/\s+/g, " ");
+  content = content.replace(/\s+/gu, " ");
 
   // Restore placeholders
-  content = content.replace(new RegExp(BR_PLACEHOLDER, "g"), "\n");
+  content = content.replace(new RegExp(BR_PLACEHOLDER, "gu"), "\n");
 
   // Split by P separator
   const parts = content.split(P_SEP_PLACEHOLDER);

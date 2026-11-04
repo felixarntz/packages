@@ -48,8 +48,8 @@ describe("readImageFile", () => {
 
     await expect(readImageFile("photo.png")).resolves.toEqual({
       buffer: PNG_BUFFER,
-      mime: "image/png",
       ext: "png",
+      mime: "image/png",
     });
     expect(readBinaryFile).toHaveBeenCalledWith("photo.png");
   });
@@ -99,8 +99,8 @@ describe("writeImageFile", () => {
     await expect(
       writeImageFile({
         buffer: Buffer.from("jpeg-bytes"),
-        mime: "image/jpeg",
         fileBase: "edited",
+        mime: "image/jpeg",
       })
     ).resolves.toBe(path.join("/out", "edited.jpg"));
   });
@@ -109,8 +109,8 @@ describe("writeImageFile", () => {
     await expect(
       writeImageFile({
         buffer: Buffer.from("png-bytes"),
-        mime: "image/png",
         fileBase: "edited",
+        mime: "image/png",
       })
     ).resolves.toBe(path.join("/out", "edited.png"));
   });
@@ -156,8 +156,8 @@ describe("writeImageFile", () => {
 const paintRaw = (opts: { width: number; height: number }): Buffer => {
   const { width, height } = opts;
   const raw = Buffer.alloc(width * height * 3);
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
       const offset = (y * width + x) * 3;
       raw[offset] = y;
       raw[offset + 1] = x;
@@ -174,8 +174,8 @@ const rotate180 = (opts: {
 }): Buffer => {
   const { raw, width, height } = opts;
   const rotated = Buffer.alloc(raw.length);
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
       const src = (y * width + x) * 3;
       const dst = ((height - 1 - y) * width + (width - 1 - x)) * 3;
       raw.copy(rotated, dst, src, src + 3);
@@ -190,8 +190,8 @@ const pngWithOrientation = (opts: {
   orientation?: number;
 }): Promise<Buffer> => {
   const { width, height, orientation } = opts;
-  let pipeline = sharpLib(paintRaw({ width, height }), {
-    raw: { width, height, channels: 3 },
+  let pipeline = sharpLib(paintRaw({ height, width }), {
+    raw: { channels: 3, height, width },
   }).png();
   if (orientation !== undefined) {
     pipeline = pipeline.withMetadata({ orientation });
@@ -208,7 +208,7 @@ const imageFromBuffer = (buffer: Buffer): ImageData => ({
 describe("ensureCorrectOrientation", () => {
   it("returns an upright image unchanged", async () => {
     const image = imageFromBuffer(
-      await pngWithOrientation({ width: 4, height: 2 })
+      await pngWithOrientation({ height: 2, width: 4 })
     );
 
     await expect(ensureCorrectOrientation(image)).resolves.toBe(image);
@@ -217,7 +217,7 @@ describe("ensureCorrectOrientation", () => {
   it("turns a 180 degree photo upright and keeps its type", async () => {
     const width = 4;
     const height = 2;
-    const buffer = await pngWithOrientation({ width, height, orientation: 3 });
+    const buffer = await pngWithOrientation({ height, orientation: 3, width });
     const image = imageFromBuffer(buffer);
 
     const result = await ensureCorrectOrientation(image);
@@ -231,14 +231,14 @@ describe("ensureCorrectOrientation", () => {
     expect(metadata.orientation).toBeUndefined();
     expect(metadata.width).toBe(width);
     expect(metadata.height).toBe(height);
-    expect(oriented.equals(rotate180({ raw: stored, width, height }))).toBe(
+    expect(oriented.equals(rotate180({ height, raw: stored, width }))).toBe(
       true
     );
   });
 
   it("swaps dimensions when the photo was stored on its side", async () => {
     const image = imageFromBuffer(
-      await pngWithOrientation({ width: 4, height: 2, orientation: 6 })
+      await pngWithOrientation({ height: 2, orientation: 6, width: 4 })
     );
 
     const result = await ensureCorrectOrientation(image);
@@ -250,9 +250,9 @@ describe("ensureCorrectOrientation", () => {
   });
 
   it("keeps a JPEG as a JPEG", async () => {
-    const raw = paintRaw({ width: 4, height: 2 });
+    const raw = paintRaw({ height: 2, width: 4 });
     const buffer = await sharpLib(raw, {
-      raw: { width: 4, height: 2, channels: 3 },
+      raw: { channels: 3, height: 2, width: 4 },
     })
       .jpeg()
       .withMetadata({ orientation: 3 })
@@ -277,7 +277,7 @@ describe("ensureCorrectOrientation", () => {
 
 describe("sharp", () => {
   it("leaves pixels unchanged when no orientation tag is present", async () => {
-    const buffer = await pngWithOrientation({ width: 4, height: 2 });
+    const buffer = await pngWithOrientation({ height: 2, width: 4 });
     const stored = await sharpLib(buffer).raw().toBuffer();
     const oriented = await sharp(buffer).raw().toBuffer();
 
@@ -287,15 +287,15 @@ describe("sharp", () => {
   it("rotates stored pixels 180 degrees before a crop", async () => {
     const width = 4;
     const height = 2;
-    const buffer = await pngWithOrientation({ width, height, orientation: 3 });
+    const buffer = await pngWithOrientation({ height, orientation: 3, width });
     const stored = await sharpLib(buffer).raw().toBuffer();
     const oriented = await sharp(buffer).raw().toBuffer();
     const extracted = await sharp(buffer)
-      .extract({ left: 0, top: 0, width, height })
+      .extract({ height, left: 0, top: 0, width })
       .raw()
       .toBuffer();
 
-    expect(oriented.equals(rotate180({ raw: stored, width, height }))).toBe(
+    expect(oriented.equals(rotate180({ height, raw: stored, width }))).toBe(
       true
     );
     expect(extracted.equals(oriented)).toBe(true);

@@ -1,7 +1,8 @@
 import type { Octokit } from "@octokit/rest";
 import { git } from "./git";
 
-const GITHUB_REMOTE_REGEX = /github\.com[:/](.+?)\/(.+?)(?:\.git)?$/;
+const GITHUB_REMOTE_REGEX =
+  /github\.com[:/](?<owner>.+?)\/(?<repo>.+?)(?:\.git)?$/u;
 
 export interface GithubRepository {
   owner: string;
@@ -75,7 +76,9 @@ export async function* getPaginatedTags(
   };
 
   let page = 1;
-  while (true) {
+  let hasMore = true;
+  while (hasMore) {
+    // biome-ignore lint/performance/noAwaitInLoops: GitHub tag pages must be requested in order
     const tags = await octokit.repos.listTags({
       ...requestArgs,
       page,
@@ -84,10 +87,8 @@ export async function* getPaginatedTags(
       throw new Error("No tags found");
     }
     yield tags.data;
-    page++;
-    if (tags.data.length < perPage) {
-      break;
-    }
+    hasMore = tags.data.length >= perPage;
+    page += 1;
   }
 }
 
@@ -113,7 +114,9 @@ export async function* getPaginatedCommits(
   };
 
   let page = 1;
-  while (true) {
+  let hasMore = true;
+  while (hasMore) {
+    // biome-ignore lint/performance/noAwaitInLoops: GitHub commit pages must be requested in order
     const commits = await octokit.repos.listCommits({
       ...requestArgs,
       page,
@@ -122,10 +125,8 @@ export async function* getPaginatedCommits(
       throw new Error("No commits found");
     }
     yield commits.data;
-    page++;
-    if (commits.data.length < perPage) {
-      break;
-    }
+    hasMore = commits.data.length >= perPage;
+    page += 1;
   }
 }
 
@@ -151,7 +152,9 @@ export async function* getPaginatedPullRequests(
   };
 
   let page = 1;
-  while (true) {
+  let hasMore = true;
+  while (hasMore) {
+    // biome-ignore lint/performance/noAwaitInLoops: GitHub pull request pages must be requested in order
     const pullRequests = await octokit.pulls.list({
       ...requestArgs,
       page,
@@ -160,10 +163,8 @@ export async function* getPaginatedPullRequests(
       throw new Error("No pull requests found");
     }
     yield pullRequests.data;
-    page++;
-    if (pullRequests.data.length < perPage) {
-      break;
-    }
+    hasMore = pullRequests.data.length >= perPage;
+    page += 1;
   }
 }
 
@@ -184,12 +185,14 @@ export async function* getPaginatedPullRequestCommits(
 ) {
   const requestArgs = {
     ...repository,
-    pull_number: pullRequestNumber,
     per_page: perPage,
+    pull_number: pullRequestNumber,
   };
 
   let page = 1;
-  while (true) {
+  let hasMore = true;
+  while (hasMore) {
+    // biome-ignore lint/performance/noAwaitInLoops: GitHub pull request commit pages must be requested in order
     const commits = await octokit.pulls.listCommits({
       ...requestArgs,
       page,
@@ -198,9 +201,7 @@ export async function* getPaginatedPullRequestCommits(
       throw new Error("No commits found");
     }
     yield commits.data;
-    page++;
-    if (commits.data.length < perPage) {
-      break;
-    }
+    hasMore = commits.data.length >= perPage;
+    page += 1;
   }
 }

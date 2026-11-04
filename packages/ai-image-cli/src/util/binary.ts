@@ -12,7 +12,8 @@ export function base64ToBuffer(base64Data: string): Buffer {
     return Buffer.from(base64Data, "base64");
   } catch (error) {
     throw new Error(
-      `Failed to convert base64 to Buffer: ${(error as Error).message}`
+      `Failed to convert base64 to Buffer: ${(error as Error).message}`,
+      { cause: error }
     );
   }
 }
@@ -70,7 +71,7 @@ export async function base64ToDataUri(
   return `data:${type.mime};base64,${base64Data}`;
 }
 
-const DATA_URI_REGEX = /^data:[^;]+;base64,(.+)$/;
+const DATA_URI_REGEX = /^data:[^;]+;base64,(?<data>.+)$/u;
 
 /**
  * Converts a data URI to a base64-encoded string.

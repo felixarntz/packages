@@ -41,17 +41,17 @@ describe("logTokenUsage", () => {
 
   it("logs current language model usage without a reasoning line", () => {
     const tokenUsage: LanguageModelUsage = {
-      inputTokens: 10,
       inputTokenDetails: {
-        noCacheTokens: 10,
         cacheReadTokens: undefined,
         cacheWriteTokens: undefined,
+        noCacheTokens: 10,
+      },
+      inputTokens: 10,
+      outputTokenDetails: {
+        reasoningTokens: undefined,
+        textTokens: 5,
       },
       outputTokens: 5,
-      outputTokenDetails: {
-        textTokens: 5,
-        reasoningTokens: undefined,
-      },
       totalTokens: 15,
     };
 
@@ -105,15 +105,15 @@ describe("logTokenUsage", () => {
   it("reads nested usage and includes reasoning tokens", () => {
     const tokenUsage: LanguageModelV3Usage = {
       inputTokens: {
-        total: 8,
-        noCache: 8,
         cacheRead: 0,
         cacheWrite: 0,
+        noCache: 8,
+        total: 8,
       },
       outputTokens: {
-        total: 3,
-        text: 1,
         reasoning: 2,
+        text: 1,
+        total: 3,
       },
     };
 
@@ -133,15 +133,15 @@ describe("logTokenUsage", () => {
   it("leaves the total unset when a nested count is missing", () => {
     const tokenUsage: LanguageModelV3Usage = {
       inputTokens: {
-        total: undefined,
-        noCache: undefined,
         cacheRead: undefined,
         cacheWrite: undefined,
+        noCache: undefined,
+        total: undefined,
       },
       outputTokens: {
-        total: 4,
-        text: 4,
         reasoning: undefined,
+        text: 4,
+        total: 4,
       },
     };
 

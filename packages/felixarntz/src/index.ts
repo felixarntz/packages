@@ -80,6 +80,7 @@ const printCharacter = async (char: string): Promise<void> => {
 
 const printLine = async (line: string): Promise<void> => {
   for (const char of line) {
+    // biome-ignore lint/performance/noAwaitInLoops: characters must appear in order
     await printCharacter(char);
   }
   process.stdout.write("\n");
@@ -100,6 +101,7 @@ const fadeUp = async (renderedLines: string[]): Promise<void> => {
   const currentLines = [...renderedLines];
 
   while (currentLines.length > 0) {
+    // biome-ignore lint/performance/noAwaitInLoops: each frame waits before the next line is removed
     await sleep(100);
     currentLines.shift();
     redrawLines(currentLines);
@@ -110,6 +112,7 @@ const main = async (): Promise<void> => {
   const contentPromise = fetchAndParseContent();
 
   for (const line of bootLines) {
+    // biome-ignore lint/performance/noAwaitInLoops: boot lines print in order
     await printLine(line);
   }
 
@@ -120,6 +123,7 @@ const main = async (): Promise<void> => {
   const formattedLines = formatContentLines(content);
 
   for (const line of formattedLines) {
+    // biome-ignore lint/performance/noAwaitInLoops: content lines print in order
     await printLine(line);
   }
 };

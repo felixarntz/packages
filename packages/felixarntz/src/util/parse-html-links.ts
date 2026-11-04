@@ -1,9 +1,9 @@
-const LINK_TAG_REGEX = /<a\b([^>]*)>([\s\S]*?)<\/a>/gi;
-const HREF_ATTR_REGEX = /href\s*=\s*(["'])(.*?)\1/i;
-const HTTP_URL_REGEX = /^https?:\/\//i;
-const STRIP_TAGS_REGEX = /<[^>]+>/g;
-const IMG_ALT_REGEX = /<img\b[^>]*alt\s*=\s*(["'])(.*?)\1/i;
-const WHITESPACE_REGEX = /\s+/g;
+const LINK_TAG_REGEX = /<a\b(?<attributes>[^>]*)>(?<inner>[\s\S]*?)<\/a>/giu;
+const HREF_ATTR_REGEX = /href\s*=\s*(?<quote>["'])(?<href>.*?)\1/iu;
+const HTTP_URL_REGEX = /^https?:\/\//iu;
+const STRIP_TAGS_REGEX = /<[^>]+>/gu;
+const IMG_ALT_REGEX = /<img\b[^>]*alt\s*=\s*(?<quote>["'])(?<alt>.*?)\1/iu;
+const WHITESPACE_REGEX = /\s+/gu;
 
 interface LinkEntry {
   isFromAlt: boolean;
@@ -15,7 +15,7 @@ function findClosingTagIndex(
   tagName: string,
   startIndex: number
 ): number {
-  const tagRegex = new RegExp(`</?${tagName}\\b[^>]*>`, "gi");
+  const tagRegex = new RegExp(`</?${tagName}\\b[^>]*>`, "giu");
   tagRegex.lastIndex = startIndex;
   let depth = 1;
 
@@ -25,9 +25,9 @@ function findClosingTagIndex(
       break;
     }
     if (tagMatch[0].startsWith("</")) {
-      depth--;
+      depth -= 1;
     } else if (!tagMatch[0].endsWith("/>")) {
-      depth++;
+      depth += 1;
     }
     if (depth === 0) {
       return tagMatch.index;
@@ -39,13 +39,13 @@ function findClosingTagIndex(
 
 function decodeEntities(text: string): string {
   return text
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#8217;/g, "'")
-    .replace(/&#039;/g, "'");
+    .replace(/&nbsp;/gu, " ")
+    .replace(/&amp;/gu, "&")
+    .replace(/&lt;/gu, "<")
+    .replace(/&gt;/gu, ">")
+    .replace(/&quot;/gu, '"')
+    .replace(/&#8217;/gu, "'")
+    .replace(/&#039;/gu, "'");
 }
 
 function extractLinkEntry(
@@ -68,14 +68,15 @@ function extractLinkEntry(
   if (!label.trim()) {
     const imgMatch = innerContent.match(IMG_ALT_REGEX);
     if (imgMatch) {
-      label = imgMatch[2];
+      const [, , alt = ""] = imgMatch;
+      label = alt;
       isFromAlt = true;
     }
   }
 
   label = decodeEntities(label).replace(WHITESPACE_REGEX, " ").trim();
 
-  return { href, label, isFromAlt };
+  return { href, isFromAlt, label };
 }
 
 /**
@@ -87,8 +88,8 @@ function extractLinkEntry(
  */
 export function parseHtmlLinks(html: string, id: string): string {
   const idRegex = new RegExp(
-    `<([a-zA-Z0-9]+)\\s+[^>]*id\\s*=\\s*["']${id}["'][^>]*>`,
-    "i"
+    `<(?<tag>[a-zA-Z0-9]+)\\s+[^>]*id\\s*=\\s*["']${id}["'][^>]*>`,
+    "iu"
   );
   const match = html.match(idRegex);
 
@@ -96,7 +97,10 @@ export function parseHtmlLinks(html: string, id: string): string {
     return "";
   }
 
-  const tagName = match[1];
+  const [, tagName] = match;
+  if (!tagName) {
+    return "";
+  }
   const startIndex = (match.index ?? 0) + match[0].length;
   const endIndex = findClosingTagIndex(html, tagName, startIndex);
 
@@ -122,7 +126,7 @@ export function parseHtmlLinks(html: string, id: string): string {
     const { href, label, isFromAlt } = entry;
     const existing = linksMap.get(href);
     if (!existing || (existing.isFromAlt && !isFromAlt)) {
-      linksMap.set(href, { label, isFromAlt });
+      linksMap.set(href, { isFromAlt, label });
     }
   }
 

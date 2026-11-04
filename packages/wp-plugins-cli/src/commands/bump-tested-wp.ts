@@ -16,14 +16,14 @@ export const name = "bump-tested-wp";
 export const description =
   "Bumps the Tested Up To WordPress version in the plugin readme and commits the change.";
 
-const TESTED_UP_TO_REGEX = /^Tested up to:(\s+)(.*)$/m;
+const TESTED_UP_TO_REGEX = /^Tested up to:(?<separator>\s+)(?<version>.*)$/mu;
 
 export const options: Option[] = [
   {
     argname: "path",
     description: "Path to the WordPress plugin folder",
-    positional: true,
     parse: (value: string) => normalizeAbsolutePath(value),
+    positional: true,
   },
   {
     argname: "-v, --version <version>",

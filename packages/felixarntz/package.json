@@ -2,37 +2,37 @@
   "name": "felixarntz",
   "version": "0.3.1",
   "description": "Meet me in my personal CLI",
-  "license": "MIT",
-  "type": "module",
-  "bin": {
-    "felixarntz": "dist/index.js"
-  },
-  "main": "dist/index.js",
-  "files": [
-    "dist/**/*"
-  ],
-  "engines": {
-    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
-  },
   "homepage": "https://github.com/felixarntz/packages/blob/main/packages/felixarntz/README.md",
+  "bugs": {
+    "url": "https://github.com/felixarntz/packages/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/felixarntz/packages.git",
     "directory": "packages/felixarntz"
   },
-  "bugs": {
-    "url": "https://github.com/felixarntz/packages/issues"
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "felixarntz": "dist/index.js"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "test:ci": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "scripts": {
-    "build": "tsdown",
-    "test": "vitest run",
-    "test:ci": "vitest run --coverage",
-    "typecheck": "tsc --noEmit"
+  "engines": {
+    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
   },
   "publishConfig": {
     "access": "public",

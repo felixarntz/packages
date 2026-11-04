@@ -2,7 +2,7 @@ import path from "node:path";
 import { fileExists, readTextFile } from "@felixarntz/cli-utils";
 import glob from "fast-glob";
 
-const PLUGIN_NAME_REGEX = /Plugin Name:\s+.+/;
+const PLUGIN_NAME_REGEX = /Plugin Name:\s+.+/u;
 
 /**
  * Checks whether the given directory is a WordPress plugin.
@@ -20,17 +20,13 @@ export async function isWordPressPlugin(
 
   // Check for main plugin file
   const phpFiles = await glob("*.php", {
-    cwd: directoryPath,
     absolute: true,
+    cwd: directoryPath,
     deep: 1,
   });
 
-  for (const file of phpFiles) {
-    const content = await readTextFile(file);
-    if (content.match(PLUGIN_NAME_REGEX)) {
-      return true;
-    }
-  }
-
-  return false;
+  const contents = await Promise.all(
+    phpFiles.map((file) => readTextFile(file))
+  );
+  return contents.some((content) => content.match(PLUGIN_NAME_REGEX));
 }

@@ -31,7 +31,7 @@ const EXAMPLE_HTML = `
 </html>
 `;
 
-const BUILD_SOFTWARE_REGEX = /^I build software/;
+const BUILD_SOFTWARE_REGEX = /^I build software/u;
 
 describe("parseHtml", () => {
   it("extracts content from example HTML", () => {

@@ -19,8 +19,8 @@ export const options: Option[] = [
   {
     argname: "path",
     description: "Path in which to look for WordPress plugins",
-    positional: true,
     parse: (value: string) => normalizeAbsolutePath(value),
+    positional: true,
   },
   {
     argname: "-n, --nesting <nesting>",
@@ -76,18 +76,27 @@ export const handler = async (...handlerArgs: HandlerArgs): Promise<void> => {
   const searchPath = path ? path : process.cwd();
 
   const entries = await glob("**", {
-    cwd: searchPath,
-    onlyDirectories: true,
-    deep: nesting,
     absolute: true,
+    cwd: searchPath,
+    deep: nesting,
+    onlyDirectories: true,
   });
 
-  for (const entry of entries) {
-    if (!(await isWordPressPlugin(entry))) {
-      continue;
-    }
-    if (!vendor || (await isPluginFromVendor(entry, vendor))) {
-      output(entry);
-    }
+  const pluginDirectories = (
+    await Promise.all(
+      entries.map(async (entry) => {
+        if (!(await isWordPressPlugin(entry))) {
+          return null;
+        }
+        if (!vendor || (await isPluginFromVendor(entry, vendor))) {
+          return entry;
+        }
+        return null;
+      })
+    )
+  ).filter((entry) => entry !== null);
+
+  for (const entry of pluginDirectories) {
+    output(entry);
   }
 };

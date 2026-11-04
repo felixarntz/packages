@@ -2,26 +2,29 @@
   "name": "@felixarntz/wp-plugins-cli",
   "version": "0.2.1",
   "description": "CLI with various tools for WordPress plugin maintenance",
-  "license": "MIT",
-  "type": "module",
-  "bin": {
-    "wp-plugins": "dist/wp-plugins-cli.js"
-  },
-  "main": "dist/wp-plugins-cli.js",
-  "files": [
-    "dist/**/*"
-  ],
-  "engines": {
-    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
-  },
   "homepage": "https://github.com/felixarntz/packages/blob/main/packages/wp-plugins-cli/README.md",
+  "bugs": {
+    "url": "https://github.com/felixarntz/packages/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/felixarntz/packages.git",
     "directory": "packages/wp-plugins-cli"
   },
-  "bugs": {
-    "url": "https://github.com/felixarntz/packages/issues"
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/wp-plugins-cli.js",
+  "bin": {
+    "wp-plugins": "dist/wp-plugins-cli.js"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "test:ci": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@commander-js/extra-typings": "catalog:",
@@ -37,11 +40,8 @@
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "scripts": {
-    "build": "tsdown",
-    "test": "vitest run",
-    "test:ci": "vitest run --coverage",
-    "typecheck": "tsc --noEmit"
+  "engines": {
+    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
   },
   "publishConfig": {
     "access": "public",
