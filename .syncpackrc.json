@@ -2,10 +2,10 @@
   "$schema": "./node_modules/syncpack/schema.json",
   "versionGroups": [
     {
-      "label": "Internal monorepo packages must use workspace:^ protocol",
+      "label": "Internal monorepo packages must use workspace:* protocol",
       "dependencies": ["$LOCAL"],
       "dependencyTypes": ["prod", "dev"],
-      "pinVersion": "workspace:^"
+      "pinVersion": "workspace:*"
     },
     {
       "label": "Shared deps must come from the catalog",

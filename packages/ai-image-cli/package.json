@@ -29,7 +29,7 @@
   "dependencies": {
     "@ai-sdk/provider": "^4.0.34",
     "@commander-js/extra-typings": "catalog:",
-    "@felixarntz/cli-utils": "workspace:^",
+    "@felixarntz/cli-utils": "workspace:*",
     "ai": "^7.0.153",
     "commander": "catalog:",
     "dotenv": "catalog:",

@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@commander-js/extra-typings": "catalog:",
-    "@felixarntz/cli-utils": "workspace:^",
+    "@felixarntz/cli-utils": "workspace:*",
     "@octokit/rest": "^22.0.1",
     "commander": "catalog:",
     "dotenv": "catalog:",
