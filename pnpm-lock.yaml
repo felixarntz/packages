@@ -42,8 +42,8 @@ importers:
         specifier: ^2.31.0
         version: 2.31.1(@types/node@24.10.9)
       '@felixarntz/biome':
-        specifier: ^0.3.1
-        version: 0.3.1
+        specifier: ^0.4.0
+        version: 0.4.2
       '@types/node':
         specifier: ^24.10.9
         version: 24.10.9
@@ -519,8 +519,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@felixarntz/biome@0.3.1':
-    resolution: {integrity: sha512-HQl2Co9FTtzjpf5uvzjEIf2NZYORiRjgep8bUTNCJvWu31NRcopn1i8HaoNZfeLkXXFbGyFWUj0k6Rb5QX7bCw==}
+  '@felixarntz/biome@0.4.2':
+    resolution: {integrity: sha512-7M/bRlFegxNo9L3qitY7I90vXzD5lt0V80H8Kou/UycDyKkiPnjfj3+PDXxAT1+shHux7D0cYKmLy+9D9ZkE+Q==}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -2705,7 +2705,7 @@ snapshots:
   '@esbuild/win32-x64@0.27.2':
     optional: true
 
-  '@felixarntz/biome@0.3.1': {}
+  '@felixarntz/biome@0.4.2': {}
 
   '@img/colour@1.1.0': {}
 

@@ -193,12 +193,12 @@ interface IndexLookup {
   [key: string]: number;
 }
 
-const TYPE_LABELS: Record<string, string> = {
+const TYPE_LABELS: Record<string, string> = Object.assign(Object.create(null), {
   bug: "bug",
   documentation: "documentation",
   enhancement: "enhancement",
   feature: "feature",
-};
+});
 
 const TYPE_REGEXPS = [
   {
@@ -284,7 +284,7 @@ const findTagConstraints = async (opts: {
 const getCommitConstraints = async (opts: {
   githubRepository: GithubRepository;
   octokit: Octokit;
-  tag: string | undefined;
+  tag?: string;
 }) => {
   const { githubRepository, octokit, tag } = opts;
   const constraints: CommitConstraints = {};

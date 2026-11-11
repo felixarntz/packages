@@ -1,6 +1,6 @@
 import { type SimpleGit, type SimpleGitOptions, simpleGit } from "simple-git";
 
-const gitInstances: Record<string, SimpleGit> = {};
+const gitInstances: Record<string, SimpleGit> = Object.create(null);
 
 /**
  * Returns a singleton instance of SimpleGit.
