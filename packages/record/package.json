@@ -1,6 +1,6 @@
 {
   "name": "@felixarntz/record",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "The classic isRecord() helper, and a prototype-pollution safe createRecord() function.",
   "homepage": "https://github.com/felixarntz/packages/blob/main/packages/record/README.md",
   "bugs": {

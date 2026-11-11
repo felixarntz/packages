@@ -1,6 +1,6 @@
 {
   "name": "@felixarntz/json",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Types and helpers for values that can be directly represented as JSON.",
   "homepage": "https://github.com/felixarntz/packages/blob/main/packages/json/README.md",
   "bugs": {
