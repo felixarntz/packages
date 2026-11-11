@@ -23,7 +23,6 @@ jobs:
           node-version-file: .nvmrc
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build # needed so that cross-dependencies are built before linting
       - run: pnpm check
       - run: pnpm check:deps
 
@@ -38,7 +37,6 @@ jobs:
           node-version-file: .nvmrc
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build # needed so that cross-dependencies are built before linting
       - run: pnpm typecheck
 
   konsistent:
@@ -52,7 +50,6 @@ jobs:
           node-version-file: .nvmrc
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build # needed so that cross-dependencies are built before linting
       - run: pnpm konsistent
 
   unittest_matrix:
@@ -69,7 +66,6 @@ jobs:
           node-version-file: .nvmrc
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build # needed so that cross-dependencies are built before linting
       - run: pnpm test:ci
 
   # separate "unittest" job to set as required in branch protections,
