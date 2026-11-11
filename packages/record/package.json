@@ -1,0 +1,39 @@
+{
+  "name": "@felixarntz/record",
+  "version": "0.0.0",
+  "description": "The classic isRecord() helper, and a prototype-pollution safe createRecord() function.",
+  "homepage": "https://github.com/felixarntz/packages/blob/main/packages/record/README.md",
+  "bugs": {
+    "url": "https://github.com/felixarntz/packages/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/felixarntz/packages.git",
+    "directory": "packages/record"
+  },
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "test:ci": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "engines": {
+    "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}
