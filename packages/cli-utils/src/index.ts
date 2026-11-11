@@ -1,4 +1,3 @@
-// biome-ignore lint/performance/noBarrelFile: intentional public API for library package
 export * from "./commander";
 export * from "./file-options";
 export * from "./fs";
