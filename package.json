@@ -39,14 +39,11 @@
     "@changesets/cli": "^2.31.0",
     "@felixarntz/biome": "^0.4.0",
     "@types/node": "^24.10.9",
-    "@vitest/coverage-v8": "catalog:",
     "husky": "^9.1.7",
     "konsistent": "^1.0.0-beta",
-    "mock-fs": "^5.5.0",
     "syncpack": "^15.2.0",
-    "turbo": "catalog:",
-    "ultracite": "^8.1.1",
-    "vitest": "catalog:"
+    "turbo": "^2.11.10",
+    "ultracite": "^8.1.1"
   },
   "packageManager": "pnpm@11.28.0",
   "engines": {
