@@ -10,6 +10,7 @@ This monorepo contains various NPM packages maintained by Felix Arntz, primarily
 - `pnpm build` - build all packages
 - `pnpm test` - run all tests
 - `pnpm typecheck` - run TypeScript checks
+- `pnpm konsistent` - run code consistency checks
 
 To run any of these commands for a specific package, use `pnpm --filter <package> <command>`. Examples:
 

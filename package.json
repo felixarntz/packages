@@ -15,7 +15,7 @@
     "packages/*"
   ],
   "scripts": {
-    "ai-image": "DEBUG=true node ./packages/ai-image-cli/dist/ai-image-cli.js",
+    "ai-image": "DEBUG=true node ./packages/ai-image-cli/dist/cli.js",
     "build": "turbo run build",
     "changeset": "changeset",
     "check": "ultracite check",
@@ -23,13 +23,16 @@
     "ci:release": "turbo build --filter='./packages/*' && changeset publish",
     "ci:version": "changeset version && pnpm install --no-frozen-lockfile",
     "doctor": "ultracite doctor",
-    "felixarntz": "DEBUG=true node ./packages/felixarntz/dist/index.js",
+    "felixarntz": "DEBUG=true node ./packages/felixarntz/dist/cli.js",
     "fix": "ultracite fix",
+    "konsistent": "turbo run konsistent:validate konsistent:check --log-order=grouped --log-prefix=none",
+    "konsistent:check": "konsistent",
+    "konsistent:validate": "konsistent validate",
     "prepare": "husky",
     "test": "turbo run test",
     "test:ci": "turbo run test:ci",
     "typecheck": "turbo run typecheck",
-    "wp-plugins": "DEBUG=true node ./packages/wp-plugins-cli/dist/wp-plugins-cli.js"
+    "wp-plugins": "DEBUG=true node ./packages/wp-plugins-cli/dist/cli.js"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.4",
@@ -38,6 +41,7 @@
     "@types/node": "^24.10.9",
     "@vitest/coverage-v8": "catalog:",
     "husky": "^9.1.7",
+    "konsistent": "^1.0.0-beta",
     "mock-fs": "^5.5.0",
     "syncpack": "^15.2.0",
     "turbo": "catalog:",

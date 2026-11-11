@@ -1,0 +1,73 @@
+{
+  "$schema": "../node_modules/konsistent/konsistent.schema.json",
+  "version": "v1",
+  "conventions": [
+    {
+      "name": "package-dir-must-have-required-files",
+      "description": "Every package directory must contain a specific minimum set of files.",
+      "paths": ["packages/*"],
+      "must": {
+        "haveType": "directory",
+        "haveFiles": [
+          "CHANGELOG.md",
+          "README.md",
+          "package.json",
+          "tsconfig.build.json",
+          "tsconfig.json",
+          "tsdown.config.ts",
+          "vitest.config.ts"
+        ]
+      }
+    },
+    {
+      "name": "package-must-follow-required-structure",
+      "description": "Every package must follow the required structure.",
+      "paths": ["packages/*/src"],
+      "must": [
+        {
+          "name": "package-src-must-be-directory",
+          "must": {
+            "haveType": "directory"
+          }
+        },
+        {
+          "name": "package-must-have-at-least-index-or-cli-file",
+          "ifNot": { "hasFile": "index.ts" },
+          "must": {
+            "haveFiles": ["cli.ts"]
+          }
+        },
+        {
+          "name": "package-must-have-at-least-index-or-cli-file",
+          "ifNot": { "hasFile": "cli.ts" },
+          "must": {
+            "haveFiles": ["index.ts"]
+          }
+        },
+        {
+          "name": "package-index-must-be-barrel-file",
+          "for": { "files": ["index.ts"] },
+          "must": {
+            "areBarrelFiles": true
+          },
+          "mustNot": {
+            "haveFiles": ["index.test.ts"]
+          }
+        },
+        {
+          "name": "package-test-files-must-be-next-to-source-files",
+          "for": { "files": ["{fileName}.test.ts", "{fileName}.test-d.ts"] },
+          "must": {
+            "haveFiles": ["${fileName}.ts"]
+          }
+        },
+        {
+          "name": "package-must-use-util-directory-instead-of-utils",
+          "mustNot": {
+            "haveDirectories": ["utils"]
+          }
+        }
+      ]
+    }
+  ]
+}
