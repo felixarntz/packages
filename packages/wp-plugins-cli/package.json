@@ -13,9 +13,9 @@
   },
   "license": "MIT",
   "type": "module",
-  "main": "dist/wp-plugins-cli.js",
+  "main": "dist/cli.js",
   "bin": {
-    "wp-plugins": "dist/wp-plugins-cli.js"
+    "wp-plugins": "dist/cli.js"
   },
   "files": [
     "dist/**/*"

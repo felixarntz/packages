@@ -3,7 +3,7 @@ import { cliBaseConfig } from "../../tsdown.base.ts";
 
 export default defineConfig(
   mergeConfig(cliBaseConfig, {
-    entry: ["src/wp-plugins-cli.ts"],
+    entry: ["src/cli.ts"],
     outDir: "dist",
   })
 );

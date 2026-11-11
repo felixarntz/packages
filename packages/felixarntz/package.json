@@ -13,9 +13,9 @@
   },
   "license": "MIT",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/cli.js",
   "bin": {
-    "felixarntz": "dist/index.js"
+    "felixarntz": "dist/cli.js"
   },
   "files": [
     "dist/**/*"

@@ -13,9 +13,9 @@
   },
   "license": "MIT",
   "type": "module",
-  "main": "dist/ai-image-cli.js",
+  "main": "dist/cli.js",
   "bin": {
-    "ai-image": "dist/ai-image-cli.js"
+    "ai-image": "dist/cli.js"
   },
   "files": [
     "dist/**/*"

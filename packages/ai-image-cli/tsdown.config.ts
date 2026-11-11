@@ -3,7 +3,7 @@ import { cliBaseConfig } from "../../tsdown.base.ts";
 
 export default defineConfig(
   mergeConfig(cliBaseConfig, {
-    entry: ["src/ai-image-cli.ts"],
+    entry: ["src/cli.ts"],
     outDir: "dist",
   })
 );
