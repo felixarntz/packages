@@ -73,6 +73,7 @@ export async function* getPaginatedTags(opts: {
   const { octokit, perPage = 100, repository } = opts;
   const requestArgs = {
     ...repository,
+    // biome-ignore lint/style/useNamingConvention: GitHub API field name
     per_page: perPage,
   };
 
@@ -112,6 +113,7 @@ export async function* getPaginatedCommits(opts: {
   const requestArgs = {
     ...repository,
     ...constraints,
+    // biome-ignore lint/style/useNamingConvention: GitHub API field name
     per_page: perPage,
   };
 
@@ -151,6 +153,7 @@ export async function* getPaginatedPullRequests(opts: {
   const requestArgs = {
     ...repository,
     ...constraints,
+    // biome-ignore lint/style/useNamingConvention: GitHub API field name
     per_page: perPage,
   };
 
@@ -189,7 +192,9 @@ export async function* getPaginatedPullRequestCommits(opts: {
   const { octokit, perPage = 100, pullRequestNumber, repository } = opts;
   const requestArgs = {
     ...repository,
+    // biome-ignore lint/style/useNamingConvention: GitHub API field name
     per_page: perPage,
+    // biome-ignore lint/style/useNamingConvention: GitHub API field name
     pull_number: pullRequestNumber,
   };
 

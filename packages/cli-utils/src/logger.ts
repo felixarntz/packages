@@ -1,14 +1,19 @@
 import { styleText } from "node:util";
 
-export const LogLevel = {
-  DEBUG: 0,
-  ERROR: 4,
-  INFO: 1,
-  SILENT: 5,
-  SUCCESS: 2,
-  WARN: 3,
-} as const;
-export type LogLevel = (typeof LogLevel)[keyof typeof LogLevel];
+export const LOG_LEVEL_SILENT = 5;
+export const LOG_LEVEL_ERROR = 4;
+export const LOG_LEVEL_WARN = 3;
+export const LOG_LEVEL_SUCCESS = 2;
+export const LOG_LEVEL_INFO = 1;
+export const LOG_LEVEL_DEBUG = 0;
+
+export type LogLevel =
+  | typeof LOG_LEVEL_SILENT
+  | typeof LOG_LEVEL_ERROR
+  | typeof LOG_LEVEL_WARN
+  | typeof LOG_LEVEL_SUCCESS
+  | typeof LOG_LEVEL_INFO
+  | typeof LOG_LEVEL_DEBUG;
 
 type TextStyles =
   | "bold"
@@ -33,38 +38,38 @@ const colorDebug = createStyledText("cyan");
 const formatLogMessage = (opts: { level: LogLevel; text: string }): string => {
   const { level, text } = opts;
   switch (level) {
-    case LogLevel.DEBUG:
-      return colorDebug(text);
-    case LogLevel.INFO:
-      return colorInfo(text);
-    case LogLevel.SUCCESS:
-      return formatBold(colorSuccess(`✅ ${text}`));
-    case LogLevel.WARN:
-      return formatBold(colorWarning(`⚠️ ${text}`));
-    case LogLevel.ERROR:
+    case LOG_LEVEL_ERROR:
       return formatBold(colorError(`❌ ${text}`));
+    case LOG_LEVEL_WARN:
+      return formatBold(colorWarning(`⚠️ ${text}`));
+    case LOG_LEVEL_SUCCESS:
+      return formatBold(colorSuccess(`✅ ${text}`));
+    case LOG_LEVEL_INFO:
+      return colorInfo(text);
+    case LOG_LEVEL_DEBUG:
+      return colorDebug(text);
     default:
       return text;
   }
 };
 
 const writeLog = (opts: { text: string; level?: LogLevel }): void => {
-  const level = opts.level ?? LogLevel.INFO;
-  if (level < CURRENT_LOG_LEVEL) {
+  const level = opts.level ?? LOG_LEVEL_INFO;
+  if (level < CurrentLogLevel) {
     return;
   }
   process.stderr.write(`${formatLogMessage({ level, text: opts.text })}\n`);
 };
 
-const DEFAULT_LOG_LEVEL = LogLevel.INFO;
-let CURRENT_LOG_LEVEL: LogLevel = DEFAULT_LOG_LEVEL;
+const DEFAULT_LOG_LEVEL = LOG_LEVEL_INFO;
+let CurrentLogLevel: LogLevel = DEFAULT_LOG_LEVEL;
 if (
   process.env["NODE_ENV"] === "development" ||
   process.env["DEBUG"] === "true"
 ) {
-  CURRENT_LOG_LEVEL = LogLevel.DEBUG;
+  CurrentLogLevel = LOG_LEVEL_DEBUG;
 } else if (process.env["SILENT"] === "true") {
-  CURRENT_LOG_LEVEL = LogLevel.SILENT;
+  CurrentLogLevel = LOG_LEVEL_SILENT;
 }
 
 /**
@@ -77,16 +82,15 @@ export const logger = {
    * @param text - The message to log.
    */
   debug(text: string): void {
-    writeLog({ level: LogLevel.DEBUG, text });
+    writeLog({ level: LOG_LEVEL_DEBUG, text });
   },
-
   /**
    * Logs an error message.
    *
    * @param text - The message to log.
    */
   error(text: string): void {
-    writeLog({ level: LogLevel.ERROR, text });
+    writeLog({ level: LOG_LEVEL_ERROR, text });
   },
 
   /**
@@ -95,7 +99,7 @@ export const logger = {
    * @param text - The message to log.
    */
   info(text: string): void {
-    writeLog({ level: LogLevel.INFO, text });
+    writeLog({ level: LOG_LEVEL_INFO, text });
   },
 
   /**
@@ -104,7 +108,7 @@ export const logger = {
    * @param text - The message to log.
    */
   success(text: string): void {
-    writeLog({ level: LogLevel.SUCCESS, text });
+    writeLog({ level: LOG_LEVEL_SUCCESS, text });
   },
 
   /**
@@ -113,6 +117,6 @@ export const logger = {
    * @param text - The message to log.
    */
   warn(text: string): void {
-    writeLog({ level: LogLevel.WARN, text });
+    writeLog({ level: LOG_LEVEL_WARN, text });
   },
 };

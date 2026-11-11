@@ -18,11 +18,11 @@ export function runWithHeartbeat<T>(opts: {
     heartbeatMessage = "Still working...",
     intervalMs = 5000,
   } = opts;
-  const intervalID = setInterval(() => {
+  const intervalId = setInterval(() => {
     logger.info(heartbeatMessage);
   }, intervalMs);
 
   return action().finally(() => {
-    clearInterval(intervalID);
+    clearInterval(intervalId);
   });
 }

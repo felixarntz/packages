@@ -234,7 +234,7 @@ const TYPE_HEADINGS = [
   },
 ];
 
-const add1SecondToISOString = (isoString: string) => {
+const add1SecondToIsoString = (isoString: string) => {
   const date = new Date(isoString);
 
   // The slice is to remove the milliseconds.
@@ -270,7 +270,7 @@ const findTagConstraints = async (opts: {
         if (!release.data.published_at) {
           throw new Error(`Release for tag ${t.name} has no published date`);
         }
-        constraints.since = add1SecondToISOString(release.data.published_at);
+        constraints.since = add1SecondToIsoString(release.data.published_at);
         break;
       }
     }
@@ -293,6 +293,7 @@ const getCommitConstraints = async (opts: {
     // If no tag name is specified, contrain commits to those since the last release.
     const releases = await octokit.repos.listReleases({
       ...githubRepository,
+      // biome-ignore lint/style/useNamingConvention: GitHub API field name
       per_page: 1,
     });
     if (!releases?.data?.[0]) {
@@ -302,7 +303,7 @@ const getCommitConstraints = async (opts: {
     if (!releases.data[0].published_at) {
       throw new Error("Latest release has no published date");
     }
-    constraints.since = add1SecondToISOString(releases.data[0].published_at);
+    constraints.since = add1SecondToIsoString(releases.data[0].published_at);
     logger.debug(`Using latest release tag ${releases.data[0].tag_name}`);
     return constraints;
   }
@@ -363,6 +364,7 @@ const amendEntryWithIssue = async (opts: {
   const { entry, githubRepository, issueNumber, octokit } = opts;
   const issue = await octokit.issues.get({
     ...githubRepository,
+    // biome-ignore lint/style/useNamingConvention: GitHub API field name
     issue_number: issueNumber,
   });
 

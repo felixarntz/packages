@@ -56,14 +56,17 @@ export function parseHtml(opts: { html: string; id: string }): string {
   let content = html.slice(startIndex, endIndex);
 
   // Placeholders
-  const BR_PLACEHOLDER = "___BR___";
-  const P_SEP_PLACEHOLDER = "___P_SEP___";
+  const BrPlaceholder = "___BR___";
+  const ParagraphSeparatorPlaceholder = "___P_SEP___";
 
   // Replace <br> variants
-  content = content.replace(/<br\s*\/?>/giu, BR_PLACEHOLDER);
+  content = content.replace(/<br\s*\/?>/giu, BrPlaceholder);
 
   // Replace <p> and </p> with separator
-  content = content.replace(/<\/?p(?:\s+[^>]*)?>/giu, P_SEP_PLACEHOLDER);
+  content = content.replace(
+    /<\/?p(?:\s+[^>]*)?>/giu,
+    ParagraphSeparatorPlaceholder
+  );
 
   // Strip all other tags
   content = content.replace(/<[^>]+>/gu, "");
@@ -82,10 +85,10 @@ export function parseHtml(opts: { html: string; id: string }): string {
   content = content.replace(/\s+/gu, " ");
 
   // Restore placeholders
-  content = content.replace(new RegExp(BR_PLACEHOLDER, "gu"), "\n");
+  content = content.replace(new RegExp(BrPlaceholder, "gu"), "\n");
 
   // Split by P separator
-  const parts = content.split(P_SEP_PLACEHOLDER);
+  const parts = content.split(ParagraphSeparatorPlaceholder);
 
   const paragraphs = parts.map((p) => p.trim()).filter((p) => p.length > 0);
 
