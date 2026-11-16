@@ -1,6 +1,6 @@
 {
   "name": "@felixarntz/async",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Async helpers for delay, deadline, and retry.",
   "homepage": "https://github.com/felixarntz/packages/blob/main/packages/async/README.md",
   "bugs": {

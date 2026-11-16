@@ -1,6 +1,6 @@
 {
   "name": "@felixarntz/serializable",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Encode, decode, and clone values that go beyond JSON",
   "homepage": "https://github.com/felixarntz/packages/blob/main/packages/serializable/README.md",
   "bugs": {
