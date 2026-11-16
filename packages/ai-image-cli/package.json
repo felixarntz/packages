@@ -1,6 +1,6 @@
 {
   "name": "@felixarntz/ai-image-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI for editing, cropping, optimizing, and upscaling images using AI.",
   "homepage": "https://github.com/felixarntz/packages/blob/main/packages/ai-image-cli/README.md",
   "bugs": {
